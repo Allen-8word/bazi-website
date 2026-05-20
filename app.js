@@ -30,20 +30,32 @@ const STEM_YIN_YANG = {
   甲:'yang',乙:'yin',丙:'yang',丁:'yin',戊:'yang',
   己:'yin',庚:'yang',辛:'yin',壬:'yang',癸:'yin'
 };
-const BRANCH_HIDDEN = {
-  子:'癸',丑:'己辛癸',寅:'甲丙戊',卯:'乙',
-  辰:'戊乙癸',巳:'丙戊庚',午:'丁己',未:'己丁乙',
-  申:'庚壬戊',酉:'辛',戌:'戊辛丁',亥:'壬甲'
+
+const BRANCH_HIDDEN_STRUCTURED = {
+  子: [{stem:'癸', type:'main'}],
+  丑: [{stem:'己', type:'main'}, {stem:'癸', type:'middle'}, {stem:'辛', type:'residual'}],
+  寅: [{stem:'甲', type:'main'}, {stem:'丙', type:'middle'}, {stem:'戊', type:'residual'}],
+  卯: [{stem:'乙', type:'main'}],
+  辰: [{stem:'戊', type:'main'}, {stem:'乙', type:'middle'}, {stem:'癸', type:'residual'}],
+  巳: [{stem:'丙', type:'main'}, {stem:'戊', type:'middle'}, {stem:'庚', type:'residual'}],
+  午: [{stem:'丁', type:'main'}, {stem:'己', type:'middle'}],
+  未: [{stem:'己', type:'main'}, {stem:'丁', type:'middle'}, {stem:'乙', type:'residual'}],
+  申: [{stem:'庚', type:'main'}, {stem:'壬', type:'middle'}, {stem:'戊', type:'residual'}],
+  酉: [{stem:'辛', type:'main'}],
+  戌: [{stem:'戊', type:'main'}, {stem:'辛', type:'middle'}, {stem:'丁', type:'residual'}],
+  亥: [{stem:'壬', type:'main'}, {stem:'甲', type:'middle'}]
 };
+
 const ELEMENT_CYCLE = {
-  wood:{generates:'fire',controls:'earth'},
-  fire:{generates:'earth',controls:'metal'},
-  earth:{generates:'metal',controls:'water'},
-  metal:{generates:'water',controls:'wood'},
-  water:{generates:'wood',controls:'fire'}
+  wood:  {generates:'fire', controls:'earth'},
+  fire:  {generates:'earth',controls:'metal'},
+  earth: {generates:'metal',controls:'water'},
+  metal: {generates:'water',controls:'wood'},
+  water: {generates:'wood', controls:'fire'}
 };
 
 function getTenGod(dayStem, otherStem){
+  if(!otherStem) return '';
   const dayEl = STEM_ELEMENT[dayStem];
   const otherEl = STEM_ELEMENT[otherStem];
   const sameYY = STEM_YIN_YANG[dayStem] === STEM_YIN_YANG[otherStem];
@@ -53,6 +65,21 @@ function getTenGod(dayStem, otherStem){
   if(ELEMENT_CYCLE[otherEl].controls === dayEl) return sameYY ? '七殺' : '正官';
   if(ELEMENT_CYCLE[otherEl].generates === dayEl) return sameYY ? '偏印' : '正印';
   return '';
+}
+
+function getBranchHiddenWithTenGods(branch, dayStem){
+  const hiddenList = BRANCH_HIDDEN_STRUCTURED[branch] || [];
+  return hiddenList.map(item => ({
+    stem: item.stem,
+    type: item.type,
+    tenGod: getTenGod(dayStem, item.stem),
+    element: STEM_ELEMENT[item.stem]
+  }));
+}
+
+function getBranchMainStem(branch){
+  const list = BRANCH_HIDDEN_STRUCTURED[branch];
+  return list && list[0] ? list[0].stem : '';
 }
 
 const BARNUM = {
@@ -208,10 +235,26 @@ function calculate(){
     };
 
     const dayStem = pillars.day.stem;
-    const tenGods = {
+
+    const stemTenGods = {
       year:  getTenGod(dayStem, pillars.year.stem),
       month: getTenGod(dayStem, pillars.month.stem),
+      day:   '日元',
       hour:  getTenGod(dayStem, pillars.hour.stem)
+    };
+
+    const branchTenGods = {
+      year:  getTenGod(dayStem, getBranchMainStem(pillars.year.branch)),
+      month: getTenGod(dayStem, getBranchMainStem(pillars.month.branch)),
+      day:   getTenGod(dayStem, getBranchMainStem(pillars.day.branch)),
+      hour:  getTenGod(dayStem, getBranchMainStem(pillars.hour.branch))
+    };
+
+    const hiddenStems = {
+      year:  getBranchHiddenWithTenGods(pillars.year.branch,  dayStem),
+      month: getBranchHiddenWithTenGods(pillars.month.branch, dayStem),
+      day:   getBranchHiddenWithTenGods(pillars.day.branch,   dayStem),
+      hour:  getBranchHiddenWithTenGods(pillars.hour.branch,  dayStem)
     };
 
     const yun = ec.getYun(state.gender === 'male' ? 1 : 0);
@@ -223,7 +266,9 @@ function calculate(){
 
     return {
       pillars,
-      tenGods,
+      stemTenGods,
+      branchTenGods,
+      hiddenStems,
       daYun,
       dayStem,
       dayElement: STEM_ELEMENT[dayStem],
@@ -245,6 +290,10 @@ function findCurrentDyIndex(daYun){
   return idx;
 }
 
+function getElementClass(element){
+  return 'el-' + element;
+}
+
 function renderResult(){
   const r = state.result;
   if(!r) return;
@@ -255,29 +304,55 @@ function renderResult(){
 
   const pEl = document.getElementById('rPillars');
   const order = ['year', 'month', 'day', 'hour'];
-  const labels = { year:'年柱', month:'月柱', day:'日柱（日主）', hour:'時柱' };
-  const tens = { year: r.tenGods.year, month: r.tenGods.month, day: '日元', hour: r.tenGods.hour };
+  const labels = { year:'年柱', month:'月柱', day:'日柱', hour:'時柱' };
 
   pEl.innerHTML = '';
   order.forEach(k => {
     const isDay = k === 'day';
     const stem = r.pillars[k].stem;
     const branch = r.pillars[k].branch;
-    const hidden = BRANCH_HIDDEN[branch] || '';
+    const stemTenGod = r.stemTenGods[k];
+    const branchTenGod = r.branchTenGods[k];
+    const hidden = r.hiddenStems[k];
+
+    const stemElClass = getElementClass(STEM_ELEMENT[stem]);
+    const branchMainStem = getBranchMainStem(branch);
+    const branchElClass = getElementClass(STEM_ELEMENT[branchMainStem]);
+
+    const hiddenHtml = hidden.map(h => {
+      const typeLabel = h.type === 'main' ? '本' : (h.type === 'middle' ? '中' : '餘');
+      const elCls = getElementClass(h.element);
+      return `
+        <div class="hidden-row">
+          <span class="hidden-type">${typeLabel}</span>
+          <span class="hidden-stem ${elCls}">${h.stem}</span>
+          <span class="hidden-tg">${h.tenGod}</span>
+        </div>
+      `;
+    }).join('');
+
     pEl.insertAdjacentHTML('beforeend', `
       <div class="pillar ${isDay ? 'day' : ''}">
-        <div class="pillar-label">${labels[k]}</div>
+        <div class="pillar-label ${isDay ? 'day' : ''}">${labels[k]}${isDay ? '（日主）' : ''}</div>
         <div class="pillar-box">
-          <div class="ten-god">${tens[k]}</div>
-          <div class="stem-char">${stem}</div>
-          <div class="branch-char">${branch}</div>
-          <div class="hidden-stems">${hidden}</div>
+          <div class="ten-god ${isDay ? 'day-elem' : ''}">${stemTenGod}</div>
+          <div class="stem-char ${stemElClass}">${stem}</div>
+          <div class="branch-char ${branchElClass}">${branch}</div>
+          <div class="branch-tg">${branchTenGod}</div>
+          <div class="hidden-divider"></div>
+          <div class="hidden-block">
+            <div class="hidden-title">藏 干</div>
+            ${hiddenHtml}
+          </div>
         </div>
       </div>
     `);
   });
 
   state.selectedDyIdx = findCurrentDyIndex(r.daYun);
+  state.selectedYear = r.daYun[state.selectedDyIdx]
+    ? r.daYun[state.selectedDyIdx].startYear
+    : new Date().getFullYear();
   renderDaYun();
   renderBarnum(r.dayElement);
 }
@@ -345,12 +420,30 @@ function renderFlowYears(){
     });
   });
 
+  renderFlowYearTags();
+}
+
+function renderFlowYearTags(){
+  const r = state.result;
+  if(!r) return;
   const tagsEl = document.getElementById('rTags');
-  const tags = ['乙巳年', '偏印透干', '驛馬星動'];
-  tagsEl.innerHTML = tags.map((t, i) => {
-    const cls = ['gold', 'green', 'blue'][i % 3];
-    return `<span class="tag ${cls}">${t}</span>`;
-  }).join('');
+  try {
+    const lunar = Solar.fromYmd(state.selectedYear, 6, 15).getLunar();
+    const yearGz = lunar.getYearInGanZhi();
+    const yearStem = yearGz.charAt(0);
+    const yearBranch = yearGz.charAt(1);
+    const stemTg = getTenGod(r.dayStem, yearStem);
+    const branchMainStem = getBranchMainStem(yearBranch);
+    const branchTg = getTenGod(r.dayStem, branchMainStem);
+    const tags = [
+      { text: yearGz + '年', cls: 'gold' },
+      { text: '流年天干 · ' + stemTg, cls: 'green' },
+      { text: '流年地支 · ' + branchTg, cls: 'blue' }
+    ];
+    tagsEl.innerHTML = tags.map(t => `<span class="tag ${t.cls}">${t.text}</span>`).join('');
+  } catch(e){
+    tagsEl.innerHTML = '';
+  }
 }
 
 function renderBarnum(el){
@@ -395,8 +488,8 @@ function handleEmailSubmit(e){
   if(!email || !email.includes('@')) return;
 
   track('email_subscribe', {
-    day_stem: state.result?.dayStem,
-    day_element: state.result?.dayElement
+    day_stem: state.result && state.result.dayStem,
+    day_element: state.result && state.result.dayElement
   });
 
   const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
@@ -406,8 +499,8 @@ function handleEmailSubmit(e){
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify({
       email: email,
-      day_stem: state.result?.dayStem || '',
-      day_element: state.result?.dayElement || '',
+      day_stem: (state.result && state.result.dayStem) || '',
+      day_element: (state.result && state.result.dayElement) || '',
       name: state.name || '',
       gender: state.gender,
       source: 'bazi_result_page'

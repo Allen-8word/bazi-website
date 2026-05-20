@@ -25,12 +25,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=Noto+Serif+TC:wght@400;500;600&display=swap" rel="stylesheet">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7Q1ED9LL5Z"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-7Q1ED9LL5Z', { 'anonymize_ip': true });
+  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true });
 </script>
 
 <script>
@@ -367,18 +367,19 @@ header.site-header {
 .pillars-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 .pillar { text-align: center; }
 .pillar .pillar-label {
   font-size: 11px;
   color: var(--color-text-sub);
   margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
-.pillar.day .pillar-label { color: var(--color-accent); }
+.pillar .pillar-label.day { color: var(--color-accent); font-weight: 500; }
 .pillar .pillar-box {
   background: var(--bg-primary);
-  padding: 14px 4px;
+  padding: 12px 6px;
   border-radius: var(--radius-md);
   transition: transform 0.2s;
 }
@@ -391,26 +392,119 @@ header.site-header {
   font-size: 11px;
   color: var(--color-accent);
   margin-bottom: 8px;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  min-height: 14px;
+}
+.pillar .ten-god.day-elem {
+  color: var(--color-mystic);
+  font-weight: 500;
 }
 .pillar .stem-char {
   font-family: 'Noto Serif TC', serif;
-  font-size: 30px;
+  font-size: 32px;
   color: var(--color-text);
   margin-bottom: 6px;
-  line-height: 1;
+  line-height: 1.1;
+  font-weight: 500;
 }
 .pillar .branch-char {
   font-family: 'Noto Serif TC', serif;
-  font-size: 30px;
-  color: var(--color-mystic);
-  line-height: 1;
+  font-size: 32px;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  line-height: 1.1;
+  font-weight: 500;
 }
-.pillar .hidden-stems {
+.pillar .branch-tg {
+  font-size: 11px;
+  color: var(--color-accent);
+  letter-spacing: 1.5px;
+  min-height: 14px;
+  margin-bottom: 4px;
+}
+.pillar .hidden-divider {
+  height: 1px;
+  background: rgba(122, 117, 109, 0.18);
+  margin: 10px 6px;
+}
+.pillar .hidden-block {
+  padding: 0 2px;
+}
+.pillar .hidden-title {
   font-size: 10px;
-  color: var(--color-main);
-  margin-top: 10px;
-  letter-spacing: 1px;
+  color: var(--color-text-sub);
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+  font-family: 'Noto Serif TC', serif;
+}
+.pillar .hidden-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 3px 0;
+  font-size: 11px;
+}
+.pillar .hidden-type {
+  font-size: 9px;
+  color: var(--color-text-sub);
+  background: rgba(232, 226, 213, 0.65);
+  border-radius: 3px;
+  padding: 1px 4px;
+  min-width: 16px;
+}
+.pillar .hidden-stem {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 16px;
+}
+.pillar .hidden-tg {
+  font-size: 10px;
+  color: var(--color-text-sub);
+  letter-spacing: 0.5px;
+}
+
+.el-wood  { color: #5A7A4E; }
+.el-fire  { color: #B85454; }
+.el-earth { color: #B89569; }
+.el-metal { color: #8A8B8E; }
+.el-water { color: #4A5868; }
+
+.pillar .stem-char.el-wood,  .pillar .branch-char.el-wood  { color: #5A7A4E; }
+.pillar .stem-char.el-fire,  .pillar .branch-char.el-fire  { color: #B85454; }
+.pillar .stem-char.el-earth, .pillar .branch-char.el-earth { color: #B89569; }
+.pillar .stem-char.el-metal, .pillar .branch-char.el-metal { color: #6F7378; }
+.pillar .stem-char.el-water, .pillar .branch-char.el-water { color: #4A5868; }
+
+.pillar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(122, 117, 109, 0.2);
+  font-size: 11px;
+  color: var(--color-text-sub);
+}
+.pillar-legend span { display: inline-flex; align-items: center; gap: 4px; letter-spacing: 0.5px; }
+.pillar-legend b {
+  background: rgba(232, 226, 213, 0.65);
+  color: var(--color-text);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.disclaimer-note {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  text-align: center;
+  padding: 0.5rem 1rem 1.25rem;
+  line-height: 1.8;
+  letter-spacing: 0.3px;
 }
 
 .dayun-header {
@@ -677,7 +771,14 @@ footer.site-footer {
 
 @media (max-width: 480px) {
   .form-row.c4 { grid-template-columns: repeat(2, 1fr); }
-  .pillar .stem-char, .pillar .branch-char { font-size: 24px; }
+  .pillar .stem-char, .pillar .branch-char { font-size: 26px; }
+  .pillar .pillar-box { padding: 10px 3px; }
+  .pillar .ten-god, .pillar .branch-tg { font-size: 10px; letter-spacing: 1px; }
+  .pillar .hidden-row { gap: 3px; padding: 2px 0; }
+  .pillar .hidden-stem { font-size: 13px; }
+  .pillar .hidden-tg { font-size: 9px; }
+  .pillar .hidden-type { font-size: 8px; padding: 1px 3px; }
+  .pillar .pillar-label { font-size: 10px; }
   .flowyear-grid { grid-template-columns: repeat(3, 1fr); }
   .hero h1 { font-size: 24px; }
   .trust-block .stats { gap: 0.5rem; }
@@ -809,6 +910,15 @@ footer.site-footer {
     <div class="card">
       <div class="section-title">四 柱 八 字</div>
       <div class="pillars-grid" id="rPillars"></div>
+      <div class="pillar-legend">
+        <span><b>本</b> 本氣（地支主氣）</span>
+        <span><b>中</b> 中氣</span>
+        <span><b>餘</b> 餘氣</span>
+      </div>
+    </div>
+
+    <div class="disclaimer-note">
+      命盤資訊依傳統四柱八字古法推算，僅供命理參考，不構成任何醫療、財務、法律或人際決策建議。
     </div>
 
     <div class="card">
