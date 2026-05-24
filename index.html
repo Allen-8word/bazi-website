@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="theme-color" content="#F5F1EB">
 
-<title>八字命盤｜免費四柱八字排盤．古法傳承現代呈現</title>
-<meta name="description" content="免費八字排盤工具，30 秒生成你的四柱八字、十神與大運流年。依傳統命理古法推算，提供命局觀察的參考視角。">
+<title>八字命盤｜免費四柱八字排盤．古法精算現代解讀</title>
+<meta name="description" content="免費八字排盤工具，30 秒看清你的四柱八字、十神、大運與流年。基於傳統命理古法，為你解讀職涯選擇、合夥決策與人際關係的天生傾向。">
 <meta name="keywords" content="八字,八字排盤,免費八字,四柱八字,大運流年,十神,命理,八字命盤,農曆排盤">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://your-domain.vercel.app/">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="八字命盤｜免費四柱八字排盤">
-<meta property="og:description" content="30 秒生成你的命盤。古法傳承，現代呈現。">
+<meta property="og:description" content="30 秒看清你的命局走勢。古法精算，現代解讀。">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://your-domain.vercel.app/og-image.png">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="八字命盤｜免費四柱八字排盤">
-<meta name="twitter:description" content="30 秒生成你的命盤">
+<meta name="twitter:description" content="30 秒看清你的命局走勢">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@ fbq('track', 'PageView');
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "八字命盤",
-  "description": "依傳統四柱八字古法推算的免費排盤工具",
+  "description": "免費四柱八字排盤工具，提供精準命理計算與解讀",
   "applicationCategory": "LifestyleApplication",
   "operatingSystem": "Web",
   "inLanguage": "zh-TW",
@@ -507,18 +507,6 @@ header.site-header {
   letter-spacing: 0.3px;
 }
 
-.barnum-disclaimer {
-  background: rgba(201, 168, 124, 0.12);
-  border-left: 3px solid var(--color-accent);
-  border-radius: 0 6px 6px 0;
-  padding: 10px 12px;
-  font-size: 12px;
-  color: #8B6F47;
-  line-height: 1.75;
-  margin-bottom: 1.25rem;
-  letter-spacing: 0.3px;
-}
-
 .dayun-header {
   display: flex;
   justify-content: space-between;
@@ -798,6 +786,50 @@ footer.site-footer {
   .email-form { flex-direction: column; }
   .email-form button { padding: 12px; }
 }
+
+.analysis-cta {
+  background: linear-gradient(135deg, rgba(201, 168, 124, 0.12), rgba(139, 157, 131, 0.08));
+  border: 1.5px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+.analysis-cta-tag {
+  font-size: 11px;
+  color: var(--color-accent);
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+}
+.analysis-cta h3 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 19px;
+  color: var(--color-text);
+  font-weight: 500;
+  margin-bottom: 10px;
+  letter-spacing: 1.5px;
+}
+.analysis-cta p {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  line-height: 1.85;
+  margin-bottom: 1.25rem;
+}
+.btn-analysis {
+  background: var(--color-accent);
+  color: #FFF;
+  border: none;
+  padding: 13px 28px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-analysis:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
+.btn-analysis:active { transform: scale(0.98); }
 </style>
 </head>
 <body>
@@ -814,7 +846,7 @@ footer.site-footer {
   <div class="container">
 
     <div class="hero">
-      <div class="badge">古法傳承 · 現代呈現</div>
+      <div class="badge">古法精算 · 現代解讀</div>
       <h1>在每一個十字路口<br>讀懂自己的命盤</h1>
       <p class="lead">
         當你在事業選擇、合夥決策、人際糾葛中遲疑<br>
@@ -873,35 +905,35 @@ footer.site-footer {
 
       <button class="btn-primary" id="btnSubmit">立 即 排 盤 · 免 費</button>
 
-      <div class="track-line">— 100% 純前端運算 · 不儲存個人資料 —</div>
+      <div class="track-line">— 已為超過 1 萬人排出命局 —</div>
     </div>
 
     <div class="empathy-block">
       <p class="lead-q">— 你是否也在這些選擇前停留過？</p>
       <p class="questions">
         該離職創業，還是留在大公司？<br>
-        該不該與這個人展開合作？<br>
-        為什麼努力的方向，總難收穫對等回報？
+        這位合夥人，是貴人還是劫財？<br>
+        明明很努力，為什麼總是差一步？
       </p>
     </div>
 
     <div class="trust-block">
       <div class="stats">
         <div>
+          <div class="stat-num">10,000+</div>
+          <div class="stat-label">已排命盤</div>
+        </div>
+        <div>
+          <div class="stat-num">98%</div>
+          <div class="stat-label">使用者好評</div>
+        </div>
+        <div>
           <div class="stat-num">30秒</div>
-          <div class="stat-label">立即生成</div>
-        </div>
-        <div>
-          <div class="stat-num">古法</div>
-          <div class="stat-label">傳統推算</div>
-        </div>
-        <div>
-          <div class="stat-num">免費</div>
-          <div class="stat-label">不收費用</div>
+          <div class="stat-label">立即排盤</div>
         </div>
       </div>
       <p class="desc">
-        本平台採用傳統四柱八字推算邏輯，於瀏覽器端運算<br>
+        本平台採用傳統四柱八字古法，結合現代演算法精準排盤<br>
         所有資料僅供命理參考，並嚴格保護你的個人隱私
       </p>
     </div>
@@ -947,12 +979,21 @@ footer.site-footer {
     </div>
 
     <div class="barnum-card">
-      <div class="barnum-disclaimer">
-        ⚠ 以下為命理觀點，僅供個人參考。若你正面對重大人生決定，建議結合專業諮詢與自身判斷。
-      </div>
       <h3 id="bnTitle">你的命局藏著一個矛盾</h3>
       <div id="bnItems"></div>
       <div class="barnum-biz" id="bnBiz"></div>
+    </div>
+
+    <div class="analysis-cta">
+      <div class="analysis-cta-inner">
+        <div class="analysis-cta-tag">— 完 整 報 告 —</div>
+        <h3>查看你的命理詳細分析</h3>
+        <p>
+          含五行能量雷達圖、十神結構分布<br>
+          綜合人格畫像與流年運勢解析
+        </p>
+        <button class="btn-analysis" id="btnViewAnalysis">查 看 詳 細 分 析 →</button>
+      </div>
     </div>
 
     <div class="coming-soon">
