@@ -220,13 +220,42 @@ function renderPersona(topTwo) {
     return;
   }
 
-  let tagHtml = '';
-  let blocksHtml = '';
+  const mainProfile = window.TEN_GODS_PROFILES[topTwo[0]];
+  const subProfile = topTwo[1] ? window.TEN_GODS_PROFILES[topTwo[1]] : null;
 
+  let dualCardHtml = '<div class="persona-dual">';
+  if (mainProfile) {
+    dualCardHtml += `
+      <div class="persona-side main">
+        <div class="ps-role">主 導</div>
+        <div class="ps-name">${mainProfile.name}</div>
+        <div class="ps-cat">${mainProfile.category}</div>
+      </div>
+    `;
+  }
+  if (subProfile) {
+    dualCardHtml += `
+      <div class="persona-side sub">
+        <div class="ps-role">輔 助</div>
+        <div class="ps-name">${subProfile.name}</div>
+        <div class="ps-cat">${subProfile.category}</div>
+      </div>
+    `;
+  } else {
+    dualCardHtml += `
+      <div class="persona-side sub">
+        <div class="ps-role">輔 助</div>
+        <div class="ps-name" style="font-size:14px;color:#7A756D">無顯著</div>
+        <div class="ps-cat">命局十神結構偏單一</div>
+      </div>
+    `;
+  }
+  dualCardHtml += '</div>';
+
+  let blocksHtml = '';
   topTwo.forEach((tgName, idx) => {
     const profile = window.TEN_GODS_PROFILES[tgName];
     if (!profile) return;
-    tagHtml += `<span class="persona-tag">${idx === 0 ? '主導 · ' : '輔助 · '}${tgName}</span>`;
 
     const strengthsHtml = profile.strengths.map(s =>
       `<div class="cat-item"><span class="cat-bullet b-pos">+</span><span>${s}</span></div>`
@@ -259,7 +288,7 @@ function renderPersona(topTwo) {
   });
 
   document.getElementById('personaContent').innerHTML = `
-    <div style="text-align:center;margin-bottom:1rem">${tagHtml}</div>
+    ${dualCardHtml}
     <div class="persona-summary">
       綜合畫像取自命盤中前兩個出現最多的十神，作為判斷個性特質的依據
     </div>
@@ -305,9 +334,16 @@ function renderFlowYear(analysisData, currentYearParam) {
     const branchTgProfile = window.TEN_GODS_PROFILES[fy.branchTenGod];
 
     let html = `
+      <div class="fy-highlight">
+        <div class="fy-big">${fy.ganZhi}</div>
+        <div class="fy-info">
+          <div class="fy-y">${year} 年</div>
+          <div class="fy-tg">${fy.stemTenGod}${fy.branchTenGod && fy.branchTenGod !== fy.stemTenGod ? ' · ' + fy.branchTenGod : ''}</div>
+        </div>
+      </div>
       <div class="cat-block">
-        <div class="cat-label">${year} 年 · ${fy.ganZhi}</div>
-        <div class="cat-item"><span class="cat-bullet b-info">·</span><span>該年五行能量：${fy.elements.map(e => window.ELEMENT_NAMES[e]).join('、')}${fy.note ? '（' + fy.note + '）' : ''}</span></div>
+        <div class="cat-label">該 年 五 行</div>
+        <div class="cat-item"><span class="cat-bullet b-info">·</span><span>${fy.elements.map(e => window.ELEMENT_NAMES[e]).join('、')}${fy.note ? '（' + fy.note + '）' : ''}</span></div>
       </div>
     `;
     if (stemTgProfile) {
@@ -385,6 +421,94 @@ function init() {
       window.location.href = '/';
     }
   });
+
+  // PDF 下載按鈕（使用瀏覽器原生列印功能）
+  const btnDownload = document.getElementById('btnDownload');
+  if (btnDownload) {
+    btnDownload.addEventListener('click', () => downloadPDF(displayName));
+  }
+
+  // 把報告生成日期寫入 PDF 頁尾
+  const today = new Date();
+  const dateStr = today.getFullYear() + '/' +
+    String(today.getMonth() + 1).padStart(2, '0') + '/' +
+    String(today.getDate()).padStart(2, '0');
+  const pdfDateEl = document.getElementById('pdfGenDate');
+  if (pdfDateEl) pdfDateEl.textContent = dateStr;
+}
+
+/**
+ * 下載 PDF 報告（使用瀏覽器原生列印 → 另存為 PDF）
+ * 
+ * 優點：
+ * - 完美支援中文字型（使用使用者系統字型）
+ * - SVG 圖表向量繪製，無損
+ * - 分頁由瀏覽器智慧處理
+ * - 檔案小（200-500KB）
+ * - 零外部依賴
+ * 
+ * 流程：
+ * 1. 自動設定瀏覽器列印標題（會成為預設檔名）
+ * 2. 觸發 window.print()
+ * 3. 使用者在列印對話框選「另存為 PDF」即可
+ */
+function downloadPDF(displayName) {
+  // 1. 設定瀏覽器列印標題（會作為預設 PDF 檔名）
+  const today = new Date();
+  const dateStamp = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+  const safeName = (displayName || '命主').replace(/[\\/:*?"<>|]/g, '_');
+  
+  const originalTitle = document.title;
+  document.title = `八字命盤_${safeName}_${dateStamp}`;
+
+  // 2. 顯示提示遮罩 0.4 秒（讓使用者知道在做什麼）
+  showPrintGuide(() => {
+    // 3. 觸發列印
+    window.print();
+    
+    // 4. 列印對話框關閉後還原標題
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
+
+    // GA4 追蹤
+    if (typeof window.gtag === 'function') {
+      try { window.gtag('event', 'download_pdf', { method: 'browser_print' }); } catch (e) {}
+    }
+  });
+}
+
+/**
+ * 顯示「列印 PDF 操作引導」提示
+ * 讓使用者知道：在列印對話框中選「另存為 PDF」
+ */
+function showPrintGuide(callback) {
+  const overlay = document.getElementById('pdfOverlay');
+  const inner = overlay.querySelector('.pdf-overlay-inner');
+  
+  // 替換內容為引導訊息
+  inner.innerHTML = `
+    <div style="font-family:'Noto Serif TC',serif;font-size:18px;color:#3D3A36;letter-spacing:2px;margin-bottom:12px">
+      準 備 開 啟 列 印 視 窗
+    </div>
+    <div style="font-size:13px;color:#7A756D;line-height:1.9;margin-bottom:14px">
+      請在列印對話框中：<br>
+      <b style="color:#C9A87C">「目的地」選擇「另存為 PDF」</b>，<br>
+      然後點「儲存」即可下載
+    </div>
+    <div style="font-size:11px;color:#8A857F;letter-spacing:1px">
+      3 秒後自動開啟…
+    </div>
+  `;
+  
+  overlay.classList.add('show');
+
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    callback();
+  }, 2500);
 }
 
 if (document.readyState === 'loading') {
