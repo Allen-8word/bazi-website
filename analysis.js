@@ -446,6 +446,18 @@ function renderFlowYear(analysisData, currentYearParam) {
     }
 
     contentEl.innerHTML = html;
+
+    // 🔄 同步更新付費鉤子區塊（讓年份跟著流年切換）
+    if (typeof window.renderPaywallSync === 'function') {
+      window.renderPaywallSync(
+        year,
+        analysisData.dayStem,
+        analysisData.topTwoTenGods,
+        fy.ganZhi,
+        fy.stemTenGod,
+        fy.branchTenGod
+      );
+    }
   }
 
   renderFyContent(selectedYear);
@@ -453,7 +465,13 @@ function renderFlowYear(analysisData, currentYearParam) {
     cell.addEventListener('click', () => {
       stripEl.querySelectorAll('.fy-year-cell').forEach(c => c.classList.remove('active'));
       cell.classList.add('active');
-      renderFyContent(+cell.dataset.year);
+      const newYear = +cell.dataset.year;
+      renderFyContent(newYear);
+
+      // GA4 追蹤年份切換
+      if (typeof window.gtag === 'function') {
+        try { window.gtag('event', 'flow_year_switch', { year: newYear }); } catch (e) {}
+      }
     });
   });
 }
@@ -529,7 +547,10 @@ function renderPaywall(year, dayStem, topTwo, ganZhi, stemTenGod, branchTenGod) 
     </div>
   `).join('');
 
-  document.getElementById('paywallContent').innerHTML = `
+  const paywallEl = document.getElementById('paywallContent');
+  if (!paywallEl) return;
+
+  paywallEl.innerHTML = `
     <div class="paywall-intro">
       免費版幫你看見了「你是什麼樣的人」<br>
       但 ${year} 年具體會發生什麼、什麼時候會發生<br>
@@ -542,6 +563,9 @@ function renderPaywall(year, dayStem, topTwo, ganZhi, stemTenGod, branchTenGod) 
     </button>
   `;
 }
+
+// 暴露為全域函式，讓流年切換時可以同步呼叫
+window.renderPaywallSync = renderPaywall;
 
 /* ========= 主初始化 ========= */
 function init() {
@@ -578,15 +602,26 @@ function init() {
   }
 
   renderTenGodsBars(analysisData.tenGodsDistribution);
-  renderFlowYear(analysisData, +params.fy || new Date().getFullYear());
+
+  // 計算初始流年（必須在流年資料表的範圍內）
+  // 邏輯：優先用 URL 帶的 fy，若該年份不在資料表中（例如使用者帶的是大運起運年 1990、2018 等）
+  //      則 fallback 到當前年份（new Date().getFullYear()）
+  const flowYearKeys = Object.keys(window.FLOW_YEAR_ELEMENTS).map(Number);
+  const minFlowYear = Math.min(...flowYearKeys);
+  const maxFlowYear = Math.max(...flowYearKeys);
+  const requestedYear = +params.fy || new Date().getFullYear();
+  const initialFlowYear = (requestedYear >= minFlowYear && requestedYear <= maxFlowYear)
+    ? requestedYear
+    : new Date().getFullYear();
+
+  renderFlowYear(analysisData, initialFlowYear);
   renderSisterWord(analysisData.dayStem, analysisData.topTwoTenGods);
 
-  const selectedYearForPaywall = +params.fy || new Date().getFullYear();
   const fyForPaywall = window.BAZI_ENGINE.calculateFlowYearAnalysis(
-    selectedYearForPaywall, analysisData.dayStem, window.BRANCH_PROFILES, window.FLOW_YEAR_ELEMENTS
+    initialFlowYear, analysisData.dayStem, window.BRANCH_PROFILES, window.FLOW_YEAR_ELEMENTS
   );
   renderPaywall(
-    selectedYearForPaywall,
+    initialFlowYear,
     analysisData.dayStem,
     analysisData.topTwoTenGods,
     fyForPaywall ? fyForPaywall.ganZhi : '',
