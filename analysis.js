@@ -1,11 +1,15 @@
 /**
- * analysis.js — 詳細分析頁面渲染邏輯
- * 
- * 工作流程：
- * 1. 從 URL hash 讀取命盤資料 (例: #y=1990&m=6&d=15&h=13&g=male&t=solar)
- * 2. 用 lunar-javascript 重新計算四柱
- * 3. 呼叫 BAZI_ENGINE 產生分析資料
- * 4. 渲染五個報告卡片
+ * analysis.js — 姊姊感版分析報告渲染邏輯
+ *
+ * 6 段式報告骨架：
+ *   一、命主特質（開場隱喻 + 三個誤解 + 點頭場景 + 陰影面）
+ *   二、五行能量觀察（雷達圖 + 為什麼你感覺累/旺盛 + 真正需要的補充）
+ *   三、人格畫像（主導/輔助 + 外在 vs 內在 + 人生劇本 + 核心張力 + 十神結構圖）
+ *   四、流年運勢預警（為什麼這年重要 + 事件類型 + 最容易卡的地方）
+ *   五、姊姊贈言（總結性的一句話）
+ *   六、付費鉤子（具體到月份/面向，引導升級）
+ *
+ * 所有內容皆來自 data/*.js 的查表資料，零 AI 生成、零幻覺。
  */
 (function() {
 'use strict';
@@ -61,11 +65,25 @@ function showError() {
   document.getElementById('reportContent').style.display = 'none';
 }
 
-function renderDayMaster(dayStem, data) {
+/* ========= 段落 1：命主特質 ========= */
+function renderDayMaster(dayStem) {
   const profile = window.DAY_MASTER_PROFILES[dayStem];
   if (!profile) return;
   const el = document.getElementById('dmContent');
+
   const keywordsHtml = profile.keywords.map(k => `<span>${k}</span>`).join('');
+
+  const misunderstoodHtml = profile.misunderstoodPoints.map(item => `
+    <div class="misunderstood-item">
+      <div class="mi-title">${item.title}</div>
+      <div class="mi-desc">${item.desc}</div>
+    </div>
+  `).join('');
+
+  const nodHtml = profile.nodScenarios.map(s =>
+    `<div class="nod-item">${s}</div>`
+  ).join('');
+
   el.innerHTML = `
     <div class="dm-imagery">
       <div class="stem-big el-${profile.element}-text">${profile.stem}</div>
@@ -73,31 +91,33 @@ function renderDayMaster(dayStem, data) {
       <div class="img-sub">${profile.elementName} · 日柱日主</div>
     </div>
     <div class="dm-keywords">${keywordsHtml}</div>
-    <div class="cat-block">
-      <div class="cat-label">核 心 本 質</div>
-      <div class="cat-item"><span class="cat-bullet b-info">·</span><span>${profile.coreIdentity}</span></div>
+
+    <div class="dm-opening-metaphor">${profile.openingMetaphor}</div>
+
+    <div class="dm-section">
+      <div class="dm-section-title">三 個 你 常 被 誤 解 的 事</div>
+      ${misunderstoodHtml}
     </div>
-    <div class="cat-block">
-      <div class="cat-label">天 性 特 質</div>
-      <div class="cat-item"><span class="cat-bullet b-info">·</span><span>${profile.nature}</span></div>
+
+    <div class="dm-section">
+      <div class="dm-section-title">你 會 在 心 裡 點 頭 的 場 景</div>
+      <div class="nod-scenarios">${nodHtml}</div>
     </div>
-    <div class="cat-block">
-      <div class="cat-label">優 勢 面</div>
-      <div class="cat-item"><span class="cat-bullet b-pos">+</span><span>${profile.strengths}</span></div>
-    </div>
-    <div class="cat-block">
-      <div class="cat-label">需 留 意</div>
-      <div class="cat-item"><span class="cat-bullet b-warn">!</span><span>${profile.challenges}</span></div>
+
+    <div class="dm-section">
+      <div class="dm-section-title">這 份 特 質 的 另 一 面</div>
+      <div class="shadow-block">
+        <div class="shadow-label">⚠ 你需要看見的</div>
+        ${profile.shadowSide}
+      </div>
     </div>
   `;
 }
 
+/* ========= 段落 2：五行能量觀察 ========= */
 function renderElementRadar(energy) {
-  const labels = ['木','火','土','金','水'];
-  const keys = ['wood','fire','earth','土','metal','water'];
-  const colorMap = { wood:'#5A7A4E', fire:'#B85454', earth:'#B89569', metal:'#6F7378', water:'#4A5868' };
   const order = ['wood','fire','earth','metal','water'];
-
+  const colorMap = { wood:'#5A7A4E', fire:'#B85454', earth:'#B89569', metal:'#6F7378', water:'#4A5868' };
   const angleStep = (2 * Math.PI) / 5;
   const startAngle = -Math.PI / 2;
   const cx = 150, cy = 130, maxR = 90;
@@ -118,12 +138,12 @@ function renderElementRadar(energy) {
   });
 
   let gridPolys = '';
-  [1, 0.66, 0.33].forEach(scale => {
+  [1, 0.66, 0.33].forEach(sc => {
     let pts = '';
     for (let i = 0; i < 5; i++) {
       const angle = startAngle + angleStep * i;
-      const x = cx + maxR * scale * Math.cos(angle);
-      const y = cy + maxR * scale * Math.sin(angle);
+      const x = cx + maxR * sc * Math.cos(angle);
+      const y = cy + maxR * sc * Math.sin(angle);
       pts += `${x.toFixed(1)},${y.toFixed(1)} `;
     }
     gridPolys += `<polygon points="${pts.trim()}" fill="none" stroke="#E8E2D5" stroke-width="1"/>`;
@@ -131,6 +151,7 @@ function renderElementRadar(energy) {
 
   let axisLines = '';
   let labelTexts = '';
+  const labelMap = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
   order.forEach((key, i) => {
     const angle = startAngle + angleStep * i;
     const x = cx + maxR * Math.cos(angle);
@@ -138,34 +159,29 @@ function renderElementRadar(energy) {
     axisLines += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#E8E2D5" stroke-width="1"/>`;
     const labelX = cx + (maxR + 16) * Math.cos(angle);
     const labelY = cy + (maxR + 16) * Math.sin(angle) + 4;
-    const label = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' }[key];
-    labelTexts += `<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-size="13" fill="${colorMap[key]}" font-family="Noto Serif TC, serif">${label}</text>`;
+    labelTexts += `<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-size="13" fill="${colorMap[key]}" font-family="Noto Serif TC, serif">${labelMap[key]}</text>`;
   });
 
-  const svg = `
+  document.getElementById('elRadarWrap').innerHTML = `
     <svg viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" class="radar-svg" aria-label="五行能量雷達圖">
-      ${gridPolys}
-      ${axisLines}
+      ${gridPolys}${axisLines}
       <polygon points="${polyPoints.trim()}" fill="rgba(139,157,131,0.25)" stroke="#8B9D83" stroke-width="2"/>
-      ${dots}
-      ${labelTexts}
+      ${dots}${labelTexts}
     </svg>
   `;
-  document.getElementById('elRadarWrap').innerHTML = svg;
 
-  const summaryEl = document.getElementById('elSummary');
-  const elNames = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+  // 五行百分比摘要
   let summaryHtml = '';
   order.forEach(key => {
     const value = energy[key] || 0;
     summaryHtml += `
       <div>
-        <div class="el-label el-${key}-text">${elNames[key]}</div>
+        <div class="el-label el-${key}-text">${labelMap[key]}</div>
         <div class="el-value">${value.toFixed(1)}%</div>
       </div>
     `;
   });
-  summaryEl.innerHTML = summaryHtml;
+  document.getElementById('elSummary').innerHTML = summaryHtml;
 }
 
 function renderBodyStrengthAndPersonality(bodyStrength, energy) {
@@ -178,15 +194,123 @@ function renderBodyStrengthAndPersonality(bodyStrength, energy) {
 
   const strongProfile = window.ELEMENT_PERSONALITY[strongest];
   const weakProfile = window.ELEMENT_PERSONALITY[weakest];
-
   if (!strongProfile || !weakProfile) return;
-  
-  const elPersonalityEl = document.getElementById('elPersonality');
-  elPersonalityEl.innerHTML = `
-    <div class="cat-block">
-      <div class="cat-label">命 局 能 量 觀 察</div>
-      <div class="cat-item"><span class="cat-bullet b-pos">+</span><span><b>${strongProfile.name}</b> 偏旺：${strongProfile.excess}</span></div>
-      <div class="cat-item"><span class="cat-bullet b-warn">-</span><span><b>${weakProfile.name}</b> 偏弱：${weakProfile.deficient}</span></div>
+
+  const renderFeelingBlock = (profile, mode) => {
+    const data = mode === 'excess' ? profile.excess : profile.deficient;
+    const scenesHtml = data.scenes.map(s => `<div class="ef-scene">${s}</div>`).join('');
+    return `
+      <div class="element-feeling">
+        <div class="ef-title">${profile.name}${mode === 'excess' ? '偏旺' : '偏弱'} · 你的日常感受</div>
+        <div class="ef-feeling">${data.feeling}</div>
+        <div class="ef-scenes">${scenesHtml}</div>
+        <div class="ef-need">
+          <div class="ef-need-label">→ 你真正需要的補充</div>
+          ${data.need}
+        </div>
+      </div>
+    `;
+  };
+
+  document.getElementById('elPersonality').innerHTML =
+    renderFeelingBlock(strongProfile, 'excess') +
+    renderFeelingBlock(weakProfile, 'deficient');
+}
+
+/* ========= 段落 3：人格畫像 ========= */
+function renderPersona(topTwo) {
+  const el = document.getElementById('personaContent');
+  if (!topTwo || topTwo.length === 0) {
+    el.innerHTML = '<p style="font-size:13px;color:#7A756D">命局十神分布平均，未呈現明顯主導十神</p>';
+    return;
+  }
+
+  const mainProfile = window.TEN_GODS_PROFILES[topTwo[0]];
+  const subProfile = topTwo[1] ? window.TEN_GODS_PROFILES[topTwo[1]] : null;
+  if (!mainProfile) return;
+
+  // 主導/輔助 雙欄圖卡
+  let dualCardHtml = '<div class="persona-dual">';
+  dualCardHtml += `
+    <div class="persona-side main">
+      <div class="ps-role">主 導</div>
+      <div class="ps-name">${mainProfile.name}</div>
+      <div class="ps-cat">${mainProfile.category}</div>
+    </div>
+  `;
+  if (subProfile) {
+    dualCardHtml += `
+      <div class="persona-side sub">
+        <div class="ps-role">輔 助</div>
+        <div class="ps-name">${subProfile.name}</div>
+        <div class="ps-cat">${subProfile.category}</div>
+      </div>
+    `;
+  } else {
+    dualCardHtml += `
+      <div class="persona-side sub">
+        <div class="ps-role">輔 助</div>
+        <div class="ps-name" style="font-size:14px;color:#7A756D">無顯著</div>
+        <div class="ps-cat">命局十神結構偏單一</div>
+      </div>
+    `;
+  }
+  dualCardHtml += '</div>';
+
+  // 主導十神的開場句
+  const summaryHtml = `
+    <div class="persona-summary">
+      ${mainProfile.summary}
+    </div>
+  `;
+
+  // 外在 vs 內在 雙欄
+  const outerHtml = mainProfile.outerView.map(v => `<div class="pv-item">${v}</div>`).join('');
+  const innerHtml = mainProfile.innerView.map(v => `<div class="pv-item">${v}</div>`).join('');
+  const viewsHtml = `
+    <div class="persona-views">
+      <div class="persona-view-side outer">
+        <div class="pv-label">別 人 眼 中 的 你</div>
+        ${outerHtml}
+      </div>
+      <div class="persona-view-side inner">
+        <div class="pv-label">你 自 己 知 道 的 你</div>
+        ${innerHtml}
+      </div>
+    </div>
+  `;
+
+  // 核心張力
+  const tensionHtml = `
+    <div class="core-tension">
+      <div class="ct-label">⚡ 你 最 該 注 意 的 內 在 矛 盾</div>
+      ${mainProfile.coreTension}
+    </div>
+  `;
+
+  el.innerHTML = dualCardHtml + summaryHtml + viewsHtml + tensionHtml;
+}
+
+function renderLifeScript(dayStem) {
+  // 人生劇本在「人格畫像」卡內顯示，依日主天干
+  const profile = window.DAY_MASTER_PROFILES[dayStem];
+  if (!profile || !profile.lifeScript) return '';
+
+  return `
+    <div class="life-script">
+      <div class="life-script-title">— 這 個 命 局 的 人 生 劇 本 —</div>
+      <div class="life-script-stage">
+        <div class="ls-stage-label">第 一 階 段</div>
+        <div>${profile.lifeScript.stage1}</div>
+      </div>
+      <div class="life-script-stage">
+        <div class="ls-stage-label">第 二 階 段</div>
+        <div>${profile.lifeScript.stage2}</div>
+      </div>
+      <div class="life-script-stage">
+        <div class="ls-stage-label">第 三 階 段</div>
+        <div>${profile.lifeScript.stage3}</div>
+      </div>
     </div>
   `;
 }
@@ -214,88 +338,7 @@ function renderTenGodsBars(distribution) {
   document.getElementById('tgBars').innerHTML = html;
 }
 
-function renderPersona(topTwo) {
-  if (!topTwo || topTwo.length === 0) {
-    document.getElementById('personaContent').innerHTML = '<p style="font-size:13px;color:#7A756D">命局十神分布平均，未呈現明顯主導十神</p>';
-    return;
-  }
-
-  const mainProfile = window.TEN_GODS_PROFILES[topTwo[0]];
-  const subProfile = topTwo[1] ? window.TEN_GODS_PROFILES[topTwo[1]] : null;
-
-  let dualCardHtml = '<div class="persona-dual">';
-  if (mainProfile) {
-    dualCardHtml += `
-      <div class="persona-side main">
-        <div class="ps-role">主 導</div>
-        <div class="ps-name">${mainProfile.name}</div>
-        <div class="ps-cat">${mainProfile.category}</div>
-      </div>
-    `;
-  }
-  if (subProfile) {
-    dualCardHtml += `
-      <div class="persona-side sub">
-        <div class="ps-role">輔 助</div>
-        <div class="ps-name">${subProfile.name}</div>
-        <div class="ps-cat">${subProfile.category}</div>
-      </div>
-    `;
-  } else {
-    dualCardHtml += `
-      <div class="persona-side sub">
-        <div class="ps-role">輔 助</div>
-        <div class="ps-name" style="font-size:14px;color:#7A756D">無顯著</div>
-        <div class="ps-cat">命局十神結構偏單一</div>
-      </div>
-    `;
-  }
-  dualCardHtml += '</div>';
-
-  let blocksHtml = '';
-  topTwo.forEach((tgName, idx) => {
-    const profile = window.TEN_GODS_PROFILES[tgName];
-    if (!profile) return;
-
-    const strengthsHtml = profile.strengths.map(s =>
-      `<div class="cat-item"><span class="cat-bullet b-pos">+</span><span>${s}</span></div>`
-    ).join('');
-    const weaknessesHtml = profile.weaknesses.map(w =>
-      `<div class="cat-item"><span class="cat-bullet b-warn">!</span><span>${w}</span></div>`
-    ).join('');
-    const remindersHtml = profile.reminder.map(r =>
-      `<div class="cat-item"><span class="cat-bullet b-think">→</span><span>${r}</span></div>`
-    ).join('');
-
-    blocksHtml += `
-      <div class="cat-block">
-        <div class="cat-label">${idx === 0 ? '主 導 十 神' : '輔 助 十 神'} · ${tgName}（${profile.category}）</div>
-        <div class="cat-item"><span class="cat-bullet b-info">·</span><span>${profile.summary}</span></div>
-      </div>
-      <div class="cat-block">
-        <div class="cat-label">優 點</div>
-        ${strengthsHtml}
-      </div>
-      <div class="cat-block">
-        <div class="cat-label">缺 點</div>
-        ${weaknessesHtml}
-      </div>
-      <div class="cat-block">
-        <div class="cat-label">提 醒</div>
-        ${remindersHtml}
-      </div>
-    `;
-  });
-
-  document.getElementById('personaContent').innerHTML = `
-    ${dualCardHtml}
-    <div class="persona-summary">
-      綜合畫像取自命盤中前兩個出現最多的十神，作為判斷個性特質的依據
-    </div>
-    ${blocksHtml}
-  `;
-}
-
+/* ========= 段落 4：流年運勢預警 ========= */
 function renderFlowYear(analysisData, currentYearParam) {
   const stripEl = document.getElementById('fyYearStrip');
   const contentEl = document.getElementById('fyContent');
@@ -305,6 +348,7 @@ function renderFlowYear(analysisData, currentYearParam) {
   const nowYear = new Date().getFullYear();
   const selectedYear = Math.min(maxYear, Math.max(minYear, currentYearParam || nowYear));
 
+  // 流年快選列
   let stripHtml = '';
   years.forEach(y => {
     const d = window.FLOW_YEAR_ELEMENTS[y];
@@ -320,19 +364,17 @@ function renderFlowYear(analysisData, currentYearParam) {
 
   function renderFyContent(year) {
     const fy = window.BAZI_ENGINE.calculateFlowYearAnalysis(
-      year,
-      analysisData.dayStem,
-      window.BRANCH_PROFILES,
-      window.FLOW_YEAR_ELEMENTS
+      year, analysisData.dayStem, window.BRANCH_PROFILES, window.FLOW_YEAR_ELEMENTS
     );
     if (!fy) {
       contentEl.innerHTML = `<p style="font-size:13px;color:#7A756D;text-align:center">${year} 年資料尚未收錄</p>`;
       return;
     }
 
-    const stemTgProfile = window.TEN_GODS_PROFILES[fy.stemTenGod];
-    const branchTgProfile = window.TEN_GODS_PROFILES[fy.branchTenGod];
+    const stemTg = window.TEN_GODS_PROFILES[fy.stemTenGod];
+    const branchTg = window.TEN_GODS_PROFILES[fy.branchTenGod];
 
+    // 大字流年圖卡
     let html = `
       <div class="fy-highlight">
         <div class="fy-big">${fy.ganZhi}</div>
@@ -341,43 +383,72 @@ function renderFlowYear(analysisData, currentYearParam) {
           <div class="fy-tg">${fy.stemTenGod}${fy.branchTenGod && fy.branchTenGod !== fy.stemTenGod ? ' · ' + fy.branchTenGod : ''}</div>
         </div>
       </div>
-      <div class="cat-block">
-        <div class="cat-label">該 年 五 行</div>
-        <div class="cat-item"><span class="cat-bullet b-info">·</span><span>${fy.elements.map(e => window.ELEMENT_NAMES[e]).join('、')}${fy.note ? '（' + fy.note + '）' : ''}</span></div>
-      </div>
     `;
-    if (stemTgProfile) {
+
+    // 為什麼這年對你重要
+    const sameTg = (fy.stemTenGod === fy.branchTenGod);
+    let whyText = '';
+    if (sameTg && stemTg) {
+      whyText = `${year} 年的能量單純而強烈——天干地支都偏向「${fy.stemTenGod}」的劇本。意思是：你會在這一年特別感受到「${stemTg.briefMeaning}」這個主題反覆出現。`;
+    } else if (stemTg && branchTg) {
+      whyText = `${year} 年的能量結構是「${fy.stemTenGod} + ${fy.branchTenGod}」的雙線並進——你會在「${stemTg.briefMeaning}」和「${branchTg.briefMeaning}」兩種劇本之間切換，這讓這一年比一般年份更複雜，但也更值得認真經營。`;
+    } else if (stemTg) {
+      whyText = `${year} 年主要的能量是「${fy.stemTenGod}」——${stemTg.summary}`;
+    }
+
+    if (whyText) {
       html += `
-        <div class="cat-block">
-          <div class="cat-label">流 年 天 干 · ${fy.flowStem}（對日主：${fy.stemTenGod}）</div>
-          <div class="cat-item"><span class="cat-bullet b-info">·</span><span>${stemTgProfile.summary}</span></div>
-          <div class="cat-item"><span class="cat-bullet b-pos">+</span><span>本年運勢面：${stemTgProfile.briefMeaning}</span></div>
+        <div class="fy-why">
+          <div class="fy-why-label">為 什 麼 ${year} 對 你 特 別 重 要</div>
+          ${whyText}
         </div>
       `;
     }
-    if (branchTgProfile && fy.branchTenGod !== fy.stemTenGod) {
+
+    // 具體會發生什麼（事件類型）— 從十神 outerView 抽取
+    html += `<div class="fy-events"><div class="fy-why-label" style="margin-bottom:10px">具 體 會 發 生 什 麼</div>`;
+    if (stemTg) {
       html += `
-        <div class="cat-block">
-          <div class="cat-label">流 年 地 支 · ${fy.flowBranch}（對日主：${fy.branchTenGod}）</div>
-          <div class="cat-item"><span class="cat-bullet b-info">·</span><span>${branchTgProfile.summary}</span></div>
-          <div class="cat-item"><span class="cat-bullet b-pos">+</span><span>本年運勢面：${branchTgProfile.briefMeaning}</span></div>
+        <div class="fy-event-item">
+          <div class="fy-event-title">事件類型一 · 流年天干「${fy.stemTenGod}」帶來的場景</div>
+          <div class="fy-event-desc">${stemTg.outerView[0]}；${stemTg.outerView[1]}。</div>
         </div>
       `;
     }
-    if (stemTgProfile && stemTgProfile.reminder.length > 0) {
+    if (branchTg && fy.branchTenGod !== fy.stemTenGod) {
       html += `
-        <div class="cat-block">
-          <div class="cat-label">本 年 宜 留 意</div>
-          ${stemTgProfile.reminder.slice(0, 2).map(r =>
-            `<div class="cat-item"><span class="cat-bullet b-warn">!</span><span>${r}</span></div>`
-          ).join('')}
+        <div class="fy-event-item">
+          <div class="fy-event-title">事件類型二 · 流年地支「${fy.branchTenGod}」觸發的場景</div>
+          <div class="fy-event-desc">${branchTg.outerView[0]}；${branchTg.outerView[1]}。</div>
         </div>
       `;
     }
+    if (stemTg && stemTg.outerView[2]) {
+      html += `
+        <div class="fy-event-item">
+          <div class="fy-event-title">事件類型三 · 整體感受</div>
+          <div class="fy-event-desc">${stemTg.outerView[2]}${stemTg.outerView[3] ? '；' + stemTg.outerView[3] : ''}。</div>
+        </div>
+      `;
+    }
+    html += `</div>`;
+
+    // 最容易卡住的地方
+    if (stemTg && stemTg.coreTension) {
+      html += `
+        <div class="fy-blocks">
+          <div class="fy-block-label">最 容 易 卡 住 的 地 方</div>
+          <div class="fy-block-item">${stemTg.coreTension.split('。')[0]}。</div>
+          ${stemTg.coreTension.split('。')[1] ? `<div class="fy-block-item">${stemTg.coreTension.split('。')[1]}。</div>` : ''}
+          ${stemTg.coreTension.split('練習：')[1] ? `<div class="fy-block-item">本年練習方向：${stemTg.coreTension.split('練習：')[1]}</div>` : ''}
+        </div>
+      `;
+    }
+
     contentEl.innerHTML = html;
   }
-  renderFyContent(selectedYear);
 
+  renderFyContent(selectedYear);
   stripEl.querySelectorAll('.fy-year-cell').forEach(cell => {
     cell.addEventListener('click', () => {
       stripEl.querySelectorAll('.fy-year-cell').forEach(c => c.classList.remove('active'));
@@ -387,6 +458,92 @@ function renderFlowYear(analysisData, currentYearParam) {
   });
 }
 
+/* ========= 段落 5：姊姊贈言 ========= */
+function renderSisterWord(dayStem, topTwo) {
+  const dmProfile = window.DAY_MASTER_PROFILES[dayStem];
+  const mainTg = topTwo && topTwo[0] ? window.TEN_GODS_PROFILES[topTwo[0]] : null;
+  if (!dmProfile) return;
+
+  // 用日主隱喻 + 主導十神的特質，組合一段「姊姊贈言」
+  const sentences = [];
+
+  // 第一句：日主天性的肯定
+  sentences.push(`你的存在本身就是「${dmProfile.imagery}」這種樣子——不需要變成別人，因為你已經是你。`);
+
+  // 第二句：呼應主導十神的核心矛盾
+  if (mainTg) {
+    const tensionShort = mainTg.coreTension.split('練習：')[0].trim();
+    sentences.push(`你最該知道的是：${tensionShort.replace(/。$/, '。')}`);
+  }
+
+  // 第三句：陰影面的接納
+  const shadowFirst = dmProfile.shadowSide.split('。')[0];
+  sentences.push(`${shadowFirst}。不是你的錯，是你的天性如此——但你已經夠好了。`);
+
+  // 第四句：給予方向感
+  sentences.push(`接下來的日子，記得：你不需要成為「更好的版本」，你只需要成為「更完整的自己」。`);
+
+  document.getElementById('sisterContent').innerHTML = sentences.map(s => `<p style="margin-bottom:12px">${s}</p>`).join('');
+}
+
+/* ========= 段落 6：付費鉤子 ========= */
+function renderPaywall(year, dayStem, topTwo, ganZhi, stemTenGod, branchTenGod) {
+  const features = [];
+
+  // 條目 1：流年三個關鍵月份
+  features.push({
+    icon: '01',
+    text: `${year} 年三個關鍵月份的具體事件預測（${stemTenGod || '主要十神'}結構會在哪些月份特別活躍）`
+  });
+
+  // 條目 2：流月對應的決策建議
+  features.push({
+    icon: '02',
+    text: `每個關鍵月份「該做什麼、該避開什麼」——具體到工作、合作、感情、健康四個面向`
+  });
+
+  // 條目 3：主導十神的深度解讀
+  if (topTwo && topTwo[0]) {
+    features.push({
+      icon: '03',
+      text: `「${topTwo[0]} + ${topTwo[1] || '單一'}」組合的完整人生劇本——包括 40 歲、50 歲、60 歲後的命運走向`
+    });
+  }
+
+  // 條目 4：合夥與感情運的分析
+  features.push({
+    icon: '04',
+    text: `${year} 年合夥契合度、感情關係的具體建議（哪些月份適合啟動、哪些月份要保留）`
+  });
+
+  // 條目 5：補運與化解
+  features.push({
+    icon: '05',
+    text: `命局五行偏頗的化解方向——具體可執行的生活調整建議（不是補運品推銷）`
+  });
+
+  const featuresHtml = features.map(f => `
+    <div class="paywall-feature">
+      <span class="pf-icon">${f.icon}</span>
+      <span>${f.text}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('paywallContent').innerHTML = `
+    <div class="paywall-intro">
+      免費版幫你看見了「你是什麼樣的人」<br>
+      但 ${year} 年具體會發生什麼、什麼時候會發生<br>
+      還沒講完
+    </div>
+    ${featuresHtml}
+    <button class="paywall-cta" id="btnPaywall" disabled>
+      解 鎖 完 整 ${year} 流 年 深 度 報 告
+      <span class="pc-price">（即將開放 · 訂閱 Email 搶先通知）</span>
+    </button>
+  `;
+}
+
+/* ========= 主初始化 ========= */
 function init() {
   const params = parseHash();
   const result = calculatePillars(params);
@@ -407,12 +564,35 @@ function init() {
   document.getElementById('rptName').textContent = displayName + ' · ' + (params.g === 'female' ? '女命' : '男命');
   document.getElementById('rptMeta').textContent = '國曆 ' + result.solarDate + ' · 農曆 ' + result.lunarDate;
 
-  renderDayMaster(analysisData.dayStem, analysisData);
+  // 渲染六個段落
+  renderDayMaster(analysisData.dayStem);
   renderElementRadar(analysisData.elementEnergy);
   renderBodyStrengthAndPersonality(analysisData.bodyStrength, analysisData.elementEnergy);
-  renderTenGodsBars(analysisData.tenGodsDistribution);
   renderPersona(analysisData.topTwoTenGods);
+
+  // 在人格畫像區塊末尾插入「人生劇本」
+  const lifeScriptHtml = renderLifeScript(analysisData.dayStem);
+  if (lifeScriptHtml) {
+    const personaContent = document.getElementById('personaContent');
+    personaContent.insertAdjacentHTML('beforeend', lifeScriptHtml);
+  }
+
+  renderTenGodsBars(analysisData.tenGodsDistribution);
   renderFlowYear(analysisData, +params.fy || new Date().getFullYear());
+  renderSisterWord(analysisData.dayStem, analysisData.topTwoTenGods);
+
+  const selectedYearForPaywall = +params.fy || new Date().getFullYear();
+  const fyForPaywall = window.BAZI_ENGINE.calculateFlowYearAnalysis(
+    selectedYearForPaywall, analysisData.dayStem, window.BRANCH_PROFILES, window.FLOW_YEAR_ELEMENTS
+  );
+  renderPaywall(
+    selectedYearForPaywall,
+    analysisData.dayStem,
+    analysisData.topTwoTenGods,
+    fyForPaywall ? fyForPaywall.ganZhi : '',
+    fyForPaywall ? fyForPaywall.stemTenGod : '',
+    fyForPaywall ? fyForPaywall.branchTenGod : ''
+  );
 
   document.getElementById('btnBack').addEventListener('click', () => {
     if (document.referrer && document.referrer.indexOf(window.location.host) >= 0) {
@@ -422,13 +602,13 @@ function init() {
     }
   });
 
-  // PDF 下載按鈕（使用瀏覽器原生列印功能）
+  // PDF 下載
   const btnDownload = document.getElementById('btnDownload');
   if (btnDownload) {
     btnDownload.addEventListener('click', () => downloadPDF(displayName));
   }
 
-  // 把報告生成日期寫入 PDF 頁尾
+  // PDF 頁尾日期
   const today = new Date();
   const dateStr = today.getFullYear() + '/' +
     String(today.getMonth() + 1).padStart(2, '0') + '/' +
@@ -438,57 +618,33 @@ function init() {
 }
 
 /**
- * 下載 PDF 報告（使用瀏覽器原生列印 → 另存為 PDF）
- * 
- * 優點：
- * - 完美支援中文字型（使用使用者系統字型）
- * - SVG 圖表向量繪製，無損
- * - 分頁由瀏覽器智慧處理
- * - 檔案小（200-500KB）
- * - 零外部依賴
- * 
- * 流程：
- * 1. 自動設定瀏覽器列印標題（會成為預設檔名）
- * 2. 觸發 window.print()
- * 3. 使用者在列印對話框選「另存為 PDF」即可
+ * 下載 PDF（瀏覽器原生列印）
  */
 function downloadPDF(displayName) {
-  // 1. 設定瀏覽器列印標題（會作為預設 PDF 檔名）
   const today = new Date();
   const dateStamp = today.getFullYear() + '-' +
     String(today.getMonth() + 1).padStart(2, '0') + '-' +
     String(today.getDate()).padStart(2, '0');
   const safeName = (displayName || '命主').replace(/[\\/:*?"<>|]/g, '_');
-  
+
   const originalTitle = document.title;
   document.title = `八字命盤_${safeName}_${dateStamp}`;
 
-  // 2. 顯示提示遮罩 0.4 秒（讓使用者知道在做什麼）
   showPrintGuide(() => {
-    // 3. 觸發列印
     window.print();
-    
-    // 4. 列印對話框關閉後還原標題
     setTimeout(() => {
       document.title = originalTitle;
     }, 1000);
-
-    // GA4 追蹤
     if (typeof window.gtag === 'function') {
       try { window.gtag('event', 'download_pdf', { method: 'browser_print' }); } catch (e) {}
     }
   });
 }
 
-/**
- * 顯示「列印 PDF 操作引導」提示
- * 讓使用者知道：在列印對話框中選「另存為 PDF」
- */
 function showPrintGuide(callback) {
   const overlay = document.getElementById('pdfOverlay');
+  if (!overlay) { callback(); return; }
   const inner = overlay.querySelector('.pdf-overlay-inner');
-  
-  // 替換內容為引導訊息
   inner.innerHTML = `
     <div style="font-family:'Noto Serif TC',serif;font-size:18px;color:#3D3A36;letter-spacing:2px;margin-bottom:12px">
       準 備 開 啟 列 印 視 窗
@@ -498,13 +654,9 @@ function showPrintGuide(callback) {
       <b style="color:#C9A87C">「目的地」選擇「另存為 PDF」</b>，<br>
       然後點「儲存」即可下載
     </div>
-    <div style="font-size:11px;color:#8A857F;letter-spacing:1px">
-      3 秒後自動開啟…
-    </div>
+    <div style="font-size:11px;color:#8A857F;letter-spacing:1px">3 秒後自動開啟…</div>
   `;
-  
   overlay.classList.add('show');
-
   setTimeout(() => {
     overlay.classList.remove('show');
     callback();
