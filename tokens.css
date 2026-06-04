@@ -1,0 +1,156 @@
+/* ============================================
+   設計 Token · Halo.Project Crystal Atelier 風格
+   ============================================
+   單一來源（Single Source of Truth）：
+   所有顏色、字級、間距、圓角等設計值都從這裡引用，
+   不允許在任何元件中硬編碼 hex 值或 px 數字。
+
+   作者：八字命盤
+   版本：v1.0（Phase 1 設計基礎）
+   ============================================ */
+
+:root {
+  /* ===== 品牌色 ===== */
+  --brand-primary: #B8956A;          /* 香檳金（主要重點色）*/
+  --brand-primary-dark: #8B6B3A;     /* 深金（hover / 強調）*/
+  --brand-primary-light: #D4B68A;    /* 淺金（漸層上緣）*/
+
+  /* ===== 背景表面 ===== */
+  --surface-page: #FAF6EF;           /* 頁面主背景（米色）*/
+  --surface-card: #FFFFFF;           /* 卡片背景（純白）*/
+  --surface-input: #F5EFE5;          /* 輸入框 / 內嵌資訊塊 */
+  --surface-muted: #F0E8D8;          /* 次要區塊 */
+  --surface-footer: #1A1F2E;         /* 頁尾深藏青 */
+
+  /* ===== 文字色 ===== */
+  --text-primary: #2A2520;           /* 主文字（深棕黑）*/
+  --text-secondary: #5C544A;         /* 次文字（內文段落）*/
+  --text-muted: #8B7E6E;             /* 輔助文字（標籤、提示）*/
+  --text-on-brand: #FFFFFF;          /* 金色按鈕上的白字 */
+  --text-on-dark: #C9C4BC;           /* 深色頁尾上的文字 */
+
+  /* ===== 日主強調色（紫色系，僅用於日主重點區塊）===== */
+  --accent-daymaster: #6B4E8A;
+  --accent-daymaster-bg: #EFE6F5;
+
+  /* ===== 五行色彩系統 ===== */
+  --wood:       #5C8A2F;
+  --wood-bg:    #EAF3E5;
+  --fire:       #B8612F;
+  --fire-bg:    #FDF2E9;
+  --earth:      #8B6B3A;
+  --earth-bg:   #F5EFE5;
+  --metal:      #5C544A;
+  --metal-bg:   #F0EDE8;
+  --water:      #4B6B9A;
+  --water-bg:   #E9EFF5;
+
+  /* ===== 邊框 ===== */
+  --border-soft:   #EBE3D5;          /* 卡片內分隔線 */
+  --border-medium: #C9C0B0;          /* 次強調邊框 */
+  --border-strong: #B8956A;          /* 強調邊框（主品牌色）*/
+
+  /* ===== 字體 ===== */
+  --font-sans:  "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+
+  /* ===== 字級（行動裝置為主）===== */
+  --text-xs:      10px;
+  --text-sm:      11px;
+  --text-base:    12px;
+  --text-md:      13px;
+  --text-lg:      15px;
+  --text-xl:      18px;
+  --text-2xl:     22px;
+  --text-3xl:     28px;
+  --text-display: 44px;              /* 大型重點數字 / 字 */
+
+  /* ===== 字重（不使用 600/700/bold，會破壞精緻感）===== */
+  --weight-regular: 400;
+  --weight-medium:  500;
+
+  /* ===== 行高 ===== */
+  --leading-tight:   1.3;             /* 大標題 */
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.7;             /* 內文標準 */
+  --leading-loose:   1.8;             /* 解析段落 */
+
+  /* ===== 字距 ===== */
+  --tracking-tight:   -0.01em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.05em;
+  --tracking-wider:   0.1em;
+  --tracking-widest:  0.15em;         /* 品牌英文 logo */
+
+  /* ===== 間距系統 ===== */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  12px;
+  --space-lg:  16px;
+  --space-xl:  20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 48px;
+
+  /* ===== 圓角 ===== */
+  --radius-sm:   6px;
+  --radius-md:   8px;                 /* 按鈕、輸入框預設 */
+  --radius-lg:   12px;
+  --radius-xl:   14px;                /* 卡片預設 */
+  --radius-2xl:  20px;
+  --radius-pill: 999px;               /* 標籤膠囊 */
+
+  /* ===== 容器寬度 ===== */
+  --container-mobile:  100%;
+  --container-tablet:  480px;
+  --container-desktop: 560px;         /* 桌機保持窄版，營造手機 app 感 */
+}
+
+/* ============================================
+   全域 Reset 與基礎樣式
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--text-primary);
+  background: var(--surface-page);
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
