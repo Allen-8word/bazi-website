@@ -75,9 +75,14 @@
   color: var(--text-primary);
   font-size: var(--text-sm);
   border-radius: var(--radius-pill);
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 .btn-pill:hover { background: var(--surface-input); }
+.btn-pill:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn-pill:disabled:hover { background: var(--surface-card); }
 
 
 /* ============================================
@@ -237,3 +242,70 @@ select.input {
   border: none;
 }
 .form-hint:hover { color: var(--brand-primary-dark); }
+
+
+/* ============================================
+   特殊表單元件：Tab 切換、性別選擇器
+   ============================================
+   用於：國曆/農曆 切換、男/女 性別選擇
+*/
+
+/* Tab 切換（國曆/農曆） */
+.tab-switch {
+  display: flex;
+  background: var(--surface-input);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin-bottom: var(--space-md);
+}
+.tab-switch button {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+.tab-switch button.active {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* 性別選擇器（男/女 兩格按鈕） */
+.gender-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+.gender-picker > div {
+  padding: 10px;
+  background: var(--surface-input);
+  color: var(--text-secondary);
+  font-size: var(--text-md);
+  text-align: center;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.gender-picker > div:hover {
+  background: var(--surface-muted);
+}
+.gender-picker > div.active {
+  background: var(--accent-daymaster-bg);
+  color: var(--accent-daymaster);
+  font-weight: var(--weight-medium);
+}
+
+/* 錯誤訊息 */
+.error-msg {
+  font-size: var(--text-xs);
+  color: var(--fire);
+  padding: var(--space-sm) 0;
+  min-height: 24px;
+}

@@ -1,0 +1,109 @@
+/* ============================================
+   內容區塊樣式 · Section Styles
+   ============================================
+   涵蓋：首頁輸入區塊（input-section）
+   後續 Phase 5-9 的內容區塊（日主、八字盤、五行分布、解析、大運流年）
+   也會放在這個檔案中
+
+   依賴：tokens.css、components.css
+   版本：v1.0（Phase 4 輸入區塊）
+   ============================================ */
+
+
+/* ============================================
+   首頁輸入區塊 · Input Section
+   ============================================
+   結構：
+     ┌─────────────────────────────────────────┐
+     │ ┌─────────────────────────────────────┐ │
+     │ │ 輸入生辰，開始計算你的八字          │ │
+     │ │ 已有 10,000+ 人次完成計算...         │ │
+     │ │ ┌──────┬────┬────┐                   │ │
+     │ │ │ 年   │ 月  │ 日  │                  │ │
+     │ │ └──────┴────┴────┘                   │ │
+     │ │ ▼ 出生時辰   不知道時辰?              │ │
+     │ │ ▼ 出生地點                            │ │
+     │ │ [    排出八字命盤    ]                │ │
+     │ └─────────────────────────────────────┘ │
+     │                                          │
+     │ 想直接看某個日主的完整解析?              │
+     │ [甲木日主] [乙木日主] [丙火日主]...      │
+     └─────────────────────────────────────────┘
+*/
+
+.input-section {
+  padding: 0 var(--space-lg);
+}
+
+/* 統計提示行（10,000+ 已使用） */
+.stat-line {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-lg);
+}
+.stat-line strong {
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* 快速連結區（卡片下方的日主膠囊群） */
+.quick-links {
+  margin-top: var(--space-xl);
+  padding: 0 4px;
+}
+
+.quick-links-title {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+
+/* ============================================
+   彈窗 · Modal（給「不知道時辰?」用）
+   ============================================
+   輕量 modal，無 box-shadow，半透明覆蓋層
+*/
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 37, 32, 0.5);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--surface-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl) var(--space-lg);
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.modal-text {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-lg);
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+.modal-actions > * { flex: 1; }
