@@ -1,0 +1,239 @@
+/* ============================================
+   基礎元件庫 · Halo.Project Crystal Atelier 風格
+   ============================================
+   涵蓋：按鈕、輸入框、卡片、五行標籤、色點
+
+   依賴：tokens.css（所有顏色、字級、間距、圓角皆引用 CSS 變數）
+   原則：禁止硬編碼 hex 值，所有設計值必須從 token 而來
+
+   版本：v1.0（Phase 2 元件基礎）
+   ============================================ */
+
+
+/* ============================================
+   按鈕系統
+   ============================================ */
+
+/* 主按鈕（CTA · 金色漸層） */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(180deg, var(--brand-primary-light) 0%, var(--brand-primary) 100%);
+  color: var(--text-on-brand);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-md);
+  transition: opacity 0.2s ease;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:active { transform: scale(0.99); }
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 次按鈕（白底邊框） */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  font-size: var(--text-md);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-soft);
+  transition: background 0.2s ease;
+}
+.btn-secondary:hover { background: var(--surface-input); }
+
+/* 重點按鈕（深色，用於儲存結果等行動） */
+.btn-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--text-primary);
+  color: var(--text-on-brand);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-md);
+  transition: opacity 0.2s ease;
+}
+.btn-dark:hover { opacity: 0.85; }
+.btn-dark:active { transform: scale(0.99); }
+
+/* 膠囊按鈕（標籤式快速連結） */
+.btn-pill {
+  padding: 6px 14px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-pill);
+  transition: background 0.2s ease;
+}
+.btn-pill:hover { background: var(--surface-input); }
+
+
+/* ============================================
+   輸入框系統
+   ============================================ */
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-input);
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  border: none;
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.input:focus {
+  background: var(--surface-muted);
+  box-shadow: 0 0 0 1px var(--brand-primary);
+}
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+/* select 微調（移除預設箭頭以保持風格一致） */
+select.input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%238B7E6E' stroke-width='1.5' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 32px;
+}
+
+/* 輸入框群組 */
+.input-group {
+  display: grid;
+  gap: var(--space-sm);
+}
+.input-group--date {
+  grid-template-columns: 1fr 60px 60px;
+}
+
+
+/* ============================================
+   卡片系統
+   ============================================ */
+
+.card {
+  background: var(--surface-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg) var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.card--center { text-align: center; }
+.card--bordered { border: 0.5px solid var(--border-soft); }
+
+.card-title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.card-divider {
+  height: 0.5px;
+  background: var(--border-soft);
+  margin: var(--space-md) 0;
+  border: none;
+}
+
+
+/* ============================================
+   五行標籤（Hashtag 風格膠囊）
+   ============================================ */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.tag--wood      { background: var(--wood-bg);  color: var(--wood); }
+.tag--fire      { background: var(--fire-bg);  color: var(--fire); }
+.tag--earth     { background: var(--earth-bg); color: var(--earth); }
+.tag--metal     { background: var(--metal-bg); color: var(--metal); }
+.tag--water     { background: var(--water-bg); color: var(--water); }
+.tag--daymaster {
+  background: var(--accent-daymaster-bg);
+  color: var(--accent-daymaster);
+}
+
+/* 標籤群組（橫向排列、可換行） */
+.tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag-group--center { justify-content: center; }
+
+
+/* ============================================
+   色點（五行能量、代表色指示）
+   ============================================ */
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.dot--wood  { background: var(--wood); }
+.dot--fire  { background: var(--fire); }
+.dot--earth { background: var(--earth); }
+.dot--metal { background: var(--metal); }
+.dot--water { background: var(--water); }
+
+.dot-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+
+/* ============================================
+   表單輔助元件（form-field、form-label、form-hint）
+   ============================================ */
+
+.form-field {
+  margin-bottom: var(--space-md);
+}
+
+.form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-hint {
+  font-size: var(--text-xs);
+  color: var(--brand-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+.form-hint:hover { color: var(--brand-primary-dark); }
