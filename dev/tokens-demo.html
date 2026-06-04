@@ -1,107 +1,479 @@
-設計 Token 視覺驗證
-確認所有色彩、字體、間距、圓角是否正確套用
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Token Demo · Phase 1 視覺驗證</title>
+<meta name="robots" content="noindex">
 
-1 · 品牌色與背景
-#B8956A
-香檳金（主要重點）
---brand-primary
-#8B6B3A
-深金（hover）
---brand-primary-dark
-#FAF6EF
-頁面背景（米色）
---surface-page
-#FFFFFF
-卡片背景（純白）
---surface-card
-#F5EFE5
-輸入框背景
---surface-input
-#1A1F2E
-頁尾深藏青
---surface-footer
-2 · 日主強調色（紫）
-僅用於日主重點區塊，避免在其他地方濫用
-#6B4E8A
-日主紫
---accent-daymaster
-#EFE6F5
-日主紫底
---accent-daymaster-bg
-3 · 五行色彩系統
-#5C8A2F / bg #EAF3E5
-木
---wood / --wood-bg
-#B8612F / bg #FDF2E9
-火
---fire / --fire-bg
-#8B6B3A / bg #F5EFE5
-土
---earth / --earth-bg
-#5C544A / bg #F0EDE8
-金
---metal / --metal-bg
-#4B6B9A / bg #E9EFF5
-水
---water / --water-bg
-4 · 文字色階
-主文字 · text-primary (#2A2520)：用於標題與重要內容
-次文字 · text-secondary (#5C544A)：用於內文段落
-輔助文字 · text-muted (#8B7E6E)：用於標籤與提示
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 
-5 · 字體
---font-sans
-命運的軌跡
-Noto Sans TC · 內文與按鈕
---font-serif
-命運的軌跡
-Noto Serif TC · 大標題與宋體字
-6 · 字級階層
---text-xs (10px)
-輔助小字
---text-sm (11px)
-提示與標籤
---text-base (12px)
-小型內文
---text-md (13px)
-標準內文
---text-lg (15px)
-較大段落
---text-xl (18px)
-中標題
---text-2xl (22px)
-大標題
---text-3xl (28px)
-超大標題
---text-display (44px)
-甲木
-7 · 間距系統
---space-xs
-4px
---space-sm
-8px
---space-md
-12px
---space-lg
-16px
---space-xl
-20px
---space-2xl
-24px
---space-3xl
-32px
---space-4xl
-48px
-8 · 圓角
---radius-sm
-6px
---radius-md
-8px
---radius-lg
-12px
---radius-xl
-14px
---radius-2xl
-20px
---radius-pill
-膠囊
+<style>
+.demo-container {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-header {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.demo-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.demo-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  margin-bottom: var(--space-sm);
+}
+
+.demo-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.demo-section {
+  margin-bottom: var(--space-3xl);
+}
+
+.demo-section-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.demo-section-note {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+}
+
+/* 色彩網格 */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.color-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-card);
+}
+
+.color-swatch {
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: var(--space-sm);
+  font-size: var(--text-xs);
+  font-family: monospace;
+}
+
+.color-meta {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.color-name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.color-token {
+  font-size: var(--text-xs);
+  font-family: monospace;
+  color: var(--text-muted);
+}
+
+/* 字級展示 */
+.type-row {
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-lg);
+}
+
+.type-row:last-child { border-bottom: none; }
+
+.type-token {
+  font-family: monospace;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.type-sample {
+  color: var(--text-primary);
+}
+
+/* 字體對照 */
+.font-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.font-card {
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
+}
+
+.font-card .label {
+  font-size: var(--text-xs);
+  font-family: monospace;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.font-card .sample-large {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+
+.font-card .sample-small {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.font-sans-sample  { font-family: var(--font-sans); }
+.font-serif-sample { font-family: var(--font-serif); }
+
+/* 間距視覺化 */
+.space-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.space-row:last-child { border-bottom: none; }
+
+.space-token {
+  font-family: monospace;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  width: 100px;
+}
+
+.space-bar {
+  background: var(--brand-primary);
+  height: 8px;
+  border-radius: var(--radius-sm);
+}
+
+.space-value {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+/* 圓角視覺化 */
+.radius-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.radius-card {
+  height: 80px;
+  background: var(--brand-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-on-brand);
+  font-size: var(--text-xs);
+  font-family: monospace;
+}
+
+.radius-card .value {
+  font-size: var(--text-sm);
+}
+
+/* 驗收清單 */
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--border-soft);
+}
+
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-md);
+}
+</style>
+</head>
+<body>
+
+<div class="demo-container">
+
+  <div class="demo-header">
+    <div class="meta">PHASE 1 · DESIGN TOKEN VERIFICATION</div>
+    <h1>設計 Token 視覺驗證</h1>
+    <p>確認所有色彩、字體、間距、圓角是否正確套用</p>
+  </div>
+
+  <!-- 1. 品牌色與背景 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">1 · 品牌色與背景</h2>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--brand-primary);color:#FFF">#B8956A</div>
+        <div class="color-meta">
+          <div class="color-name">香檳金（主要重點）</div>
+          <div class="color-token">--brand-primary</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--brand-primary-dark);color:#FFF">#8B6B3A</div>
+        <div class="color-meta">
+          <div class="color-name">深金（hover）</div>
+          <div class="color-token">--brand-primary-dark</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--surface-page);color:var(--text-muted)">#FAF6EF</div>
+        <div class="color-meta">
+          <div class="color-name">頁面背景（米色）</div>
+          <div class="color-token">--surface-page</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--surface-card);color:var(--text-muted);border-bottom:1px solid var(--border-soft)">#FFFFFF</div>
+        <div class="color-meta">
+          <div class="color-name">卡片背景（純白）</div>
+          <div class="color-token">--surface-card</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--surface-input);color:var(--text-muted)">#F5EFE5</div>
+        <div class="color-meta">
+          <div class="color-name">輸入框背景</div>
+          <div class="color-token">--surface-input</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--surface-footer);color:var(--text-on-dark)">#1A1F2E</div>
+        <div class="color-meta">
+          <div class="color-name">頁尾深藏青</div>
+          <div class="color-token">--surface-footer</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 日主強調色 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">2 · 日主強調色（紫）</h2>
+    <p class="demo-section-note">僅用於日主重點區塊，避免在其他地方濫用</p>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--accent-daymaster);color:#FFF">#6B4E8A</div>
+        <div class="color-meta">
+          <div class="color-name">日主紫</div>
+          <div class="color-token">--accent-daymaster</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--accent-daymaster-bg);color:var(--accent-daymaster)">#EFE6F5</div>
+        <div class="color-meta">
+          <div class="color-name">日主紫底</div>
+          <div class="color-token">--accent-daymaster-bg</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 五行色彩 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">3 · 五行色彩系統</h2>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--wood-bg);color:var(--wood)">#5C8A2F / bg #EAF3E5</div>
+        <div class="color-meta">
+          <div class="color-name" style="color:var(--wood)">木</div>
+          <div class="color-token">--wood / --wood-bg</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--fire-bg);color:var(--fire)">#B8612F / bg #FDF2E9</div>
+        <div class="color-meta">
+          <div class="color-name" style="color:var(--fire)">火</div>
+          <div class="color-token">--fire / --fire-bg</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--earth-bg);color:var(--earth)">#8B6B3A / bg #F5EFE5</div>
+        <div class="color-meta">
+          <div class="color-name" style="color:var(--earth)">土</div>
+          <div class="color-token">--earth / --earth-bg</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--metal-bg);color:var(--metal)">#5C544A / bg #F0EDE8</div>
+        <div class="color-meta">
+          <div class="color-name" style="color:var(--metal)">金</div>
+          <div class="color-token">--metal / --metal-bg</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:var(--water-bg);color:var(--water)">#4B6B9A / bg #E9EFF5</div>
+        <div class="color-meta">
+          <div class="color-name" style="color:var(--water)">水</div>
+          <div class="color-token">--water / --water-bg</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 文字色階 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">4 · 文字色階</h2>
+    <div style="background:var(--surface-card);border-radius:var(--radius-md);padding:var(--space-lg);border:1px solid var(--border-soft)">
+      <p style="color:var(--text-primary);font-size:var(--text-md);margin-bottom:var(--space-sm)">
+        主文字 · text-primary (#2A2520)：用於標題與重要內容
+      </p>
+      <p style="color:var(--text-secondary);font-size:var(--text-md);margin-bottom:var(--space-sm)">
+        次文字 · text-secondary (#5C544A)：用於內文段落
+      </p>
+      <p style="color:var(--text-muted);font-size:var(--text-sm)">
+        輔助文字 · text-muted (#8B7E6E)：用於標籤與提示
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. 字體 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">5 · 字體</h2>
+    <div class="font-demo">
+      <div class="font-card font-sans-sample">
+        <div class="label">--font-sans</div>
+        <div class="sample-large">命運的軌跡</div>
+        <div class="sample-small">Noto Sans TC · 內文與按鈕</div>
+      </div>
+      <div class="font-card font-serif-sample">
+        <div class="label">--font-serif</div>
+        <div class="sample-large">命運的軌跡</div>
+        <div class="sample-small">Noto Serif TC · 大標題與宋體字</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 字級 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">6 · 字級階層</h2>
+    <div style="background:var(--surface-card);border-radius:var(--radius-md);padding:var(--space-lg);border:1px solid var(--border-soft)">
+      <div class="type-row"><span class="type-token">--text-xs (10px)</span><span class="type-sample" style="font-size:var(--text-xs)">輔助小字</span></div>
+      <div class="type-row"><span class="type-token">--text-sm (11px)</span><span class="type-sample" style="font-size:var(--text-sm)">提示與標籤</span></div>
+      <div class="type-row"><span class="type-token">--text-base (12px)</span><span class="type-sample" style="font-size:var(--text-base)">小型內文</span></div>
+      <div class="type-row"><span class="type-token">--text-md (13px)</span><span class="type-sample" style="font-size:var(--text-md)">標準內文</span></div>
+      <div class="type-row"><span class="type-token">--text-lg (15px)</span><span class="type-sample" style="font-size:var(--text-lg)">較大段落</span></div>
+      <div class="type-row"><span class="type-token">--text-xl (18px)</span><span class="type-sample" style="font-size:var(--text-xl)">中標題</span></div>
+      <div class="type-row"><span class="type-token">--text-2xl (22px)</span><span class="type-sample" style="font-size:var(--text-2xl)">大標題</span></div>
+      <div class="type-row"><span class="type-token">--text-3xl (28px)</span><span class="type-sample" style="font-size:var(--text-3xl)">超大標題</span></div>
+      <div class="type-row"><span class="type-token">--text-display (44px)</span><span class="type-sample" style="font-size:var(--text-display);font-family:var(--font-serif);color:var(--accent-daymaster)">甲木</span></div>
+    </div>
+  </section>
+
+  <!-- 7. 間距 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">7 · 間距系統</h2>
+    <div style="background:var(--surface-card);border-radius:var(--radius-md);padding:var(--space-lg);border:1px solid var(--border-soft)">
+      <div class="space-row"><span class="space-token">--space-xs</span><div class="space-bar" style="width:4px"></div><span class="space-value">4px</span></div>
+      <div class="space-row"><span class="space-token">--space-sm</span><div class="space-bar" style="width:8px"></div><span class="space-value">8px</span></div>
+      <div class="space-row"><span class="space-token">--space-md</span><div class="space-bar" style="width:12px"></div><span class="space-value">12px</span></div>
+      <div class="space-row"><span class="space-token">--space-lg</span><div class="space-bar" style="width:16px"></div><span class="space-value">16px</span></div>
+      <div class="space-row"><span class="space-token">--space-xl</span><div class="space-bar" style="width:20px"></div><span class="space-value">20px</span></div>
+      <div class="space-row"><span class="space-token">--space-2xl</span><div class="space-bar" style="width:24px"></div><span class="space-value">24px</span></div>
+      <div class="space-row"><span class="space-token">--space-3xl</span><div class="space-bar" style="width:32px"></div><span class="space-value">32px</span></div>
+      <div class="space-row"><span class="space-token">--space-4xl</span><div class="space-bar" style="width:48px"></div><span class="space-value">48px</span></div>
+    </div>
+  </section>
+
+  <!-- 8. 圓角 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">8 · 圓角</h2>
+    <div class="radius-grid">
+      <div class="radius-card" style="border-radius:var(--radius-sm)">
+        <div>--radius-sm</div>
+        <div class="value">6px</div>
+      </div>
+      <div class="radius-card" style="border-radius:var(--radius-md)">
+        <div>--radius-md</div>
+        <div class="value">8px</div>
+      </div>
+      <div class="radius-card" style="border-radius:var(--radius-lg)">
+        <div>--radius-lg</div>
+        <div class="value">12px</div>
+      </div>
+      <div class="radius-card" style="border-radius:var(--radius-xl)">
+        <div>--radius-xl</div>
+        <div class="value">14px</div>
+      </div>
+      <div class="radius-card" style="border-radius:var(--radius-2xl)">
+        <div>--radius-2xl</div>
+        <div class="value">20px</div>
+      </div>
+      <div class="radius-card" style="border-radius:var(--radius-pill)">
+        <div>--radius-pill</div>
+        <div class="value">膠囊</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 驗收清單 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">✓ Phase 1 驗收標準</h2>
+    <div class="verify-list">
+      <div class="verify-item">tokens.css 已建立，包含全部設計變數</div>
+      <div class="verify-item">頁面背景為米色 #FAF6EF</div>
+      <div class="verify-item">文字主色為深棕 #2A2520</div>
+      <div class="verify-item">字體已切換為 Noto Sans TC / Noto Serif TC</div>
+      <div class="verify-item">所有 index、analysis、privacy、terms 頁面都引用 tokens.css</div>
+      <div class="verify-item">在 iPhone SE (375px) 寬度下無水平捲動</div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
