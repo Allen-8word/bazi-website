@@ -11,16 +11,16 @@
 
 :root {
   /* ===== 品牌色 ===== */
-  --brand-primary: #B8956A;          /* 香檳金（主要重點色）*/
-  --brand-primary-dark: #8B6B3A;     /* 深金（hover / 強調）*/
-  --brand-primary-light: #D4B68A;    /* 淺金（漸層上緣）*/
+  --brand-primary: #CFAE85;          /* 香檳金（主要重點色）*/
+  --brand-primary-dark: #A88555;     /* 深金（hover / 強調）*/
+  --brand-primary-light: #E2C8A2;    /* 淺金（漸層上緣）*/
 
   /* ===== 背景表面 ===== */
   --surface-page: #FAF6EF;           /* 頁面主背景（米色）*/
   --surface-card: #FFFFFF;           /* 卡片背景（純白）*/
   --surface-input: #F5EFE5;          /* 輸入框 / 內嵌資訊塊 */
   --surface-muted: #F0E8D8;          /* 次要區塊 */
-  --surface-footer: #1A1F2E;         /* 頁尾深藏青 */
+  --surface-footer: #3D4258;         /* 頁尾深藏青 */
 
   /* ===== 文字色 ===== */
   --text-primary: #2A2520;           /* 主文字（深棕黑）*/
@@ -48,7 +48,7 @@
   /* ===== 邊框 ===== */
   --border-soft:   #EBE3D5;          /* 卡片內分隔線 */
   --border-medium: #C9C0B0;          /* 次強調邊框 */
-  --border-strong: #B8956A;          /* 強調邊框（主品牌色）*/
+  --border-strong: #CFAE85;          /* 強調邊框（主品牌色）*/
 
   /* ===== 字體 ===== */
   --font-sans:  "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
