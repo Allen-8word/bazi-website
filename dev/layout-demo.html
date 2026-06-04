@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>頁面框架 Demo · Phase 3 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+
+<style>
+/* demo 頁面專用，不影響 layout 本身 */
+.demo-section {
+  max-width: var(--container-desktop);
+  margin: 0 auto var(--space-3xl);
+}
+
+.demo-section-header {
+  padding: var(--space-xl) var(--space-lg) var(--space-md);
+  text-align: center;
+}
+
+.demo-section-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.demo-section-header h2 {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+
+.demo-section-header p {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.demo-frame {
+  border-top: 1px dashed var(--border-soft);
+  border-bottom: 1px dashed var(--border-soft);
+  margin: 0;
+}
+
+.demo-content {
+  padding: var(--space-2xl) var(--space-lg);
+  background: var(--surface-page);
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wider);
+}
+
+/* 驗收清單 */
+.verify-section {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) var(--space-4xl);
+}
+
+.verify-section h2 {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+}
+
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-md);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     Demo 1：完整版（品牌英文 + 主標 + 副標）
+     ============================================ -->
+
+<section class="demo-section">
+  <div class="demo-section-header">
+    <div class="meta">DEMO 1</div>
+    <h2>完整 Header（首頁用）</h2>
+    <p>品牌英文行 + 中文主標 + 副標一句話</p>
+  </div>
+
+  <div class="demo-frame">
+    <header class="page-header">
+      <div class="brand-line">
+        <span class="brand-mark">BAZI · ATELIER</span>
+        <button class="menu-btn" aria-label="選單">
+          <span class="menu-icon"><span></span></span>
+        </button>
+      </div>
+      <h1 class="page-title">八字命盤旅程</h1>
+      <p class="page-subtitle">輸入生辰、取得八字命格解析與五行能量觀察</p>
+    </header>
+    <div class="demo-content">↓ 此處為頁面主要內容區（demo 預留位）↓</div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     Demo 2：簡化版（無副標，用於分析頁等內頁）
+     ============================================ -->
+
+<section class="demo-section">
+  <div class="demo-section-header">
+    <div class="meta">DEMO 2</div>
+    <h2>簡化 Header（內頁用）</h2>
+    <p>只保留品牌英文行 + 中文主標</p>
+  </div>
+
+  <div class="demo-frame">
+    <header class="page-header">
+      <div class="brand-line">
+        <span class="brand-mark">BAZI · ATELIER</span>
+        <button class="menu-btn" aria-label="選單">
+          <span class="menu-icon"><span></span></span>
+        </button>
+      </div>
+      <h1 class="page-title">命理分析報告</h1>
+    </header>
+    <div class="demo-content">↓ 內頁主要內容區 ↓</div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     Demo 3：頁尾
+     ============================================ -->
+
+<section class="demo-section">
+  <div class="demo-section-header">
+    <div class="meta">DEMO 3</div>
+    <h2>深色 Footer</h2>
+    <p>柔藏青 #3D4258 背景 + 米白文字</p>
+  </div>
+
+  <div class="demo-frame">
+    <div class="demo-content">↑ 頁面主要內容區結束 ↑</div>
+    <footer class="page-footer" style="margin-top:0">
+      <div class="footer-brand">八字命盤 · BAZI ATELIER</div>
+      <nav class="footer-nav">
+        <a href="/about">關於我們</a>
+        <span class="footer-nav-sep">·</span>
+        <a href="/privacy">隱私政策</a>
+        <span class="footer-nav-sep">·</span>
+        <a href="/terms">服務條款</a>
+        <span class="footer-nav-sep">·</span>
+        <a href="/contact">聯絡</a>
+      </nav>
+      <p class="footer-copyright">內容僅供參考。© 2026 八字命盤. All rights reserved.</p>
+    </footer>
+  </div>
+</section>
+
+
+<!-- ============================================
+     驗收清單
+     ============================================ -->
+
+<section class="verify-section">
+  <h2>✓ Phase 3 驗收標準</h2>
+  <div class="verify-list">
+    <div class="verify-item">Header 三層結構（品牌字行 / 主標 / 副標）視覺正確</div>
+    <div class="verify-item">品牌英文「BAZI · ATELIER」有寬字距（letter-spacing 0.15em）</div>
+    <div class="verify-item">中文主標使用宋體（Noto Serif TC）</div>
+    <div class="verify-item">Footer 柔藏青背景 + 米白文字</div>
+    <div class="verify-item">Footer 連結 hover 時 opacity 從 0.7 變 1（變更明顯）</div>
+    <div class="verify-item">在 iPhone SE（375px）寬度下無水平捲動</div>
+    <div class="verify-item">所有顏色與字級皆引用 tokens 變數，layout.css 無硬編碼</div>
+  </div>
+</section>
+
+</body>
+</html>
