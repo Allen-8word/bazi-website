@@ -1,0 +1,149 @@
+/* ============================================
+   頁面框架 · Header & Footer
+   ============================================
+   涵蓋：全站共用的品牌標頭與深色頁尾
+
+   依賴：tokens.css（顏色、字級、間距、圓角）
+   版本：v1.0（Phase 3 頁面框架）
+   ============================================ */
+
+
+/* ============================================
+   Header · 品牌標頭
+   ============================================
+   結構：
+     ┌─────────────────────────────────────────┐
+     │ BAZI · ATELIER          ☰ 選單           │
+     │                                          │
+     │            八字命盤旅程                  │
+     │     輸入生辰、取得命格解析與五行能量      │
+     └─────────────────────────────────────────┘
+*/
+
+.page-header {
+  padding: var(--space-xl) var(--space-xl) var(--space-2xl);
+  text-align: center;
+}
+
+/* 第一行：品牌英文 + 選單按鈕 */
+.brand-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.brand-mark {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  /* 字距比一般大很多，營造精緻 logo 感 */
+}
+
+.menu-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.menu-btn:hover { color: var(--text-primary); }
+
+/* hamburger icon · 用 CSS 畫，三條橫線 */
+.menu-icon {
+  width: 18px;
+  height: 12px;
+  position: relative;
+}
+.menu-icon::before,
+.menu-icon::after,
+.menu-icon span {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: currentColor;
+}
+.menu-icon::before { top: 0; }
+.menu-icon span    { top: 5px; display: block; }
+.menu-icon::after  { bottom: 0; }
+
+/* 第二行：中文主標 */
+.page-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+/* 第三行：副標一句話 */
+.page-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+
+/* ============================================
+   Footer · 深色頁尾
+   ============================================
+   結構：
+     ┌─────────────────────────────────────────┐
+     │            八字命盤 · BAZI ATELIER       │
+     │     關於我們 · 隱私政策 · 聯絡            │
+     │       © 2026 內容僅供參考                │
+     └─────────────────────────────────────────┘
+*/
+
+.page-footer {
+  background: var(--surface-footer);
+  color: var(--text-on-dark);
+  padding: var(--space-2xl) var(--space-xl);
+  text-align: center;
+  margin-top: var(--space-4xl);
+}
+
+.footer-brand {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+  margin-bottom: var(--space-md);
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.footer-nav a {
+  color: var(--text-on-dark);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.footer-nav a:hover { opacity: 1; }
+
+.footer-nav-sep {
+  opacity: 0.4;
+  user-select: none;
+}
+
+.footer-copyright {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.4);
+  line-height: var(--leading-relaxed);
+}
