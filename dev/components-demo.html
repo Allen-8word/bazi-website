@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>元件 Demo · Phase 2 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+
+<style>
+/* 此頁面為 demo 專用，不影響元件本身 */
+.demo-container {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-header {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.demo-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.demo-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  margin-bottom: var(--space-sm);
+}
+
+.demo-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.demo-section {
+  margin-bottom: var(--space-3xl);
+}
+
+.demo-section-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.demo-section-note {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.demo-block {
+  margin-bottom: var(--space-lg);
+}
+
+.demo-block-label {
+  display: block;
+  font-family: monospace;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.demo-block-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+/* 驗收清單 */
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+}
+
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-md);
+}
+</style>
+</head>
+<body>
+
+<div class="demo-container">
+
+  <div class="demo-header">
+    <div class="meta">PHASE 2 · COMPONENT LIBRARY</div>
+    <h1>基礎元件視覺驗證</h1>
+    <p>按鈕、輸入框、卡片、標籤、色點</p>
+  </div>
+
+  <!-- 1. 按鈕系統 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">1 · 按鈕系統</h2>
+    <p class="demo-section-note">5 種按鈕：主按鈕、次按鈕、深色按鈕、膠囊按鈕、禁用狀態</p>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.btn-primary（主 CTA · 金色漸層）</span>
+      <button class="btn-primary">排出八字命盤</button>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.btn-primary:disabled（禁用狀態）</span>
+      <button class="btn-primary" disabled>即將開放</button>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.btn-dark（深色重點按鈕）</span>
+      <button class="btn-dark">儲存結果</button>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.btn-secondary（白底次按鈕）</span>
+      <div class="demo-block-row">
+        <button class="btn-secondary">完了</button>
+        <button class="btn-secondary">取消</button>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.btn-pill（膠囊按鈕 · 快速連結）</span>
+      <div class="demo-block-row">
+        <button class="btn-pill">甲木日主</button>
+        <button class="btn-pill">乙木日主</button>
+        <button class="btn-pill">丙火日主</button>
+        <button class="btn-pill">丁火日主</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 輸入框系統 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">2 · 輸入框系統</h2>
+    <p class="demo-section-note">含 input、select、輸入框群組</p>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.input（單一輸入框）</span>
+      <input class="input" placeholder="請輸入姓名">
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.input-group--date（日期欄三分欄）</span>
+      <div class="input-group input-group--date">
+        <input class="input" type="number" placeholder="1990" min="1900" max="2100">
+        <input class="input" type="number" placeholder="08" min="1" max="12">
+        <input class="input" type="number" placeholder="15" min="1" max="31">
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">select.input（下拉選單）</span>
+      <select class="input">
+        <option>請選擇時辰</option>
+        <option>子時（23:00–01:00）</option>
+        <option>丑時（01:00–03:00）</option>
+        <option>寅時（03:00–05:00）</option>
+      </select>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.form-field + .form-label + .form-hint</span>
+      <div class="form-field">
+        <label class="form-label">
+          出生時辰
+          <button class="form-hint" type="button">不知道時辰?</button>
+        </label>
+        <select class="input">
+          <option>請選擇時辰</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 卡片系統 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">3 · 卡片系統</h2>
+    <p class="demo-section-note">純白底、無陰影、圓角 14px</p>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.card（標準卡片）</span>
+      <div class="card">
+        <h3 class="card-title">你的八字盤</h3>
+        <p style="font-size:var(--text-sm);color:var(--text-secondary);line-height:var(--leading-relaxed)">
+          這裡放卡片內容。卡片背景為純白、無陰影、圓角 14px，整體保持平面化質感。
+        </p>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.card--center（置中內容卡片）</span>
+      <div class="card card--center">
+        <p style="font-size:var(--text-xs);color:var(--text-muted);letter-spacing:var(--tracking-wider);margin-bottom:var(--space-sm)">
+          PHASE 2 COMPLETE
+        </p>
+        <h3 style="font-family:var(--font-serif);font-size:var(--text-xl);font-weight:var(--weight-medium);margin-bottom:var(--space-sm)">
+          基礎元件就緒
+        </h3>
+        <p style="font-size:var(--text-sm);color:var(--text-secondary)">
+          接下來可以開始 Phase 3 頁面框架
+        </p>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.card + .card-divider（含分隔線）</span>
+      <div class="card">
+        <h3 class="card-title">本月運勢</h3>
+        <p style="font-size:var(--text-sm);color:var(--text-secondary)">
+          上半段內容。
+        </p>
+        <hr class="card-divider">
+        <p style="font-size:var(--text-sm);color:var(--text-secondary)">
+          下半段內容。中間用 .card-divider 分隔。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 五行標籤 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">4 · 五行標籤（Hashtag 風格）</h2>
+    <p class="demo-section-note">五個五行 + 日主紫，採膠囊形、淡色底搭配對應五行色文字</p>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.tag-group（多個標籤橫向 wrap）</span>
+      <div class="tag-group">
+        <span class="tag tag--wood">#成長動能</span>
+        <span class="tag tag--fire">#熱情</span>
+        <span class="tag tag--earth">#穩定</span>
+        <span class="tag tag--metal">#責任感</span>
+        <span class="tag tag--water">#策略思考</span>
+        <span class="tag tag--daymaster">#日主</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.tag-group--center（居中對齊）</span>
+      <div class="tag-group tag-group--center">
+        <span class="tag tag--wood">#成長動能</span>
+        <span class="tag tag--earth">#穩定</span>
+        <span class="tag tag--fire">#開創</span>
+        <span class="tag tag--daymaster">#正直</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 色點 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">5 · 色點（五行能量指示）</h2>
+    <p class="demo-section-note">10px 圓點 + 文字標籤，用於五行能量分布、代表色</p>
+
+    <div class="demo-block">
+      <span class="demo-block-label">.dot-label（色點 + 文字）</span>
+      <div class="demo-block-row" style="gap:var(--space-lg)">
+        <div class="dot-label"><span class="dot dot--wood"></span>木 · 青綠</div>
+        <div class="dot-label"><span class="dot dot--fire"></span>火 · 暖橘</div>
+        <div class="dot-label"><span class="dot dot--earth"></span>土 · 大地棕</div>
+        <div class="dot-label"><span class="dot dot--metal"></span>金 · 沉灰</div>
+        <div class="dot-label"><span class="dot dot--water"></span>水 · 海藍</div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <span class="demo-block-label">獨立色點（不含文字標籤）</span>
+      <div class="demo-block-row">
+        <span class="dot dot--wood"></span>
+        <span class="dot dot--fire"></span>
+        <span class="dot dot--earth"></span>
+        <span class="dot dot--metal"></span>
+        <span class="dot dot--water"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 綜合範例 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">6 · 綜合範例（首頁輸入區）</h2>
+    <p class="demo-section-note">把以上元件組合起來的真實使用場景</p>
+
+    <div class="card">
+      <h3 class="card-title">輸入生辰，開始計算你的八字</h3>
+      <p style="font-size:var(--text-xs);color:var(--text-muted);line-height:var(--leading-normal);margin-bottom:var(--space-lg)">
+        已有 <strong style="color:var(--brand-primary);font-weight:var(--weight-medium)">10,000+</strong> 人次完成計算，累積超過
+        <strong style="color:var(--brand-primary);font-weight:var(--weight-medium)">1,000+</strong> 份專屬客製化分析報告。
+      </p>
+
+      <div class="form-field">
+        <label class="form-label">出生日期</label>
+        <div class="input-group input-group--date">
+          <input class="input" type="number" placeholder="1990">
+          <input class="input" type="number" placeholder="08">
+          <input class="input" type="number" placeholder="15">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">
+          出生時辰
+          <button class="form-hint" type="button">不知道時辰?</button>
+        </label>
+        <select class="input">
+          <option>請選擇時辰</option>
+          <option>子時（23:00–01:00）</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">出生地點</label>
+        <select class="input">
+          <option>臺北市</option>
+        </select>
+      </div>
+
+      <button class="btn-primary">排出八字命盤</button>
+    </div>
+
+    <div style="margin-top:var(--space-xl)">
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin-bottom:var(--space-md)">
+        想直接看某個日主的完整解析?
+      </p>
+      <div class="tag-group">
+        <button class="btn-pill">甲木日主</button>
+        <button class="btn-pill">乙木日主</button>
+        <button class="btn-pill">丙火日主</button>
+        <button class="btn-pill">丁火日主</button>
+        <button class="btn-pill">戊土日主</button>
+        <button class="btn-pill">己土日主</button>
+        <button class="btn-pill">庚金日主</button>
+        <button class="btn-pill">辛金日主</button>
+        <button class="btn-pill">壬水日主</button>
+        <button class="btn-pill">癸水日主</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 驗收清單 -->
+  <section class="demo-section">
+    <h2 class="demo-section-title">✓ Phase 2 驗收標準</h2>
+    <div class="verify-list">
+      <div class="verify-item">components.css 已建立，包含上述所有元件</div>
+      <div class="verify-item">已建立 demo 頁面（本頁）展示所有元件</div>
+      <div class="verify-item">主按鈕「排出八字命盤」有金色漸層（淺金 → 柔和金）</div>
+      <div class="verify-item">5 個五行標籤色 + 日主紫色都正確顯示</div>
+      <div class="verify-item">輸入框焦點時有金色 1px 邊框</div>
+      <div class="verify-item">在 iPhone SE（375px）寬度下無水平捲動</div>
+      <div class="verify-item">元件 CSS 中無任何硬編碼 hex 值，全部引用 tokens 變數</div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
