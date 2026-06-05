@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日主展示卡 Demo · Phase 5 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/sections.css">
+
+<style>
+.demo-wrap {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.demo-section-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.demo-section-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+
+.demo-section-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.demo-row-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wider);
+  text-align: center;
+  margin: var(--space-lg) 0 var(--space-sm);
+  font-family: monospace;
+}
+
+.verify-section {
+  margin-top: var(--space-3xl);
+  padding: 0;
+}
+
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+}
+
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-md);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="demo-wrap">
+
+  <div class="demo-section-header">
+    <div class="meta">PHASE 5 · DAY MASTER CARD</div>
+    <h1>日主展示卡視覺驗證</h1>
+    <p>展示 10 個日主在結果頁首屏的視覺呈現</p>
+  </div>
+
+  <!-- 10 張日主展示卡的容器（由 JS 自動填入） -->
+  <div id="cardsContainer"></div>
+
+  <!-- 驗收清單 -->
+  <section class="verify-section">
+    <h2 style="font-family:var(--font-serif);font-size:var(--text-lg);font-weight:var(--weight-medium);margin-bottom:var(--space-md);text-align:center">
+      ✓ Phase 5 驗收標準
+    </h2>
+    <div class="verify-list">
+      <div class="verify-item">「甲木」「丁火」等大字用宋體 + 紫色 + 44px 顯示</div>
+      <div class="verify-item">圓形插畫（80x80px）米紫底色 + 中央宋體天干字</div>
+      <div class="verify-item">標籤橫向居中、自動換行</div>
+      <div class="verify-item">「分享結果」按鈕在最下方，目前 disabled（即將開放）</div>
+      <div class="verify-item">日主類型對應的特質標籤（木火土金水各自的色系）</div>
+      <div class="verify-item">在 iPhone SE（375px）寬度下無水平捲動</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- 載入日主資料庫 -->
+<script src="/data/dayMaster.js"></script>
+
+<script>
+// 從 data/dayMaster.js 取出 10 個日主資料，逐一渲染卡片
+const cardsContainer = document.getElementById('cardsContainer');
+const stems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+
+const elementTags = {
+  wood:  ['#成長動能', '#開創', '#策略思考'],
+  fire:  ['#熱情', '#感染力', '#行動力'],
+  earth: ['#穩定', '#包容', '#責任感'],
+  metal: ['#原則', '#果決', '#改革'],
+  water: ['#流動', '#智慧', '#洞察']
+};
+
+stems.forEach(stem => {
+  const profile = window.DAY_MASTER_PROFILES[stem];
+  if (!profile) return;
+
+  // 標題：日主天干（如：1990-08-15 → 甲）
+  const label = document.createElement('div');
+  label.className = 'demo-row-label';
+  label.textContent = `── ${profile.stem}${profile.elementName.slice(1)}日主 ──`;
+  cardsContainer.appendChild(label);
+
+  // 卡片
+  const baseTags = elementTags[profile.element] || [];
+  const allTags = [...baseTags, '#' + (profile.keywords[0] || '日主')];
+
+  const tagsHtml = allTags.map(t => {
+    if (t.includes(profile.keywords[0])) {
+      return `<span class="tag tag--daymaster">${t}</span>`;
+    }
+    return `<span class="tag tag--${profile.element}">${t}</span>`;
+  }).join('');
+
+  const card = document.createElement('section');
+  card.className = 'daymaster-card card card--center';
+  card.innerHTML = `
+    <span class="tag tag--daymaster">你的日主</span>
+    <div class="daymaster-display" style="margin-top:16px">
+      <h2 class="daymaster-name">${profile.stem}${profile.elementName.slice(1)}</h2>
+      <p class="daymaster-subtitle">${profile.elementName} · ${profile.imagery}</p>
+    </div>
+    <div class="daymaster-illustration">
+      <span class="daymaster-glyph">${profile.stem}</span>
+    </div>
+    <h3 class="daymaster-tagline">${profile.stem}${profile.elementName.slice(1)}日主 · ${profile.tagline}</h3>
+    <div class="tag-group tag-group--center">${tagsHtml}</div>
+    <button class="btn-share" disabled title="即將開放">
+      <span aria-hidden="true">↗</span> 分享結果（即將開放）
+    </button>
+  `;
+  cardsContainer.appendChild(card);
+});
+</script>
+
+</body>
+</html>
