@@ -596,6 +596,84 @@ select.input {
 
 
 /* ============================================
+   能量輪廓 · Energy Profile（Phase 8）
+   ============================================
+   位置：五行分布 → 大運流年 之間
+   用途：結果頁的「人格精簡卡」，給使用者一個有人味的概覽
+   分析頁有完整深度版（命主特質、人格畫像等）
+*/
+
+.energy-profile {
+  padding: var(--space-lg) var(--space-md);
+}
+
+.ep-block {
+  margin-bottom: var(--space-lg);
+}
+.ep-block:last-child { margin-bottom: 0; }
+
+.ep-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+  letter-spacing: var(--tracking-wide);
+}
+
+.ep-text {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: var(--leading-loose);
+}
+
+/* 代表色（色點橫排） */
+.ep-color-list {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+/* 「天賦」區塊用淡紫底色強調（呼應日主） */
+.ep-block--talent {
+  background: var(--accent-daymaster-bg);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+}
+.ep-block--talent .ep-label {
+  color: var(--accent-daymaster);
+}
+
+/* 「需要注意」區塊用淡橘色背景強調（規格書要求） */
+.ep-block--warning {
+  background: var(--fire-bg);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: 0;
+}
+.ep-block--warning .ep-label {
+  color: var(--fire);
+}
+.ep-block--warning .ep-text {
+  color: var(--text-secondary);
+}
+
+/* 「想看更深?」引導句 */
+.ep-deep-hint {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px dashed var(--border-soft);
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+.ep-deep-hint strong {
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+
+
+/* ============================================
    特殊表單元件：Tab 切換、性別選擇器
    ============================================
    用於：國曆/農曆 切換、男/女 性別選擇

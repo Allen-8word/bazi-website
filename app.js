@@ -295,6 +295,84 @@ function getElementClass(element){
 }
 
 /**
+ * Phase 8: 渲染能量輪廓（人格精簡卡）
+ * 結果頁的「有人味的概覽」，引導使用者點 CTA 進分析頁看完整版
+ *
+ * 內容：
+ *   - 代表色：日主五行色 + 用神色
+ *   - 你是誰?：日主 tagline（一句話）
+ *   - 你的天賦：日主 openingMetaphor（畫面感隱喻）
+ *   - 需要注意：日主 shadowSide 第一句
+ *
+ * @param {Object} pillars - 四柱資料
+ * @param {string} dayStem - 日主天干
+ */
+function renderEnergyProfile(pillars, dayStem){
+  if (!window.BAZI_ENGINE || !window.DAY_MASTER_PROFILES) return;
+  const cardEl = document.getElementById('rEnergyProfile');
+  const contentEl = document.getElementById('rEpContent');
+  if (!cardEl || !contentEl) return;
+
+  const profile = window.DAY_MASTER_PROFILES[dayStem];
+  if (!profile) return;
+  const dayElement = profile.element;
+
+  // 1) 代表色：日主五行 + 用神（取第一個）
+  const energy = window.BAZI_ENGINE.calculateElementEnergy(pillars, window.BRANCH_PROFILES);
+  const bodyStrength = window.BAZI_ENGINE.determineBodyStrength(energy, dayElement);
+  let favorable = [];
+  if (window.FAVORABLE_ELEMENTS && window.FAVORABLE_ELEMENTS[dayElement]) {
+    const favData = window.FAVORABLE_ELEMENTS[dayElement][bodyStrength.type];
+    favorable = favData ? favData.favorable : [];
+  }
+  const elNames = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+  const elNameLong = {
+    wood:'青綠', fire:'暖橘', earth:'大地棕', metal:'沉灰', water:'海藍'
+  };
+
+  // 代表色清單：日主色 + 用神（去重）
+  const colorList = [dayElement, ...favorable].filter((el, i, arr) => arr.indexOf(el) === i).slice(0, 3);
+  const colorListHtml = colorList.map(el => `
+    <div class="dot-label">
+      <span class="dot dot--${el}"></span>${elNames[el]} · ${elNameLong[el]}
+    </div>
+  `).join('');
+
+  // 2) 取 shadowSide 第一句（用「。」切）
+  const shadowFirst = profile.shadowSide ? profile.shadowSide.split('。')[0] + '。' : '';
+
+  contentEl.innerHTML = `
+    <div class="ep-block">
+      <div class="ep-label">代 表 色</div>
+      <div class="ep-color-list">${colorListHtml}</div>
+    </div>
+
+    <div class="ep-block">
+      <div class="ep-label">你 是 誰?</div>
+      <p class="ep-text">${profile.tagline}。</p>
+    </div>
+
+    <div class="ep-block ep-block--talent">
+      <div class="ep-label">你 的 天 賦</div>
+      <p class="ep-text">${profile.openingMetaphor}</p>
+    </div>
+
+    <div class="ep-block ep-block--warning">
+      <div class="ep-label">⚠ 需 要 注 意</div>
+      <p class="ep-text">${shadowFirst}</p>
+    </div>
+
+    <p class="ep-deep-hint">
+      以上是輪廓速覽 ─ 想看完整的「三個常被誤解的事」「點頭場景」「人生劇本」<br>
+      請點下方 <strong>查看詳細分析</strong>
+    </p>
+  `;
+
+  cardEl.style.display = '';
+}
+
+
+/**
  * Phase 7: 渲染五行分布
  * 使用 engine.calculateElementEnergy 計算百分比
  * 用神對應的格子加金色邊框 + 右上「用」字徽章
@@ -491,6 +569,9 @@ function renderResult(){
 
   // Phase 7: 渲染五行分布
   renderFiveElements(r.pillars, r.pillars.day.stem);
+
+  // Phase 8: 渲染能量輪廓（人格精簡卡）
+  renderEnergyProfile(r.pillars, r.pillars.day.stem);
 
   const pEl = document.getElementById('rPillars');
   const order = ['year', 'month', 'day', 'hour'];
