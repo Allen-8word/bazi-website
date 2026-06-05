@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大運 Timeline Demo · Phase 9-A 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+
+<style>
+.demo-wrap {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-soft);
+}
+.demo-section-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.demo-section-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+.demo-section-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.demo-label {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--text-muted);
+  text-align: center;
+  font-family: monospace;
+  margin: var(--space-lg) 0 var(--space-sm);
+}
+
+/* 模擬結果頁區塊 */
+#page-result {
+  display: block;
+}
+
+.dayun-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-md);
+}
+.dayun-header h3 {
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  letter-spacing: 1px;
+}
+.dayun-header .hint {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.dayun-list {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.dayun-item {
+  min-width: 70px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.dayun-item .age,
+.dayun-item .gz,
+.dayun-item .current-mark { display: block; }
+
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+  margin-top: var(--space-2xl);
+}
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div id="page-result">
+<div class="demo-wrap">
+
+  <div class="demo-section-header">
+    <div class="meta">PHASE 9-A · DA YUN TIMELINE</div>
+    <h1>大運 Timeline 視覺驗證</h1>
+    <p>10 年一柱 · 共 8 柱 · 當前柱金色強調</p>
+  </div>
+
+  <!-- 範例：1990 年生男性的 8 柱大運 -->
+  <div class="demo-label">── 範例 1：當前在第 4 柱（35-44 歲，丁卯）──</div>
+  <section class="card">
+    <div class="dayun-header">
+      <h3>大 運 流 程</h3>
+      <span class="hint">10 年一柱 · 共 8 柱</span>
+    </div>
+    <div class="dayun-list">
+      <div class="dayun-item"><div class="age">5 歲</div><div class="gz">乙丑</div></div>
+      <div class="dayun-item"><div class="age">15 歲</div><div class="gz">甲子</div></div>
+      <div class="dayun-item"><div class="age">25 歲</div><div class="gz">癸亥</div></div>
+      <div class="dayun-item active"><div class="age">35 歲</div><div class="gz">丁卯</div><div class="current-mark">當前</div></div>
+      <div class="dayun-item"><div class="age">45 歲</div><div class="gz">丙寅</div></div>
+      <div class="dayun-item"><div class="age">55 歲</div><div class="gz">乙丑</div></div>
+      <div class="dayun-item"><div class="age">65 歲</div><div class="gz">甲子</div></div>
+      <div class="dayun-item"><div class="age">75 歲</div><div class="gz">癸亥</div></div>
+    </div>
+  </section>
+
+  <!-- 範例 2：當前在第 1 柱（剛起運） -->
+  <div class="demo-label">── 範例 2：當前在第 1 柱（5-14 歲，乙丑）──</div>
+  <section class="card">
+    <div class="dayun-header">
+      <h3>大 運 流 程</h3>
+      <span class="hint">10 年一柱 · 共 8 柱</span>
+    </div>
+    <div class="dayun-list">
+      <div class="dayun-item active"><div class="age">5 歲</div><div class="gz">乙丑</div><div class="current-mark">當前</div></div>
+      <div class="dayun-item"><div class="age">15 歲</div><div class="gz">甲子</div></div>
+      <div class="dayun-item"><div class="age">25 歲</div><div class="gz">癸亥</div></div>
+      <div class="dayun-item"><div class="age">35 歲</div><div class="gz">壬戌</div></div>
+      <div class="dayun-item"><div class="age">45 歲</div><div class="gz">辛酉</div></div>
+      <div class="dayun-item"><div class="age">55 歲</div><div class="gz">庚申</div></div>
+      <div class="dayun-item"><div class="age">65 歲</div><div class="gz">己未</div></div>
+      <div class="dayun-item"><div class="age">75 歲</div><div class="gz">戊午</div></div>
+    </div>
+  </section>
+
+  <!-- 範例 3：點選非當前柱（看選中狀態） -->
+  <div class="demo-label">── 範例 3：使用者點了第 6 柱（55-64 歲，庚申）──</div>
+  <section class="card">
+    <div class="dayun-header">
+      <h3>大 運 流 程</h3>
+      <span class="hint">點擊切換 →</span>
+    </div>
+    <div class="dayun-list">
+      <div class="dayun-item"><div class="age">5 歲</div><div class="gz">乙丑</div></div>
+      <div class="dayun-item"><div class="age">15 歲</div><div class="gz">甲子</div></div>
+      <div class="dayun-item"><div class="age">25 歲</div><div class="gz">癸亥</div><div class="current-mark">當前</div></div>
+      <div class="dayun-item"><div class="age">35 歲</div><div class="gz">壬戌</div></div>
+      <div class="dayun-item"><div class="age">45 歲</div><div class="gz">辛酉</div></div>
+      <div class="dayun-item active"><div class="age">55 歲</div><div class="gz">庚申</div></div>
+      <div class="dayun-item"><div class="age">65 歲</div><div class="gz">己未</div></div>
+      <div class="dayun-item"><div class="age">75 歲</div><div class="gz">戊午</div></div>
+    </div>
+  </section>
+
+  <!-- 驗收清單 -->
+  <div class="verify-list">
+    <h2 style="font-family:var(--font-serif);font-size:var(--text-md);font-weight:var(--weight-medium);margin-bottom:var(--space-md)">
+      ✓ Phase 9-A 驗收標準
+    </h2>
+    <div class="verify-item">8 柱大運橫向時間軸顯示</div>
+    <div class="verify-item">每柱之間用淡金漸層線串接</div>
+    <div class="verify-item">當前柱（active）的圓點較大（16px）、金色填滿、有淺色光暈</div>
+    <div class="verify-item">當前柱的「年齡」「干支」也用金色強調</div>
+    <div class="verify-item">「當前」小字標記在干支下方</div>
+    <div class="verify-item">非當前柱的圓點是白底 + 灰色邊框（10px）</div>
+    <div class="verify-item">在窄手機（375px）若 8 柱擠不下，可橫向滑動</div>
+    <div class="verify-item">在 iPhone SE（375px）下沒有破版</div>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
