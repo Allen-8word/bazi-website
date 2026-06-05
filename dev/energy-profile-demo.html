@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>能量輪廓 Demo · Phase 8 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+
+<style>
+.demo-wrap {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+.demo-section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-soft);
+}
+.demo-section-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.demo-section-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+.demo-section-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.demo-label {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--text-muted);
+  text-align: center;
+  font-family: monospace;
+  margin: var(--space-lg) 0 var(--space-sm);
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-widest);
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+  margin-top: var(--space-2xl);
+}
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="demo-wrap">
+
+  <div class="demo-section-header">
+    <div class="meta">PHASE 8 · ENERGY PROFILE</div>
+    <h1>能量輪廓視覺驗證</h1>
+    <p>結果頁的人格精簡卡（4 個小區塊 + 引導句）</p>
+  </div>
+
+  <!-- 由 JS 自動產生 3 個樣本 -->
+  <div id="samplesContainer"></div>
+
+  <!-- 驗收清單 -->
+  <div class="verify-list">
+    <h2 style="font-family:var(--font-serif);font-size:var(--text-md);font-weight:var(--weight-medium);margin-bottom:var(--space-md)">
+      ✓ Phase 8 驗收標準
+    </h2>
+    <div class="verify-item">「代表色」用色點 + 文字並排顯示</div>
+    <div class="verify-item">「你是誰?」段落行高 1.8，閱讀舒適</div>
+    <div class="verify-item">「你的天賦」區塊有淡紫色背景強調</div>
+    <div class="verify-item">「需要注意」區塊有淡橘色背景強調 + ⚠ 符號</div>
+    <div class="verify-item">底部有引導句鼓勵點「查看詳細分析」</div>
+    <div class="verify-item">在 iPhone SE（375px）寬度下無水平捲動</div>
+  </div>
+
+</div>
+
+<script src="/data/dayMaster.js"></script>
+<script>
+const samples = [
+  { stem: '丁', label: '丁火日主（燭光型）' },
+  { stem: '甲', label: '甲木日主（主幹型）' },
+  { stem: '辛', label: '辛金日主（珠寶型）' }
+];
+
+const container = document.getElementById('samplesContainer');
+const elNames = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+const elNameLong = { wood:'青綠', fire:'暖橘', earth:'大地棕', metal:'沉灰', water:'海藍' };
+
+// 三個用神範例（簡化版，給 demo 用）
+const sampleFavorables = {
+  '丁': ['earth', 'metal', 'water'],
+  '甲': ['water', 'wood'],
+  '辛': ['earth', 'metal']
+};
+
+samples.forEach(s => {
+  const profile = window.DAY_MASTER_PROFILES[s.stem];
+  if (!profile) return;
+
+  const dayElement = profile.element;
+  const favorable = sampleFavorables[s.stem] || [];
+  const colorList = [dayElement, ...favorable].filter((el, i, arr) => arr.indexOf(el) === i).slice(0, 3);
+  const colorListHtml = colorList.map(el => `
+    <div class="dot-label">
+      <span class="dot dot--${el}"></span>${elNames[el]} · ${elNameLong[el]}
+    </div>
+  `).join('');
+
+  const shadowFirst = profile.shadowSide ? profile.shadowSide.split('。')[0] + '。' : '';
+
+  // 標題
+  const label = document.createElement('div');
+  label.className = 'demo-label';
+  label.textContent = `── ${s.label} ──`;
+  container.appendChild(label);
+
+  // 卡片
+  const card = document.createElement('section');
+  card.className = 'energy-profile card';
+  card.innerHTML = `
+    <div class="section-title">能 量 輪 廓</div>
+    <div class="ep-block">
+      <div class="ep-label">代 表 色</div>
+      <div class="ep-color-list">${colorListHtml}</div>
+    </div>
+    <div class="ep-block">
+      <div class="ep-label">你 是 誰?</div>
+      <p class="ep-text">${profile.tagline}。</p>
+    </div>
+    <div class="ep-block ep-block--talent">
+      <div class="ep-label">你 的 天 賦</div>
+      <p class="ep-text">${profile.openingMetaphor}</p>
+    </div>
+    <div class="ep-block ep-block--warning">
+      <div class="ep-label">⚠ 需 要 注 意</div>
+      <p class="ep-text">${shadowFirst}</p>
+    </div>
+    <p class="ep-deep-hint">
+      以上是輪廓速覽 ─ 想看完整的「三個常被誤解的事」「點頭場景」「人生劇本」<br>
+      請點下方 <strong>查看詳細分析</strong>
+    </p>
+  `;
+  container.appendChild(card);
+});
+</script>
+
+</body>
+</html>
