@@ -295,6 +295,62 @@ function getElementClass(element){
 }
 
 /**
+ * Phase 7: 渲染五行分布
+ * 使用 engine.calculateElementEnergy 計算百分比
+ * 用神對應的格子加金色邊框 + 右上「用」字徽章
+ *
+ * @param {Object} pillars - 四柱資料
+ * @param {string} dayStem - 日主天干
+ */
+function renderFiveElements(pillars, dayStem){
+  if (!window.BAZI_ENGINE || !window.BRANCH_PROFILES || !window.DAY_MASTER_PROFILES) return;
+  const cardEl = document.getElementById('rFiveElementsCard');
+  const gridEl = document.getElementById('rFiveElements');
+  const hintEl = document.getElementById('rElementsHint');
+  if (!cardEl || !gridEl || !hintEl) return;
+
+  const profile = window.DAY_MASTER_PROFILES[dayStem];
+  const dayElement = profile ? profile.element : null;
+  if (!dayElement) return;
+
+  // 1) 五行能量百分比
+  const energy = window.BAZI_ENGINE.calculateElementEnergy(pillars, window.BRANCH_PROFILES);
+
+  // 2) 命格 & 用神
+  const bodyStrength = window.BAZI_ENGINE.determineBodyStrength(energy, dayElement);
+  let favorable = [];
+  if (window.FAVORABLE_ELEMENTS && window.FAVORABLE_ELEMENTS[dayElement]) {
+    const favData = window.FAVORABLE_ELEMENTS[dayElement][bodyStrength.type];
+    favorable = favData ? favData.favorable : [];
+  }
+
+  // 3) 渲染五格（依木火土金水順序）
+  const elementOrder = ['wood', 'fire', 'earth', 'metal', 'water'];
+  const elNames = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+
+  gridEl.innerHTML = elementOrder.map(el => {
+    const isYongShen = favorable.includes(el);
+    const pct = (energy[el] || 0).toFixed(0);
+    return `
+      <div class="element-cell ${isYongShen ? 'element-cell--yongshen' : ''}">
+        <span class="dot dot--${el}"></span>
+        <span class="element-name element-name--${el}">${elNames[el]}</span>
+        <span class="element-count">${pct}%</span>
+      </div>
+    `;
+  }).join('');
+
+  // 4) 提示行
+  const favText = favorable.length > 0
+    ? favorable.map(el => elNames[el]).join(' · ')
+    : '無顯著';
+  hintEl.innerHTML = `用神為 <strong>${favText}</strong>，建議生活中多接觸對應五行的色彩、方位與環境。`;
+
+  cardEl.style.display = '';
+}
+
+
+/**
  * Phase 6: 渲染八字摘要列表
  * 在四柱八字卡片下方顯示「日主 / 命格 / 主要五行 / 用神」
  *
@@ -432,6 +488,9 @@ function renderResult(){
 
   // Phase 6: 渲染八字摘要列表
   renderBaziSummary(r.pillars, r.pillars.day.stem);
+
+  // Phase 7: 渲染五行分布
+  renderFiveElements(r.pillars, r.pillars.day.stem);
 
   const pEl = document.getElementById('rPillars');
   const order = ['year', 'month', 'day', 'hour'];

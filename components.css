@@ -409,6 +409,193 @@ select.input {
 
 
 /* ============================================
+   五行分布 · Five Elements Grid（Phase 7）
+   ============================================
+   位置：四柱八字 + 八字摘要之後
+   結構：5 個方格（1:1 比例）+ 用神金色邊框
+*/
+
+.five-elements {
+  padding: var(--space-lg) var(--space-md);
+}
+
+.elements-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: var(--space-md);
+}
+
+.element-cell {
+  aspect-ratio: 1;
+  background: var(--surface-input);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1.5px solid transparent;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+.element-cell:hover { transform: translateY(-1px); }
+
+/* 用神格子 — 金色邊框 + 右上角徽章 */
+.element-cell--yongshen {
+  border-color: var(--brand-primary);
+  background: var(--surface-card);
+}
+.element-cell--yongshen::after {
+  content: '用';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-size: 10px;
+  font-family: var(--font-serif);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0;
+  font-weight: var(--weight-medium);
+}
+
+.element-name {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+}
+
+.element-name--wood  { color: var(--wood); }
+.element-name--fire  { color: var(--fire); }
+.element-name--earth { color: var(--earth); }
+.element-name--metal { color: var(--metal); }
+.element-name--water { color: var(--water); }
+
+.element-count {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.elements-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+  text-align: center;
+  padding: var(--space-sm) 0 0;
+}
+.elements-hint strong {
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+
+
+/* ============================================
+   五行分布 · Five Elements Grid（Phase 7）
+   ============================================
+   位置：四柱八字卡片之後
+   結構：
+     ┌─────────────────────────────────────┐
+     │         五 行 分 布                  │
+     ├─────┬─────┬─────┬─────┬─────┤
+     │  ●  │  ●  │  ●  │  ●  │  ●  │
+     │  木  │  火  │  土  │  金  │  水  │
+     │ 5%  │ 48% │ 23% │ 12% │ 12% │
+     └─────┴─────┴─────┴─────┴─────┘
+     用神為 火、土，建議生活中多接觸對應的色彩。
+*/
+
+.elements-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: var(--space-md);
+}
+
+.element-cell {
+  aspect-ratio: 1;
+  background: var(--surface-input);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+/* 用神高亮（金色邊框） */
+.element-cell--yongshen {
+  border: 1.5px solid var(--brand-primary);
+  background: var(--surface-card);
+}
+
+.element-cell--yongshen::after {
+  content: '用';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: var(--weight-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0;
+}
+
+.element-cell .dot {
+  width: 8px;
+  height: 8px;
+}
+
+.element-name {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+}
+
+.element-name--wood  { color: var(--wood); }
+.element-name--fire  { color: var(--fire); }
+.element-name--earth { color: var(--earth); }
+.element-name--metal { color: var(--metal); }
+.element-name--water { color: var(--water); }
+
+.element-count {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* 提示行 */
+.elements-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+  text-align: center;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px dashed var(--border-soft);
+}
+
+.elements-hint strong {
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+
+
+/* ============================================
    特殊表單元件：Tab 切換、性別選擇器
    ============================================
    用於：國曆/農曆 切換、男/女 性別選擇
