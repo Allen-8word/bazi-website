@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八字命盤 Demo · Phase 6 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/sections.css">
+
+<style>
+/* Phase 6 Demo 專用樣式 — 重現 index.html 中 .pillar 的核心樣式 */
+.demo-wrap {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.demo-section-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.demo-section-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+
+.demo-section-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-widest);
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+/* 重現現有 .pillar 樣式 */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.pillar { text-align: center; }
+.pillar .pillar-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.pillar .pillar-box {
+  background: var(--surface-input);
+  padding: 12px 4px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-serif);
+}
+/* 日主柱（紫色強調） */
+.pillar.day .pillar-box {
+  background: var(--accent-daymaster-bg);
+  border: 1.5px solid var(--accent-daymaster);
+}
+.pillar.day .pillar-label {
+  color: var(--accent-daymaster);
+  font-weight: var(--weight-medium);
+}
+.pillar .ten-god {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.pillar .stem-char,
+.pillar .branch-char {
+  font-size: 24px;
+  display: block;
+  margin: 2px 0;
+  font-weight: var(--weight-medium);
+}
+.pillar.day .stem-char { color: var(--accent-daymaster); }
+.pillar .branch-tg {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* 五行色 */
+.el-wood  { color: var(--wood); }
+.el-fire  { color: var(--fire); }
+.el-earth { color: var(--earth); }
+.el-metal { color: var(--metal); }
+.el-water { color: var(--water); }
+
+.pillar-legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-md);
+}
+.pillar-legend b {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: var(--surface-muted);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 16px;
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  margin-right: 4px;
+  font-size: 10px;
+}
+
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+  margin-top: var(--space-2xl);
+}
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="demo-wrap">
+
+  <div class="demo-section-header">
+    <div class="meta">PHASE 6 · BAZI CHART</div>
+    <h1>八字命盤視覺驗證</h1>
+    <p>四柱卡片並排 + 日主紫色強調 + 摘要列表</p>
+  </div>
+
+  <!-- 範例：丁未日 命盤 -->
+  <div class="card">
+    <div class="section-title">四 柱 八 字</div>
+
+    <div class="pillars-grid">
+      <!-- 年柱 -->
+      <div class="pillar">
+        <div class="pillar-label">年柱</div>
+        <div class="pillar-box">
+          <div class="ten-god">正財</div>
+          <span class="stem-char el-metal">庚</span>
+          <span class="branch-char el-fire">午</span>
+          <div class="branch-tg">比肩</div>
+        </div>
+      </div>
+      <!-- 月柱 -->
+      <div class="pillar">
+        <div class="pillar-label">月柱</div>
+        <div class="pillar-box">
+          <div class="ten-god">正官</div>
+          <span class="stem-char el-water">壬</span>
+          <span class="branch-char el-fire">午</span>
+          <div class="branch-tg">比肩</div>
+        </div>
+      </div>
+      <!-- 日柱（日主） -->
+      <div class="pillar day">
+        <div class="pillar-label">日柱（日主）</div>
+        <div class="pillar-box">
+          <div class="ten-god">日元</div>
+          <span class="stem-char">丁</span>
+          <span class="branch-char el-earth">未</span>
+          <div class="branch-tg">食神</div>
+        </div>
+      </div>
+      <!-- 時柱 -->
+      <div class="pillar">
+        <div class="pillar-label">時柱</div>
+        <div class="pillar-box">
+          <div class="ten-god">比肩</div>
+          <span class="stem-char el-fire">丁</span>
+          <span class="branch-char el-earth">未</span>
+          <div class="branch-tg">食神</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillar-legend">
+      <span><b>本</b> 本氣</span>
+      <span><b>中</b> 中氣</span>
+      <span><b>餘</b> 餘氣</span>
+    </div>
+
+    <!-- 八字摘要 -->
+    <dl class="bazi-summary">
+      <div class="bazi-summary-row">
+        <dt>日主</dt>
+        <dd><span class="accent">丁火</span></dd>
+      </div>
+      <div class="bazi-summary-row">
+        <dt>命格</dt>
+        <dd>身強（幫扶能量 53%）</dd>
+      </div>
+      <div class="bazi-summary-row">
+        <dt>主要五行</dt>
+        <dd><span class="el-fire">火</span> 48%　<span class="el-earth">土</span> 22%</dd>
+      </div>
+      <div class="bazi-summary-row">
+        <dt>用神</dt>
+        <dd><span class="el-metal">金</span>、<span class="el-water">水</span>、<span class="el-earth">土</span></dd>
+      </div>
+    </dl>
+  </div>
+
+  <!-- 驗收清單 -->
+  <div class="verify-list">
+    <h2 style="font-family:var(--font-serif);font-size:var(--text-md);font-weight:var(--weight-medium);margin-bottom:var(--space-md)">
+      ✓ Phase 6 驗收標準
+    </h2>
+    <div class="verify-item">四柱橫向並排，日柱（第三個）有紫色邊框與淡紫底色</div>
+    <div class="verify-item">每個天干地支根據五行顯示對應顏色</div>
+    <div class="verify-item">日主天干字用紫色（覆蓋原五行色）</div>
+    <div class="verify-item">「年柱、月柱、日柱、時柱」標籤在卡片上方</div>
+    <div class="verify-item">卡片下方有日主 / 命格 / 主要五行 / 用神四行摘要</div>
+    <div class="verify-item">摘要中的五行字用對應五行色，用神用金色強調</div>
+  </div>
+
+</div>
+
+</body>
+</html>
