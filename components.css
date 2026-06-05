@@ -674,6 +674,138 @@ select.input {
 
 
 /* ============================================
+   大運 Timeline 視覺升級（Phase 9-A）
+   ============================================
+   保留現有 .dayun-list / .dayun-item HTML 結構與 JS 邏輯，
+   只用 CSS 升級為 Halo.Project 風格的時間軸節點視覺
+*/
+
+/* 大運區塊容器 — 加上水平時間軸線 */
+#page-result .dayun-list {
+  position: relative;
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+  /* 保留原有 scroll-x 行為（手機 8 柱會擠） */
+}
+
+/* 時間軸水平線（從淡 → 金 → 淡） */
+#page-result .dayun-list::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 50%;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-muted) 0%,
+    var(--brand-primary-light) 50%,
+    var(--surface-muted) 100%
+  );
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 每個大運柱升級 */
+#page-result .dayun-item {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  border-radius: var(--radius-md);
+  padding: 6px 8px;
+  min-width: 56px;
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 圓點節點（中央，當「時間軸的珠子」） */
+#page-result .dayun-item::before {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-medium);
+  border-radius: 50%;
+  order: 2; /* 圓點放中間（age 在上、gz 在下） */
+  transition: all 0.2s ease;
+}
+
+/* 起運年齡（最上方） */
+#page-result .dayun-item .age {
+  font-size: 9px;
+  color: var(--text-muted);
+  order: 1;
+  margin-bottom: 0;
+  letter-spacing: 0.5px;
+}
+
+/* 干支（最下方） */
+#page-result .dayun-item .gz {
+  font-family: var(--font-serif);
+  font-size: 12px;
+  color: var(--text-secondary);
+  order: 3;
+  margin-top: 0;
+}
+
+/* 「當前」標記（淡金小字） */
+#page-result .dayun-item .current-mark {
+  font-size: 8px;
+  color: var(--brand-primary);
+  letter-spacing: 1px;
+  order: 4;
+  opacity: 0.9;
+}
+
+/* 選中狀態 — 金色強調，不再填滿背景色 */
+#page-result .dayun-item.active {
+  background: transparent !important;
+  color: inherit !important;
+  transform: translateY(-1px);
+}
+#page-result .dayun-item.active::before {
+  width: 16px;
+  height: 16px;
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px var(--surface-input);
+}
+#page-result .dayun-item.active .age {
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+#page-result .dayun-item.active .gz {
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* hover 微互動 */
+#page-result .dayun-item:hover:not(.active) {
+  transform: translateY(-1px);
+}
+#page-result .dayun-item:hover:not(.active)::before {
+  border-color: var(--brand-primary-light);
+}
+
+/* 大運區的 header 微調 */
+#page-result .dayun-header h3 {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+}
+#page-result .dayun-header .hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+
+/* ============================================
    特殊表單元件：Tab 切換、性別選擇器
    ============================================
    用於：國曆/農曆 切換、男/女 性別選擇
