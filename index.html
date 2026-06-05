@@ -869,6 +869,11 @@ body {
       <div class="date" id="rDate"></div>
     </div>
 
+    <!-- Phase 5: 日主展示卡（由 app.js 動態填入內容） -->
+    <section class="daymaster-card card card--center" id="rDayMasterCard" style="display:none">
+      <!-- 內容由 renderDayMasterCard() 動態產生 -->
+    </section>
+
     <div class="card">
       <div class="section-title">四 柱 八 字</div>
       <div class="pillars-grid" id="rPillars"></div>
@@ -956,6 +961,7 @@ body {
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/lunar.js"></script>
+<script src="./data/dayMaster.js"></script>
 <script src="./app.js"></script>
 
 </body>

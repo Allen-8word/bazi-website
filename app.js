@@ -294,6 +294,63 @@ function getElementClass(element){
   return 'el-' + element;
 }
 
+/**
+ * Phase 5: 渲染日主展示卡
+ * 從 data/dayMaster.js 取資料，依日主天干填入大字、副標、意象、tagline 等
+ *
+ * @param {string} dayStem - 日主天干（如：'甲'、'丁'、'庚'）
+ */
+function renderDayMasterCard(dayStem){
+  if (!window.DAY_MASTER_PROFILES) return;
+  const profile = window.DAY_MASTER_PROFILES[dayStem];
+  const cardEl = document.getElementById('rDayMasterCard');
+  if (!profile || !cardEl) return;
+
+  // 五行對應的代表特質標籤（每個元素挑 3-4 個）
+  const elementTags = {
+    wood:  ['#成長動能', '#開創', '#策略思考'],
+    fire:  ['#熱情', '#感染力', '#行動力'],
+    earth: ['#穩定', '#包容', '#責任感'],
+    metal: ['#原則', '#果決', '#改革'],
+    water: ['#流動', '#智慧', '#洞察']
+  };
+  const baseTags = elementTags[profile.element] || [];
+  const allTags = [...baseTags, '#' + (profile.keywords[0] || '日主')];
+
+  const tagsHtml = allTags.map(t => {
+    // 第一個用 tag--daymaster（紫），其他用對應五行色
+    if (t.includes(profile.keywords[0])) {
+      return `<span class="tag tag--daymaster">${t}</span>`;
+    }
+    return `<span class="tag tag--${profile.element}">${t}</span>`;
+  }).join('');
+
+  cardEl.innerHTML = `
+    <span class="tag tag--daymaster">你的日主</span>
+
+    <div class="daymaster-display" style="margin-top:16px">
+      <h2 class="daymaster-name">${profile.stem}${profile.elementName.slice(1)}</h2>
+      <p class="daymaster-subtitle">${profile.elementName} · ${profile.imagery}</p>
+    </div>
+
+    <div class="daymaster-illustration">
+      <span class="daymaster-glyph">${profile.stem}</span>
+    </div>
+
+    <h3 class="daymaster-tagline">${profile.stem}${profile.elementName.slice(1)}日主 · ${profile.tagline}</h3>
+
+    <div class="tag-group tag-group--center">
+      ${tagsHtml}
+    </div>
+
+    <button class="btn-share" disabled title="即將開放">
+      <span aria-hidden="true">↗</span> 分享結果（即將開放）
+    </button>
+  `;
+  cardEl.style.display = '';
+}
+
+
 function renderResult(){
   const r = state.result;
   if(!r) return;
@@ -301,6 +358,9 @@ function renderResult(){
   const displayName = state.name || '命主';
   document.getElementById('rName').textContent = displayName + ' · ' + (state.gender === 'male' ? '男命' : '女命');
   document.getElementById('rDate').textContent = '國曆 ' + r.solarDate + ' · 農曆 ' + r.lunarDate;
+
+  // Phase 5: 渲染日主展示卡
+  renderDayMasterCard(r.pillars.day.stem);
 
   const pEl = document.getElementById('rPillars');
   const order = ['year', 'month', 'day', 'hour'];
