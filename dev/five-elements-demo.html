@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五行分布 Demo · Phase 7 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+
+<style>
+.demo-wrap {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-soft);
+}
+.demo-section-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.demo-section-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+.demo-section-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.demo-label {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--text-muted);
+  text-align: center;
+  font-family: monospace;
+  margin: var(--space-lg) 0 var(--space-sm);
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-widest);
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+  margin-top: var(--space-2xl);
+}
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="demo-wrap">
+
+  <div class="demo-section-header">
+    <div class="meta">PHASE 7 · FIVE ELEMENTS GRID</div>
+    <h1>五行分布視覺驗證</h1>
+    <p>5 格等寬色點 + 用神金色邊框徽章</p>
+  </div>
+
+  <!-- 範例 1：丁火日主（身強，用神金水土） -->
+  <div class="demo-label">── 範例 1 · 丁火日主（身強，用神為金水土）──</div>
+  <section class="five-elements card">
+    <div class="section-title">五 行 分 布</div>
+    <div class="elements-grid">
+      <div class="element-cell">
+        <span class="dot dot--wood"></span>
+        <span class="element-name element-name--wood">木</span>
+        <span class="element-count">8%</span>
+      </div>
+      <div class="element-cell">
+        <span class="dot dot--fire"></span>
+        <span class="element-name element-name--fire">火</span>
+        <span class="element-count">48%</span>
+      </div>
+      <div class="element-cell element-cell--yongshen">
+        <span class="dot dot--earth"></span>
+        <span class="element-name element-name--earth">土</span>
+        <span class="element-count">23%</span>
+      </div>
+      <div class="element-cell element-cell--yongshen">
+        <span class="dot dot--metal"></span>
+        <span class="element-name element-name--metal">金</span>
+        <span class="element-count">12%</span>
+      </div>
+      <div class="element-cell element-cell--yongshen">
+        <span class="dot dot--water"></span>
+        <span class="element-name element-name--water">水</span>
+        <span class="element-count">9%</span>
+      </div>
+    </div>
+    <p class="elements-hint">
+      用神為 <strong>土 · 金 · 水</strong>，建議生活中多接觸對應五行的色彩、方位與環境。
+    </p>
+  </section>
+
+  <!-- 範例 2：甲木日主（身弱，用神水木） -->
+  <div class="demo-label">── 範例 2 · 甲木日主（身弱,用神為水木）──</div>
+  <section class="five-elements card">
+    <div class="section-title">五 行 分 布</div>
+    <div class="elements-grid">
+      <div class="element-cell element-cell--yongshen">
+        <span class="dot dot--wood"></span>
+        <span class="element-name element-name--wood">木</span>
+        <span class="element-count">18%</span>
+      </div>
+      <div class="element-cell">
+        <span class="dot dot--fire"></span>
+        <span class="element-name element-name--fire">火</span>
+        <span class="element-count">10%</span>
+      </div>
+      <div class="element-cell">
+        <span class="dot dot--earth"></span>
+        <span class="element-name element-name--earth">土</span>
+        <span class="element-count">22%</span>
+      </div>
+      <div class="element-cell">
+        <span class="dot dot--metal"></span>
+        <span class="element-name element-name--metal">金</span>
+        <span class="element-count">35%</span>
+      </div>
+      <div class="element-cell element-cell--yongshen">
+        <span class="dot dot--water"></span>
+        <span class="element-name element-name--water">水</span>
+        <span class="element-count">15%</span>
+      </div>
+    </div>
+    <p class="elements-hint">
+      用神為 <strong>水 · 木</strong>，建議生活中多接觸對應五行的色彩、方位與環境。
+    </p>
+  </section>
+
+  <!-- 驗收清單 -->
+  <div class="verify-list">
+    <h2 style="font-family:var(--font-serif);font-size:var(--text-md);font-weight:var(--weight-medium);margin-bottom:var(--space-md)">
+      ✓ Phase 7 驗收標準
+    </h2>
+    <div class="verify-item">五個五行格子等寬並排（1:1 比例）</div>
+    <div class="verify-item">用神對應的格子有金色邊框（1.5px）+ 右上「用」字小圓徽章</div>
+    <div class="verify-item">每個五行字用對應的五行色 + 宋體</div>
+    <div class="verify-item">下方提示行有用神說明，「用神為 X · Y · Z」用金色強調</div>
+    <div class="verify-item">在 iPhone SE（375px）寬度下無水平捲動</div>
+  </div>
+
+</div>
+
+</body>
+</html>
