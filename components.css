@@ -338,6 +338,77 @@ select.input {
 
 
 /* ============================================
+   八字摘要列表 · Bazi Summary（Phase 6）
+   ============================================
+   位置：四柱八字卡片下方
+   內容：日主 / 命格 / 主要五行 / 用神
+*/
+
+.bazi-summary {
+  display: grid;
+  gap: 6px;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px dashed var(--border-soft);
+}
+
+.bazi-summary-row {
+  display: flex;
+  font-size: var(--text-sm);
+  align-items: baseline;
+}
+
+.bazi-summary-row dt {
+  color: var(--text-muted);
+  width: 64px;
+  flex-shrink: 0;
+  letter-spacing: var(--tracking-wide);
+}
+
+.bazi-summary-row dd {
+  color: var(--text-primary);
+  flex: 1;
+}
+
+/* 用神標示用品牌金色 */
+.bazi-summary-row dd .accent {
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* 五行字色（在摘要中用） */
+.bazi-summary-row dd .el-wood  { color: var(--wood); }
+.bazi-summary-row dd .el-fire  { color: var(--fire); }
+.bazi-summary-row dd .el-earth { color: var(--earth); }
+.bazi-summary-row dd .el-metal { color: var(--metal); }
+.bazi-summary-row dd .el-water { color: var(--water); }
+
+
+/* ============================================
+   四柱卡片視覺升級（Phase 6）
+   ============================================
+   在 index.html 既有 .pillar 樣式之上微調，
+   讓日主柱用紫色強調（呼應日主展示卡）
+*/
+
+/* 日主柱 — 將原本的金色強調升級為紫色，與日主展示卡呼應 */
+#page-result .pillar.day .pillar-box {
+  background: var(--accent-daymaster-bg) !important;
+  border: 1.5px solid var(--accent-daymaster) !important;
+}
+
+#page-result .pillar.day .pillar-label.day {
+  color: var(--accent-daymaster) !important;
+  font-weight: var(--weight-medium);
+}
+
+/* 日主柱的天干字 — 用日主紫色（即使原本是五行色） */
+#page-result .pillar.day .stem-char {
+  color: var(--accent-daymaster) !important;
+}
+
+
+/* ============================================
    特殊表單元件：Tab 切換、性別選擇器
    ============================================
    用於：國曆/農曆 切換、男/女 性別選擇

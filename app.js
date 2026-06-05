@@ -295,6 +295,74 @@ function getElementClass(element){
 }
 
 /**
+ * Phase 6: 渲染八字摘要列表
+ * 在四柱八字卡片下方顯示「日主 / 命格 / 主要五行 / 用神」
+ *
+ * 使用 engine.js 的 calculateElementEnergy 與 determineBodyStrength
+ * 資料骨幹：A-1.pdf 喜用神統整表 + A-3.pdf 身強身弱判斷
+ *
+ * @param {Object} pillars - 四柱資料 { year, month, day, hour }
+ * @param {string} dayStem - 日主天干（如 '甲'）
+ */
+function renderBaziSummary(pillars, dayStem){
+  if (!window.BAZI_ENGINE || !window.BRANCH_PROFILES || !window.DAY_MASTER_PROFILES) return;
+  const summaryEl = document.getElementById('rBaziSummary');
+  if (!summaryEl) return;
+
+  const profile = window.DAY_MASTER_PROFILES[dayStem];
+  const dayElement = profile ? profile.element : null;
+  if (!dayElement) return;
+
+  // 1) 計算五行能量分布
+  const energy = window.BAZI_ENGINE.calculateElementEnergy(pillars, window.BRANCH_PROFILES);
+
+  // 2) 判斷命格（身強/身弱/從強格/從弱格）
+  const bodyStrength = window.BAZI_ENGINE.determineBodyStrength(energy, dayElement);
+
+  // 3) 取喜用神（從 elements.js 的 FAVORABLE_ELEMENTS）
+  let favorableHtml = '—';
+  if (window.FAVORABLE_ELEMENTS && window.FAVORABLE_ELEMENTS[dayElement]) {
+    const favData = window.FAVORABLE_ELEMENTS[dayElement][bodyStrength.type];
+    if (favData && favData.favorable) {
+      const elNames = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+      favorableHtml = favData.favorable.map(el =>
+        `<span class="el-${el}">${elNames[el]}</span>`
+      ).join('、');
+    }
+  }
+
+  // 4) 主要五行（取能量最強的兩個）
+  const elNames = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+  const sortedEls = Object.entries(energy).sort((a, b) => b[1] - a[1]).slice(0, 2);
+  const mainElsHtml = sortedEls.map(([el, val]) =>
+    `<span class="el-${el}">${elNames[el]}</span> ${val.toFixed(0)}%`
+  ).join('　');
+
+  // 5) 日主全名（如「丁火」）
+  const dayMasterFull = profile.stem + profile.elementName.slice(1);
+
+  summaryEl.innerHTML = `
+    <div class="bazi-summary-row">
+      <dt>日主</dt>
+      <dd><span class="accent">${dayMasterFull}</span></dd>
+    </div>
+    <div class="bazi-summary-row">
+      <dt>命格</dt>
+      <dd>${bodyStrength.type}（幫扶能量 ${bodyStrength.supportRatio.toFixed(0)}%）</dd>
+    </div>
+    <div class="bazi-summary-row">
+      <dt>主要五行</dt>
+      <dd>${mainElsHtml}</dd>
+    </div>
+    <div class="bazi-summary-row">
+      <dt>用神</dt>
+      <dd>${favorableHtml}</dd>
+    </div>
+  `;
+}
+
+
+/**
  * Phase 5: 渲染日主展示卡
  * 從 data/dayMaster.js 取資料，依日主天干填入大字、副標、意象、tagline 等
  *
@@ -361,6 +429,9 @@ function renderResult(){
 
   // Phase 5: 渲染日主展示卡
   renderDayMasterCard(r.pillars.day.stem);
+
+  // Phase 6: 渲染八字摘要列表
+  renderBaziSummary(r.pillars, r.pillars.day.stem);
 
   const pEl = document.getElementById('rPillars');
   const order = ['year', 'month', 'day', 'hour'];
