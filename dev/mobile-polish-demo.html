@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>行動裝置打磨 Demo · Phase 11 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/mobile-polish.css">
+
+<style>
+.demo-container {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-header {
+  text-align: center;
+  padding-bottom: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border-soft);
+}
+.demo-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.demo-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+.demo-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+.demo-block {
+  background: var(--surface-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl) var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.demo-block-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+  letter-spacing: var(--tracking-wide);
+}
+.demo-block-meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wider);
+  margin-bottom: var(--space-md);
+}
+.demo-block-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-lg);
+}
+
+.touch-target-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+.touch-target-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  min-width: 100px;
+}
+
+/* 用一個 outline 視覺化「實際可點區」 */
+.show-hitbox button,
+.show-hitbox .clickable,
+.show-hitbox a {
+  outline: 1px dashed var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.viewport-indicator {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  padding: 6px 12px;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-family: monospace;
+  font-size: 11px;
+  border-radius: var(--radius-pill);
+  z-index: 300;
+  letter-spacing: 1px;
+}
+
+.long-content {
+  background: var(--surface-input);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl) var(--space-lg);
+  margin: var(--space-md) 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-loose);
+}
+
+.demo-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.dummy-cta {
+  background: linear-gradient(135deg, rgba(207,174,133,0.12), rgba(139,157,131,0.08));
+  border: 1.5px solid var(--brand-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  margin: var(--space-2xl) 0;
+}
+.dummy-cta h3 {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-sm);
+}
+.dummy-cta p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+/* 為了 demo 可重複觸發，把 sticky CTA 預設改為 page-result 區塊內也能用 */
+#page-result.active { padding-bottom: 0; }
+</style>
+</head>
+<body>
+
+<div class="viewport-indicator" id="vpInd">--</div>
+
+<div class="demo-container">
+
+  <div class="demo-header">
+    <div class="meta">PHASE · 11</div>
+    <h1>行 動 裝 置 細 節 打 磨</h1>
+    <p>觸控目標 · Sticky CTA · 安全區域 · Loading 狀態</p>
+  </div>
+
+  <!-- ====== Block 1: Touch Targets ====== -->
+  <section class="demo-block">
+    <div class="demo-block-title">1. 觸 控 目 標 ≥ 44×44px</div>
+    <div class="demo-block-meta">APPLE HIG · WCAG 2.5.5 LEVEL AAA</div>
+    <p class="demo-block-desc">
+      點開虛線框看實際可點區域。視覺尺寸保持原樣，min-height 確保符合行動裝置觸控標準。
+    </p>
+
+    <div class="show-hitbox">
+
+      <div class="touch-target-row">
+        <span class="touch-target-label">返回按鈕</span>
+        <button class="btn-back" id="page-result-style-mock">← 重新排盤</button>
+      </div>
+
+      <div class="touch-target-row">
+        <span class="touch-target-label">分享按鈕</span>
+        <button class="share-btn">複製連結</button>
+        <button class="share-btn">Line</button>
+        <button class="share-btn">Facebook</button>
+      </div>
+
+      <div class="touch-target-row">
+        <span class="touch-target-label">漢堡選單</span>
+        <button class="menu-btn"><span class="menu-icon"><span></span></span></button>
+      </div>
+
+      <div class="touch-target-row">
+        <span class="touch-target-label">頁尾連結</span>
+        <a href="#" style="color:var(--text-secondary)">隱私權政策</a>
+        <a href="#" style="color:var(--text-secondary)">服務條款</a>
+      </div>
+
+      <div class="touch-target-row">
+        <span class="touch-target-label">性別選擇</span>
+        <div class="gender-picker" style="width:200px">
+          <div class="active">男 命</div>
+          <div>女 命</div>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="demo-block-desc" style="margin-top:var(--space-lg);margin-bottom:0;font-size:11px;color:var(--text-muted)">
+      💡 在 Chrome DevTools 開啟「Show touch targets」即可看到實際命中區域。
+    </p>
+  </section>
+
+  <!-- ====== Block 2: Loading Spinner ====== -->
+  <section class="demo-block">
+    <div class="demo-block-title">2. Loading 金 色 圓 圈</div>
+    <div class="demo-block-meta">CONIC-GRADIENT · 1s LINEAR INFINITE</div>
+    <p class="demo-block-desc">
+      點按鈕觸發 1.5 秒 loading 遮罩。實際使用時：點「立即排盤」後顯示 450ms。
+    </p>
+
+    <div class="demo-actions">
+      <button class="btn-primary" id="btnTriggerLoading" style="width:auto;padding:14px 28px">觸發 Loading（1.5s）</button>
+    </div>
+
+    <div style="margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface-input);border-radius:var(--radius-md);display:flex;justify-content:center;align-items:center;gap:var(--space-xl)">
+      <div class="loading-spinner"></div>
+      <div>
+        <div class="loading-text">命 盤 推 算 中</div>
+        <div class="loading-subtext">本地運算 · 即時生成</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Block 3: Sticky CTA ====== -->
+  <section class="demo-block">
+    <div class="demo-block-title">3. Sticky CTA 浮 動 按 鈕</div>
+    <div class="demo-block-meta">INTERSECTIONOBSERVER · ROOTMARGIN -20% BOTTOM</div>
+    <p class="demo-block-desc">
+      往下捲動，sticky CTA 會在「假 CTA 區塊」進入視窗前出現。捲到 CTA 區塊即自動隱藏。
+    </p>
+
+    <div class="demo-actions">
+      <button class="btn-secondary" id="btnToggleSticky">手動切換 Sticky CTA</button>
+    </div>
+
+    <div class="long-content">
+      <p>↓ 假裝這裡是結果頁的「四柱八字」、「五行分布」、「能量輪廓」、「大運流年」⋯⋯</p>
+    </div>
+    <div class="long-content" style="min-height:300px">
+      <p>↓ 繼續滾動 ⋯⋯ 注意右下角的 sticky CTA 是否出現。</p>
+    </div>
+    <div class="long-content" style="min-height:300px">
+      <p>↓ 再來一段內容 ⋯⋯</p>
+    </div>
+    <div class="long-content" style="min-height:300px">
+      <p>↓ 即將看到原 CTA ⋯⋯</p>
+    </div>
+
+    <div class="dummy-cta analysis-cta" id="fakeCta">
+      <h3>查看你的命理詳細分析</h3>
+      <p>當這個區塊進入視窗時，sticky CTA 應該自動消失（避免重複按鈕的視覺壓力）。</p>
+      <button class="btn-primary" style="width:auto;padding:13px 28px">查 看 詳 細 分 析 →</button>
+    </div>
+
+    <div class="long-content">
+      <p>↑ sticky CTA 已隱藏。再往上捲，它會重新出現。</p>
+    </div>
+  </section>
+
+  <!-- ====== Block 4: Safe Area ====== -->
+  <section class="demo-block">
+    <div class="demo-block-title">4. iOS 安 全 區 域</div>
+    <div class="demo-block-meta">VIEWPORT-FIT=COVER · ENV(SAFE-AREA-INSET-BOTTOM)</div>
+    <p class="demo-block-desc">
+      Sticky CTA 與頁尾自動避開 iPhone X 以後的 Home Indicator 區域。<br>
+      請在實機（或 iPhone 模擬器）查看：sticky CTA 的下緣會比按鈕底色多一塊「呼吸區」。
+    </p>
+
+    <div style="background:var(--surface-input);border-radius:var(--radius-md);padding:var(--space-md);font-family:monospace;font-size:11px;color:var(--text-secondary);line-height:1.8">
+      Current safe-area-inset-bottom: <span id="saiVal">--</span>
+    </div>
+  </section>
+
+</div>
+
+<!-- 同 index.html 的 sticky CTA + loading -->
+<div class="sticky-cta" id="stickyCta" aria-hidden="true">
+  <button class="sticky-cta-btn" type="button">查 看 詳 細 分 析 →</button>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay" aria-hidden="true" role="status">
+  <div class="loading-spinner" aria-hidden="true"></div>
+  <div class="loading-text">命 盤 推 算 中</div>
+  <div class="loading-subtext">本地運算 · 即時生成</div>
+</div>
+
+<script>
+// 即時 viewport 寬度顯示
+function updateVP() {
+  document.getElementById('vpInd').textContent = window.innerWidth + 'px';
+}
+updateVP();
+window.addEventListener('resize', updateVP);
+
+// 顯示 safe-area-inset-bottom 數值
+function updateSAI() {
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;visibility:hidden;height:env(safe-area-inset-bottom,0px)';
+  document.body.appendChild(probe);
+  const h = probe.getBoundingClientRect().height;
+  document.body.removeChild(probe);
+  document.getElementById('saiVal').textContent = h.toFixed(2) + 'px';
+}
+updateSAI();
+window.addEventListener('resize', updateSAI);
+
+// Loading trigger
+document.getElementById('btnTriggerLoading').addEventListener('click', () => {
+  document.getElementById('loadingOverlay').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.remove('show');
+  }, 1500);
+});
+
+// 手動切換 sticky CTA
+let stickyForced = false;
+document.getElementById('btnToggleSticky').addEventListener('click', () => {
+  const el = document.getElementById('stickyCta');
+  stickyForced = !stickyForced;
+  el.classList.toggle('show', stickyForced);
+});
+
+// 自動 sticky CTA：依 fakeCta 是否可見決定
+const fakeCta = document.getElementById('fakeCta');
+const sticky = document.getElementById('stickyCta');
+const obs = new IntersectionObserver((entries) => {
+  if (stickyForced) return; // 手動切換中時不自動覆蓋
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sticky.classList.remove('show');
+    } else {
+      sticky.classList.add('show');
+    }
+  });
+}, { rootMargin: '0px 0px -20% 0px', threshold: 0 });
+obs.observe(fakeCta);
+</script>
+
+</body>
+</html>
