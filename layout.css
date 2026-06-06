@@ -147,3 +147,74 @@
   color: rgba(255, 255, 255, 0.4);
   line-height: var(--leading-relaxed);
 }
+
+
+/* ============================================
+   Phase 12 · 桌機版自適應
+   ============================================
+   原則：在桌機保持「手機 app」氣質
+   - 內容區 max-width 560px 居中（既有設定維持）
+   - 桌機背景比 app 內更深 → 內容區呈現「漂浮」效果
+   - 內容區加淡陰影 → 視覺從 page 中浮出
+   - 避免裝飾元素 → 維持 Halo.Project 簡潔風格
+*/
+
+/* === 平板斷點（768px+）：背景變深、內容區浮起 === */
+@media (min-width: 768px) {
+
+  body {
+    background: var(--surface-muted);
+    /* 比 --surface-page (#FAF6EF) 深一階為 #F0E8D8，凸顯出居中的內容區 */
+  }
+
+  /* 容器加淡陰影 + 維持頁面背景色（看起來像漂浮的 app） */
+  .container,
+  .demo-wrap,
+  .demo-container,
+  .demo-section {
+    background: var(--surface-page);
+    box-shadow: 0 0 32px rgba(42, 37, 32, 0.05);
+    min-height: 100vh;
+  }
+
+  /* Header 與 Footer 在桌機時要跟著 container 的 max-width 居中
+     做法：把它們的視覺寬度限制在 container 內 */
+
+  /* 桌機 Header padding 微調（比手機更寬鬆） */
+  .page-header {
+    padding: var(--space-2xl) var(--space-2xl) var(--space-3xl);
+  }
+
+  /* 桌機 Footer 也保持在內容區內 */
+  .page-footer {
+    /* 維持深色背景，但讓它跟 container 對齊 */
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* === 大桌機斷點（1200px+）：給更深的背景對比 === */
+@media (min-width: 1200px) {
+  body {
+    background: #E8E0CE;
+    /* 比 --surface-muted 再深一階，讓內容區的浮出感更明顯 */
+  }
+}
+
+
+/* ============================================
+   Phase 12 · 列印模式（PDF 列印用）
+   ============================================
+   桌機版陰影、背景對比在列印時要關閉，避免列印油墨浪費
+*/
+@media print {
+  body {
+    background: #FFFFFF !important;
+  }
+  .container,
+  .demo-wrap,
+  .demo-container {
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+  }
+}
