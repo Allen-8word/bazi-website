@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>分享卡 Demo · Phase 10 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/mobile-polish.css">
+<link rel="stylesheet" href="/share-card.css">
+
+<style>
+.demo-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-header {
+  text-align: center;
+  padding-bottom: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border-soft);
+}
+.demo-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.demo-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+.demo-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* 三張卡並排展示 */
+.demo-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--space-2xl);
+  margin-bottom: var(--space-4xl);
+  justify-items: center;
+}
+
+/* Demo 內的卡片 wrapper 用更大的 preview-scale */
+.demo-cards-row .share-card-wrapper {
+  --preview-scale: 0.68;
+}
+
+.demo-card-section {
+  text-align: center;
+}
+.demo-card-section h3 {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-md);
+  letter-spacing: var(--tracking-wide);
+}
+
+.demo-controls {
+  background: var(--surface-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl) var(--space-lg);
+  margin-bottom: var(--space-2xl);
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.demo-controls-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  margin-bottom: var(--space-md);
+  letter-spacing: var(--tracking-wide);
+}
+.demo-controls-row {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+  align-items: center;
+}
+.demo-controls-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  min-width: 60px;
+}
+.demo-controls select {
+  padding: 8px 12px;
+  background: var(--surface-input);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+.demo-controls button {
+  padding: 8px 16px;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  letter-spacing: var(--tracking-wide);
+}
+</style>
+</head>
+<body>
+
+<div class="demo-container">
+
+  <div class="demo-header">
+    <div class="meta">PHASE · 10</div>
+    <h1>I G 限 動 分 享 卡</h1>
+    <p>3 張卡並排展示，點下方按鈕切換不同日主 / 觸發 Modal 體驗</p>
+  </div>
+
+  <div class="demo-controls">
+    <div class="demo-controls-title">控 制 面 板</div>
+
+    <div class="demo-controls-row">
+      <span class="demo-controls-label">日主</span>
+      <select id="demoStemSelect">
+        <option value="甲">甲 · 陽木</option>
+        <option value="乙">乙 · 陰木</option>
+        <option value="丙" selected>丙 · 陽火</option>
+        <option value="丁">丁 · 陰火</option>
+        <option value="戊">戊 · 陽土</option>
+        <option value="己">己 · 陰土</option>
+        <option value="庚">庚 · 陽金</option>
+        <option value="辛">辛 · 陰金</option>
+        <option value="壬">壬 · 陽水</option>
+        <option value="癸">癸 · 陰水</option>
+      </select>
+    </div>
+
+    <div class="demo-controls-row">
+      <button id="demoTriggerModal">觸發完整 Modal 體驗 →</button>
+      <button id="demoTriggerDownload">直接下載當前卡（不開 modal）</button>
+    </div>
+
+    <div style="font-size:11px;color:var(--text-muted);line-height:1.7;margin-top:var(--space-md)">
+      💡 此 demo 使用「丙午丙申丙午癸巳」作為固定四柱範例（陽火日主，會看到火重的能量分布）。<br>
+      💡 三張卡並排展示，點 Modal 按鈕可體驗真實使用流程（tab 切換、QR、下載）。
+    </div>
+  </div>
+
+  <!-- 三張卡並排 -->
+  <div class="demo-cards-row">
+
+    <div class="demo-card-section">
+      <h3>1. 日 主 人 格 卡</h3>
+      <div class="share-card-wrapper">
+        <div class="share-card-frame" id="demoFrame1"></div>
+      </div>
+    </div>
+
+    <div class="demo-card-section">
+      <h3>2. 命 局 速 覽 卡</h3>
+      <div class="share-card-wrapper">
+        <div class="share-card-frame" id="demoFrame2"></div>
+      </div>
+    </div>
+
+    <div class="demo-card-section">
+      <h3>3. 能 量 輪 廓 卡</h3>
+      <div class="share-card-wrapper">
+        <div class="share-card-frame" id="demoFrame3"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- 整個 Modal（demo 用） -->
+<div class="share-modal" id="shareCardModal" aria-hidden="true" role="dialog">
+  <div class="share-modal-panel">
+    <div class="share-modal-header">
+      <div class="share-modal-title">下 載 分 享 卡</div>
+      <button class="share-modal-close" id="shareCardClose" type="button" aria-label="關閉">×</button>
+    </div>
+
+    <div class="share-modal-tabs">
+      <button class="share-tab active" type="button">日 主 人 格</button>
+      <button class="share-tab" type="button">命 局 速 覽</button>
+      <button class="share-tab" type="button">能 量 輪 廓</button>
+    </div>
+
+    <div class="share-modal-preview">
+      <div class="share-card-wrapper" id="shareCardWrapper">
+        <div class="share-card-frame" id="shareCardFrame"></div>
+      </div>
+    </div>
+
+    <div class="share-modal-footer">
+      <button class="share-modal-download" id="shareCardDownload" type="button">下 載 PNG · 1080×1920</button>
+      <div class="share-modal-hint">下載後可上傳到 IG 限時動態 / FB / Line</div>
+    </div>
+  </div>
+</div>
+
+<!-- 依賴 -->
+<script src="../data/dayMaster.js"></script>
+<script src="../data/branches.js"></script>
+<script src="../data/elements.js"></script>
+<script src="../data/engine.js"></script>
+<script src="../share-card.js"></script>
+
+<script>
+// 固定範例命盤：丙午年 丙申月 丙午日 癸巳時（陽火三朵）
+const SAMPLE_PILLARS = {
+  year:  { stem: '丙', branch: '午' },
+  month: { stem: '丙', branch: '申' },
+  day:   { stem: '丙', branch: '午' },
+  hour:  { stem: '癸', branch: '巳' }
+};
+
+// 切換日主 → 改 day 柱的 stem
+function buildPillarsForStem(stem) {
+  const STEM_BRANCH = {
+    '甲':'子','乙':'卯','丙':'午','丁':'巳',
+    '戊':'辰','己':'未','庚':'申','辛':'酉','壬':'亥','癸':'子'
+  };
+  return {
+    year:  { stem: stem, branch: STEM_BRANCH[stem] || '午' },
+    month: { stem: stem, branch: '申' },
+    day:   { stem: stem, branch: STEM_BRANCH[stem] || '午' },
+    hour:  { stem: '癸', branch: '巳' }
+  };
+}
+
+const STEM_ELEMENT = {
+  '甲':'wood','乙':'wood','丙':'fire','丁':'fire',
+  '戊':'earth','己':'earth','庚':'metal','辛':'metal',
+  '壬':'water','癸':'water'
+};
+
+function buildData(stem) {
+  return {
+    pillars: buildPillarsForStem(stem),
+    dayStem: stem,
+    dayElement: STEM_ELEMENT[stem],
+    name: '示範',
+    gender: 'male',
+    solarDate: '1986-07-15',
+    lunarDate: '丙寅年六月初九'
+  };
+}
+
+// 渲染三張 demo 卡 —— 直接使用 share-card.js 內部的 render 邏輯
+// 由於 share-card.js 的 render 函式都是 module-private，
+// 我們透過呼叫 ShareCard.init + 切換 tab + 暴露 frame 的方式間接觸發
+function refreshDemoCards(stem) {
+  const data = buildData(stem);
+
+  // 動態渲染每一張：暫時把 shareCardFrame 指向各 demoFrame
+  // 改變策略：直接呼叫 ShareCard.init 然後拷貝渲染結果
+  if (!window.ShareCard) return;
+
+  // 用 init 載入資料
+  window.ShareCard.init(data);
+
+  // 觸發 modal 隱形渲染（為了拿到 HTML）
+  const frame = document.getElementById('shareCardFrame');
+  if (!frame) return;
+
+  // 切到 tab 0 (persona) → 取 innerHTML → 注入 demoFrame1
+  window.ShareCard.switchTab(0);
+  setTimeout(() => {
+    document.getElementById('demoFrame1').innerHTML = frame.innerHTML;
+    window.ShareCard.switchTab(1);
+    setTimeout(() => {
+      document.getElementById('demoFrame2').innerHTML = frame.innerHTML;
+      window.ShareCard.switchTab(2);
+      setTimeout(() => {
+        document.getElementById('demoFrame3').innerHTML = frame.innerHTML;
+        // 回到 tab 0
+        window.ShareCard.switchTab(0);
+      }, 50);
+    }, 50);
+  }, 50);
+}
+
+// 等 lib 載入後再 refresh（因為 QR 需要 qrcode lib）
+function whenLibsReady() {
+  return new Promise(resolve => {
+    const check = () => {
+      if (window.qrcode && window.html2canvas) {
+        resolve();
+      } else {
+        setTimeout(check, 200);
+      }
+    };
+    check();
+  });
+}
+
+// 觸發模式：開啟 modal → 載入 libs → 渲染 demo cards
+function initDemo() {
+  const data = buildData(document.getElementById('demoStemSelect').value);
+  window.ShareCard.init(data);
+  // 開 modal 一次以觸發 lib 載入
+  window.ShareCard.open();
+  // 開後立即關閉（使用者看不到）
+  setTimeout(() => {
+    window.ShareCard.close();
+    whenLibsReady().then(() => {
+      refreshDemoCards(document.getElementById('demoStemSelect').value);
+    });
+  }, 100);
+}
+
+document.getElementById('demoStemSelect').addEventListener('change', (e) => {
+  refreshDemoCards(e.target.value);
+});
+
+document.getElementById('demoTriggerModal').addEventListener('click', () => {
+  const data = buildData(document.getElementById('demoStemSelect').value);
+  window.ShareCard.init(data);
+  window.ShareCard.open();
+});
+
+document.getElementById('demoTriggerDownload').addEventListener('click', () => {
+  const data = buildData(document.getElementById('demoStemSelect').value);
+  window.ShareCard.init(data);
+  // 直接開 modal 觸發 + 下載
+  window.ShareCard.open();
+  setTimeout(() => {
+    window.ShareCard.download();
+  }, 1500);
+});
+
+// 初始化
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDemo);
+} else {
+  initDemo();
+}
+</script>
+
+</body>
+</html>
