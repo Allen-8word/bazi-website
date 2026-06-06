@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桌機自適應 Demo · Phase 12 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+
+<style>
+.demo-container {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.demo-section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-soft);
+}
+.demo-section-header .meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.demo-section-header h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-xs);
+}
+.demo-section-header p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+.viewport-indicator {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  padding: 6px 12px;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-family: monospace;
+  font-size: 11px;
+  border-radius: var(--radius-pill);
+  z-index: 100;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.demo-block {
+  margin-bottom: var(--space-xl);
+}
+
+.demo-block-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.demo-content {
+  padding: var(--space-lg) var(--space-md);
+  background: var(--surface-card);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-loose);
+}
+
+.size-hint {
+  text-align: center;
+  padding: var(--space-md) 0;
+  margin-bottom: var(--space-lg);
+  background: var(--surface-input);
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  font-family: monospace;
+}
+
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+  margin-top: var(--space-2xl);
+}
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- 即時顯示當前 viewport 尺寸的小標籤 -->
+<div class="viewport-indicator" id="vpIndicator">— 解析度偵測中 —</div>
+
+<div class="demo-container">
+
+  <div class="demo-section-header">
+    <div class="meta">PHASE 12 · DESKTOP RESPONSIVE</div>
+    <h1>桌機版自適應視覺驗證</h1>
+    <p>請調整瀏覽器寬度測試三個斷點的視覺變化<br>
+    建議用 Mac Safari／Chrome 拖曳視窗邊緣測試</p>
+  </div>
+
+  <!-- 斷點說明 -->
+  <div class="demo-block">
+    <div class="demo-block-title">三個視覺斷點</div>
+    <div class="size-hint">
+      手機 (&lt;768px) → 平板 (768-1199px) → 桌機 (1200px+)
+    </div>
+    <div class="demo-content">
+      <p style="margin-bottom:var(--space-md)">
+        <strong>手機 (&lt;768px)</strong><br>
+        body 背景：<code>--surface-page (#FAF6EF 米色)</code><br>
+        內容區：直接貼齊頁面，無陰影
+      </p>
+      <p style="margin-bottom:var(--space-md)">
+        <strong>平板 / 一般桌機 (768-1199px)</strong><br>
+        body 背景變深：<code>--surface-muted (#F0E8D8)</code><br>
+        內容區：浮出陰影、維持 560px 寬度居中
+      </p>
+      <p>
+        <strong>大螢幕 (1200px+)</strong><br>
+        body 背景再加深：<code>#E8E0CE</code><br>
+        內容區的「漂浮感」更明顯
+      </p>
+    </div>
+  </div>
+
+  <!-- 視覺呈現範例 -->
+  <div class="demo-block">
+    <div class="demo-block-title">當前頁面的視覺呈現</div>
+    <div class="demo-content">
+      <p>你現在看到這個區塊：</p>
+      <ul style="margin-left:var(--space-lg);margin-top:var(--space-sm);line-height:var(--leading-loose)">
+        <li>在<strong>手機尺寸</strong>，背景是淡米色，內容貼齊邊緣</li>
+        <li>在<strong>平板以上</strong>，整個內容區會浮出陰影，兩側顯露出較深的米色</li>
+        <li>在<strong>1200px 以上</strong>，背景變得更深，陰影對比更明顯</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer 展示 -->
+  <div class="demo-block">
+    <div class="demo-block-title">Footer 在桌機的呈現</div>
+    <div class="size-hint">↓ 拉到最下方看 Footer ↓</div>
+  </div>
+
+  <!-- 驗收清單 -->
+  <div class="verify-list">
+    <h2 style="font-family:var(--font-serif);font-size:var(--text-md);font-weight:var(--weight-medium);margin-bottom:var(--space-md)">
+      ✓ Phase 12 驗收標準
+    </h2>
+    <div class="verify-item">手機（&lt;768px）：背景單一米色，內容直接貼齊頁面</div>
+    <div class="verify-item">平板（768px+）：背景變深米色（F0E8D8），內容區浮出陰影</div>
+    <div class="verify-item">大桌機（1200px+）：背景再加深（E8E0CE），對比更明顯</div>
+    <div class="verify-item">內容區最大寬度始終為 560px（不會在桌機被拉滿）</div>
+    <div class="verify-item">內容區的陰影是淡的（不要太重，符合 Halo 平面化風格）</div>
+    <div class="verify-item">拖曳瀏覽器寬度時三種狀態切換流暢</div>
+    <div class="verify-item">列印 / 另存 PDF 時自動關閉陰影與背景對比</div>
+  </div>
+
+</div>
+
+<!-- 範例 Footer -->
+<footer class="page-footer">
+  <div class="footer-brand">八字命盤 · BAZI ATELIER</div>
+  <nav class="footer-nav">
+    <a href="/privacy">隱私政策</a>
+    <span class="footer-nav-sep">·</span>
+    <a href="/terms">服務條款</a>
+  </nav>
+  <p class="footer-copyright">內容僅供參考。© 2026 八字命盤. All rights reserved.</p>
+</footer>
+
+<script>
+// 即時顯示視窗寬度，方便測試斷點
+function updateViewport() {
+  const w = window.innerWidth;
+  let level = '手機';
+  if (w >= 1200) level = '大桌機';
+  else if (w >= 768) level = '平板/桌機';
+  document.getElementById('vpIndicator').textContent = `${w}px · ${level}`;
+}
+window.addEventListener('resize', updateViewport);
+updateViewport();
+</script>
+
+</body>
+</html>
