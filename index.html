@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <meta name="theme-color" content="#F5F1EB">
 
 <title>八字命盤｜免費四柱八字排盤．古法精算現代解讀</title>
@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/layout.css">
 <link rel="stylesheet" href="/sections.css">
+<link rel="stylesheet" href="/mobile-polish.css">
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
@@ -974,6 +975,18 @@ body {
   </nav>
   <p class="footer-copyright">內容僅供命理參考。© 2026 八字命盤. All rights reserved.</p>
 </footer>
+
+<!-- Phase 11: Sticky CTA（結果頁底部固定按鈕） -->
+<div class="sticky-cta" id="stickyCta" aria-hidden="true">
+  <button class="sticky-cta-btn" id="stickyCtaBtn" type="button">查 看 詳 細 分 析 →</button>
+</div>
+
+<!-- Phase 11: Loading 遮罩（排盤計算時短暫顯示） -->
+<div class="loading-overlay" id="loadingOverlay" aria-hidden="true" role="status">
+  <div class="loading-spinner" aria-hidden="true"></div>
+  <div class="loading-text">命 盤 推 算 中</div>
+  <div class="loading-subtext">本地運算 · 即時生成</div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/lunar.js"></script>
 <script src="./data/dayMaster.js"></script>

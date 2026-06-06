@@ -1,0 +1,317 @@
+/* ============================================
+   行動裝置細節打磨 · Mobile Polish
+   ============================================
+   Phase 11 涵蓋：
+     1. 觸控目標最小 44×44px（Apple HIG / WCAG 2.5.5）
+     2. Sticky CTA（結果頁底部固定分享按鈕）
+     3. iOS notch / home indicator 安全區域
+     4. Loading 狀態（金色圓圈 spinner）
+
+   依賴：tokens.css（顏色、字級、間距、圓角）
+   版本：v1.0（Phase 11 行動裝置打磨）
+   ============================================ */
+
+
+/* ============================================
+   1. 觸控目標放大 · Touch Target ≥ 44×44px
+   ============================================
+   原則：視覺尺寸保持原樣（避免破壞既有設計），
+   只透過 padding / min-height 擴大「可點區」。
+   採用 min-width / min-height 而非 width / height，
+   讓既有的 padding-based 樣式能向上相容。
+*/
+
+/* 返回按鈕：原 padding 8px 12px → 約 30px 高，太小 */
+#page-result .btn-back {
+  min-height: 44px;
+  padding: 10px 12px;
+  /* 視覺位置仍貼齊左側，但增加上下可點區 */
+}
+
+/* 分享按鈕：原 padding 9px 16px → 約 38px 高，差 6px */
+.share-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Header 漢堡選單：原 32×32，差 12px */
+.menu-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Footer 連結：原本只有純文字、無可點區擴展 */
+.footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-sm);
+}
+
+/* 大運/流年點擊區（橫向滑動列表）
+   原 padding 10px 6px → 約 40px，差 4px。
+   只補高度，不動寬度，避免擠壓橫向空間 */
+#page-result .dayun-item,
+#page-result .flowyear-cell {
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 性別選擇器（已 40px，差 4px） */
+.gender-picker > div {
+  min-height: 44px;
+}
+
+/* 國曆/農曆 tab 切換 */
+.tab-switch button {
+  min-height: 44px;
+}
+
+/* 「不知道時辰?」按鈕 / Modal 內按鈕等次要操作
+   modal-actions 下的按鈕已是 btn-primary/secondary 高度足夠，
+   但要確保「不知道時辰?」這類純連結也有可點區 */
+.hint-link,
+.disclaimer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px; /* 純連結放寬，避免影響文章流動 */
+  padding: 4px 0;
+}
+
+
+/* ============================================
+   2. Sticky CTA · 固定底部分享按鈕
+   ============================================
+   行為：
+     - 只在 #page-result 啟用時顯示
+     - 由 IntersectionObserver 控制：當原 .analysis-cta
+       未進入視窗時顯示，看到原 CTA 時自動隱藏
+     - 含 iOS safe-area-inset-bottom（home indicator）
+*/
+
+.sticky-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+
+  /* 上方留半透明漸層淡入，避免硬切線 */
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 246, 239, 0) 0%,
+    var(--surface-page) 24%,
+    var(--surface-page) 100%
+  );
+
+  /* 底部留 home indicator 空間 */
+  padding:
+    var(--space-md)
+    var(--space-lg)
+    calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+
+  /* 預設隱藏（淡出 + 下移） */
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* 顯示時的狀態（由 JS 加 .show） */
+.sticky-cta.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* 內部按鈕（沿用 btn-primary 金色漸層風格） */
+.sticky-cta-btn {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  background: linear-gradient(
+    180deg,
+    var(--brand-primary-light) 0%,
+    var(--brand-primary) 100%
+  );
+  color: var(--text-on-brand);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  /* 加一點陰影營造「浮在頁面上」的層次感 */
+  box-shadow: 0 4px 16px rgba(207, 174, 133, 0.32);
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+.sticky-cta-btn:hover { opacity: 0.92; }
+.sticky-cta-btn:active { transform: scale(0.99); }
+
+/* 桌機（768+）時 sticky CTA 也要居中於 560px 容器內 */
+@media (min-width: 768px) {
+  .sticky-cta {
+    max-width: var(--container-desktop);
+    margin: 0 auto;
+    /* 由於 fixed 定位，left/right 0 + max-width + margin auto 來居中 */
+  }
+}
+
+
+/* ============================================
+   3. iOS Notch / Home Indicator 安全區域
+   ============================================
+   說明：搭配 index.html 的
+   <meta viewport-fit="cover"> 一起運作
+*/
+
+/* 結果頁底部要保留空間給 sticky CTA + home indicator
+   避免最後一個元素被遮住 */
+#page-result.active {
+  padding-bottom: calc(
+    96px
+    + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* Footer 也要適度抬高，避免 iPhone home bar 蓋掉「© 2026」 */
+.page-footer {
+  padding-bottom: calc(
+    var(--space-2xl)
+    + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+
+/* ============================================
+   4. Loading 狀態 · 金色圓圈 Spinner
+   ============================================
+   行為：
+     - 點「立即排盤」按鈕時短暫顯示
+     - 全螢幕半透明遮罩 + 居中 spinner + 文字
+     - 避免使用者按下後沒有回饋以為卡住
+*/
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+
+  background: rgba(250, 246, 239, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+
+  /* 淡入動畫 */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.loading-overlay.show {
+  display: flex;
+  opacity: 1;
+}
+
+/* 圓圈本體：用 conic-gradient 做金色漸變的旋轉圓
+   優於 border-only 寫法的好處：能呈現「淡 → 深」的軌跡 */
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    var(--brand-primary-light) 35%,
+    var(--brand-primary) 75%,
+    var(--brand-primary-dark) 100%
+  );
+
+  /* 中央挖空成環狀（用 mask 而非 border，圓潤度較佳） */
+  -webkit-mask: radial-gradient(
+    circle,
+    transparent 14px,
+    #000 15px
+  );
+          mask: radial-gradient(
+    circle,
+    transparent 14px,
+    #000 15px
+  );
+
+  animation: spinner-rotate 1s linear infinite;
+}
+
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* spinner 下方提示文字 */
+.loading-text {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-wide);
+}
+
+/* 提示文字下方的副標（次行說明） */
+.loading-subtext {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wide);
+  margin-top: calc(var(--space-sm) * -1);
+}
+
+
+/* ============================================
+   5. 觸控反饋優化 · iOS Tap Highlight
+   ============================================
+   清除 iOS 預設的灰色點擊高亮（保留我們自己的 :active 效果）
+*/
+
+a, button, .btn-pill, .share-btn,
+.gender-picker > div, .dayun-item, .flowyear-cell,
+.tab-switch button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 觸控裝置上隱藏 hover 殘留樣式
+   防止手機點完後維持 hover 視覺直到下次點擊 */
+@media (hover: none) {
+  .share-btn:hover,
+  .btn-back:hover,
+  .gender-picker > div:hover,
+  .dayun-item:hover,
+  .flowyear-cell:hover {
+    background: inherit;
+    transform: none;
+  }
+}
+
+
+/* ============================================
+   6. 列印時關閉行動裝置裝飾
+   ============================================
+   sticky CTA、loading 等不應出現在列印 PDF
+*/
+
+@media print {
+  .sticky-cta,
+  .loading-overlay {
+    display: none !important;
+  }
+
+  #page-result.active {
+    padding-bottom: 0;
+  }
+}

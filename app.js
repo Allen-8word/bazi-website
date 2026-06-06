@@ -815,14 +815,27 @@ function init(){
 
   document.getElementById('btnSubmit').addEventListener('click', () => {
     track('form_submit', { calendar: state.calendarType, gender: state.gender });
+
+    // Phase 11: 先做一次表單驗證（calculate 內部會回 null + 顯示 errMsg）
+    // 驗證失敗就不顯示 loading，避免出現「閃一下」的怪現象
     const r = calculate();
     if(!r) return;
     state.result = r;
     track('chart_generated', { day_stem: r.dayStem, day_element: r.dayElement });
-    renderResult();
-    document.getElementById('page-home').classList.remove('active');
-    document.getElementById('page-result').classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Phase 11: 顯示 loading 遮罩 → 300ms 後切換頁面
+    // 雖然計算是同步的、其實不需要等待，但給使用者一個「正在排盤」的感受
+    // 同時也讓字體渲染 / 圖檔下載有時間完成，避免進結果頁時還在閃爍
+    showLoading();
+    setTimeout(() => {
+      renderResult();
+      document.getElementById('page-home').classList.remove('active');
+      document.getElementById('page-result').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      hideLoading();
+      // 結果頁進入後，啟動 sticky CTA observer
+      initStickyCta();
+    }, 450);
   });
 
   document.getElementById('btnBack').addEventListener('click', () => {
@@ -830,6 +843,8 @@ function init(){
     document.getElementById('page-result').classList.remove('active');
     document.getElementById('page-home').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Phase 11: 回首頁時隱藏 sticky CTA
+    hideStickyCta();
   });
 
   document.querySelectorAll('.share-btn').forEach(b => {
@@ -858,6 +873,92 @@ function init(){
       ].filter(Boolean).join('&');
       window.location.href = './analysis.html#' + hashParams;
     });
+  }
+
+  // Phase 11: Sticky CTA 點擊 → 觸發既有的「查看詳細分析」邏輯
+  // 不重複寫 hashParams 組裝，直接呼叫 btnViewAnalysis 的 click
+  const stickyCtaBtn = document.getElementById('stickyCtaBtn');
+  if (stickyCtaBtn && btnViewAnalysis) {
+    stickyCtaBtn.addEventListener('click', () => {
+      track('sticky_cta_click', {});
+      btnViewAnalysis.click();
+    });
+  }
+}
+
+
+/* ============================================
+   Phase 11 · 行動裝置打磨 · 幫手函式
+   ============================================ */
+
+// --- Loading 遮罩 ---
+function showLoading() {
+  const el = document.getElementById('loadingOverlay');
+  if (el) el.classList.add('show');
+}
+
+function hideLoading() {
+  const el = document.getElementById('loadingOverlay');
+  if (el) el.classList.remove('show');
+}
+
+// --- Sticky CTA 控制（IntersectionObserver）---
+let stickyObserver = null;
+let stickyObserverTarget = null;
+
+function initStickyCta() {
+  const sticky = document.getElementById('stickyCta');
+  const target = document.querySelector('#page-result .analysis-cta');
+  if (!sticky || !target) return;
+
+  // 若已初始化過、且 target 沒換 → 直接重新顯示判斷一次
+  if (stickyObserver && stickyObserverTarget === target) {
+    // 已掛載，無需重新建立
+    return;
+  }
+
+  // 清掉舊的（保險）
+  if (stickyObserver) {
+    try { stickyObserver.disconnect(); } catch(e) {}
+  }
+
+  // 規則：
+  // - 當「查看詳細分析」原始 CTA 區塊「看不到」時 → 顯示 sticky CTA
+  // - 看得到時（已經在使用者眼前） → 隱藏 sticky CTA
+  // rootMargin: -50% 0px -20% 0px 表示「視窗中下段」進入時才視為可見
+  stickyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        hideStickyCta();
+      } else {
+        // 但只有在結果頁啟用時才顯示
+        const resultActive = document.getElementById('page-result').classList.contains('active');
+        if (resultActive) showStickyCta();
+      }
+    });
+  }, {
+    root: null,
+    rootMargin: '0px 0px -20% 0px',
+    threshold: 0
+  });
+
+  stickyObserver.observe(target);
+  stickyObserverTarget = target;
+}
+
+function showStickyCta() {
+  const el = document.getElementById('stickyCta');
+  if (el) {
+    el.classList.add('show');
+    el.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function hideStickyCta() {
+  const el = document.getElementById('stickyCta');
+  if (el) {
+    el.classList.remove('show');
+    el.setAttribute('aria-hidden', 'true');
   }
 }
 
