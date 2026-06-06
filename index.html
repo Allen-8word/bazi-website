@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="/layout.css">
 <link rel="stylesheet" href="/sections.css">
 <link rel="stylesheet" href="/mobile-polish.css">
+<link rel="stylesheet" href="/share-card.css">
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
@@ -950,6 +951,10 @@ body {
     </div>
 
     <div class="share-section">
+      <button class="share-card-trigger" id="btnShareCard" type="button">
+        <span class="share-card-trigger-icon">⬇</span>
+        下 載 IG 限 動 分 享 卡
+      </button>
       <div class="label">把命盤分享給朋友</div>
       <div class="share-buttons">
         <button class="share-btn" data-share="copy">複製連結</button>
@@ -981,6 +986,35 @@ body {
   <button class="sticky-cta-btn" id="stickyCtaBtn" type="button">查 看 詳 細 分 析 →</button>
 </div>
 
+<!-- Phase 10: IG 限動分享卡 Modal -->
+<div class="share-modal" id="shareCardModal" aria-hidden="true" role="dialog" aria-labelledby="shareCardTitle">
+  <div class="share-modal-panel">
+    <div class="share-modal-header">
+      <div class="share-modal-title" id="shareCardTitle">下 載 分 享 卡</div>
+      <button class="share-modal-close" id="shareCardClose" type="button" aria-label="關閉">×</button>
+    </div>
+
+    <div class="share-modal-tabs">
+      <button class="share-tab active" type="button">日 主 人 格</button>
+      <button class="share-tab" type="button">命 局 速 覽</button>
+      <button class="share-tab" type="button">能 量 輪 廓</button>
+    </div>
+
+    <div class="share-modal-preview">
+      <div class="share-card-wrapper" id="shareCardWrapper">
+        <div class="share-card-frame" id="shareCardFrame">
+          <!-- 內容由 share-card.js 動態填入 -->
+        </div>
+      </div>
+    </div>
+
+    <div class="share-modal-footer">
+      <button class="share-modal-download" id="shareCardDownload" type="button">下 載 PNG · 1080×1920</button>
+      <div class="share-modal-hint">下載後可上傳到 IG 限時動態 / FB / Line</div>
+    </div>
+  </div>
+</div>
+
 <!-- Phase 11: Loading 遮罩（排盤計算時短暫顯示） -->
 <div class="loading-overlay" id="loadingOverlay" aria-hidden="true" role="status">
   <div class="loading-spinner" aria-hidden="true"></div>
@@ -994,6 +1028,7 @@ body {
 <script src="./data/elements.js"></script>
 <script src="./data/engine.js"></script>
 <script src="./app.js"></script>
+<script src="./share-card.js"></script>
 
 </body>
 </html>

@@ -626,6 +626,19 @@ function renderResult(){
     : new Date().getFullYear();
   renderDaYun();
   renderBarnum(r.dayElement);
+
+  // Phase 10: 初始化分享卡資料
+  if (window.ShareCard) {
+    window.ShareCard.init({
+      pillars: r.pillars,
+      dayStem: r.pillars.day.stem,
+      dayElement: r.dayElement,
+      name: state.name,
+      gender: state.gender,
+      solarDate: r.solarDate,
+      lunarDate: r.lunarDate
+    });
+  }
 }
 
 function renderDaYun(){
@@ -882,6 +895,19 @@ function init(){
     stickyCtaBtn.addEventListener('click', () => {
       track('sticky_cta_click', {});
       btnViewAnalysis.click();
+    });
+  }
+
+  // Phase 10: 下載 IG 分享卡按鈕
+  const btnShareCard = document.getElementById('btnShareCard');
+  if (btnShareCard) {
+    btnShareCard.addEventListener('click', () => {
+      track('share_card_open', {
+        day_stem: state.result && state.result.dayStem
+      });
+      if (window.ShareCard) {
+        window.ShareCard.open();
+      }
     });
   }
 }

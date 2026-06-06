@@ -1,0 +1,719 @@
+/* ============================================
+   IG 限動分享卡 · Share Card
+   ============================================
+   Phase 10 涵蓋：
+     1. 分享 Modal（全螢幕半透明 + 居中卡片預覽）
+     2. Tab 切換（3 張卡）
+     3. 3 張分享卡版型：日主人格卡 / 命局速覽卡 / 能量輪廓卡
+     4. 下載按鈕（html2canvas → PNG）
+
+   尺寸策略：
+     - DOM 渲染區固定 540×960（IG Story 9:16 的一半）
+     - 預覽用 transform scale 縮放到 modal 可見大小
+     - 截圖時 html2canvas scale: 2 → 輸出 1080×1920 PNG
+
+   依賴：tokens.css
+   版本：v1.0（Phase 10）
+   ============================================ */
+
+
+/* ============================================
+   1. Share Modal · 全螢幕分享彈窗
+   ============================================ */
+
+.share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(42, 37, 32, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  /* 給 sticky CTA 留出視覺優先級 */
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.share-modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.share-modal-panel {
+  background: var(--surface-page);
+  border-radius: var(--radius-2xl);
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - var(--space-2xl) * 2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  transform: translateY(16px);
+  transition: transform 0.25s ease;
+}
+.share-modal.show .share-modal-panel {
+  transform: translateY(0);
+}
+
+/* Modal Header */
+.share-modal-header {
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.share-modal-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-wide);
+}
+
+.share-modal-close {
+  width: 32px;
+  height: 32px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  transition: background 0.2s ease;
+}
+.share-modal-close:hover {
+  background: var(--surface-input);
+  color: var(--text-primary);
+}
+
+/* Tab 切換列 */
+.share-modal-tabs {
+  display: flex;
+  padding: var(--space-md) var(--space-lg) 0;
+  gap: var(--space-xs);
+  background: var(--surface-page);
+}
+
+.share-tab {
+  flex: 1;
+  padding: var(--space-sm) var(--space-xs);
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  min-height: 44px;
+  letter-spacing: var(--tracking-wide);
+  text-align: center;
+}
+.share-tab:hover {
+  background: var(--surface-input);
+  color: var(--text-secondary);
+}
+.share-tab.active {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* Preview 區（含縮小的分享卡） */
+.share-modal-preview {
+  flex: 1;
+  padding: var(--space-lg);
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Modal Footer · 下載按鈕 */
+.share-modal-footer {
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0px));
+  background: var(--surface-page);
+  border-top: 1px solid var(--border-soft);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.share-modal-download {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  background: linear-gradient(
+    180deg,
+    var(--brand-primary-light) 0%,
+    var(--brand-primary) 100%
+  );
+  color: var(--text-on-brand);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s ease;
+}
+.share-modal-download:hover { opacity: 0.92; }
+.share-modal-download:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.share-modal-download:active { transform: scale(0.99); }
+
+.share-modal-hint {
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wide);
+  line-height: var(--leading-relaxed);
+}
+
+
+/* ============================================
+   2. Share Card Frame · 分享卡共用框架
+   ============================================
+   尺寸：540×960（DOM 渲染區），輸出 1080×1920
+   預覽透過外層 wrapper 的 transform 縮放
+*/
+
+.share-card-wrapper {
+  /* 預設 scale，由 JS 動態調整 */
+  --preview-scale: 0.62;
+  width: calc(540px * var(--preview-scale));
+  height: calc(960px * var(--preview-scale));
+  flex-shrink: 0;
+  position: relative;
+}
+
+.share-card-frame {
+  width: 540px;
+  height: 960px;
+  background: var(--surface-page);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(var(--preview-scale));
+  transform-origin: top left;
+  overflow: hidden;
+
+  /* 內部 padding 給 1080×1920 設計 → 540×960 是一半，所以 padding 也減半 */
+  padding: 48px 40px 36px;
+
+  /* 卡片字體 fallback：避免 Google Fonts 未載入時跑版 */
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+
+  display: flex;
+  flex-direction: column;
+
+  /* 加細邊 + 微陰影，預覽時看起來更像「卡」 */
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(42, 37, 32, 0.1);
+}
+
+/* 共用：卡片頂部品牌列 */
+.sc-brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-widest);
+  margin-bottom: 20px;
+}
+.sc-brand-mark {
+  font-family: var(--font-serif);
+}
+.sc-brand-tag {
+  font-family: var(--font-sans);
+  font-size: 10px;
+}
+
+/* 共用：卡片底部 QR + 網址 */
+.sc-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-top: 0.5px solid var(--border-soft);
+}
+.sc-qr {
+  width: 64px;
+  height: 64px;
+  background: var(--surface-card);
+  border-radius: 8px;
+  padding: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sc-qr canvas,
+.sc-qr svg,
+.sc-qr img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.sc-footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sc-footer-url {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+.sc-footer-cta {
+  font-family: var(--font-serif);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wide);
+}
+
+
+/* ============================================
+   3. 卡 1 · 日主人格卡 (Persona Card)
+   ============================================ */
+
+.sc-persona-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* 元素名（陽木/陰火...） */
+.sc-persona-element {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: var(--text-muted);
+  margin-top: 12px;
+  margin-bottom: 28px;
+}
+
+/* 大圓形日主 icon */
+.sc-persona-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: var(--accent-daymaster-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+.sc-persona-circle::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-daymaster);
+  opacity: 0.18;
+}
+.sc-persona-stem {
+  font-family: var(--font-serif);
+  font-size: 96px;
+  color: var(--accent-daymaster);
+  line-height: 1;
+  font-weight: 500;
+}
+
+/* 意象（參天大樹） */
+.sc-persona-imagery {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  letter-spacing: 8px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+
+/* 分隔線 */
+.sc-divider {
+  width: 36px;
+  height: 1px;
+  background: var(--brand-primary);
+  opacity: 0.5;
+  margin: 12px 0 22px;
+}
+
+/* Tagline 一句話 */
+.sc-persona-tagline {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  line-height: 1.55;
+  letter-spacing: 3px;
+  color: var(--text-primary);
+  margin-bottom: 28px;
+  font-weight: 500;
+  max-width: 380px;
+}
+
+/* Keywords 膠囊 */
+.sc-keywords {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.sc-keyword {
+  padding: 6px 14px;
+  background: var(--surface-card);
+  border: 0.5px solid var(--border-medium);
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+}
+
+
+/* ============================================
+   4. 卡 2 · 命局速覽卡 (Chart Card)
+   ============================================ */
+
+.sc-chart-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-section-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  letter-spacing: 6px;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 14px 0 22px;
+}
+.sc-section-subtitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 四柱方陣 */
+.sc-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.sc-pillar {
+  background: var(--surface-card);
+  border-radius: 10px;
+  padding: 14px 6px;
+  text-align: center;
+}
+.sc-pillar--day {
+  background: var(--accent-daymaster-bg);
+}
+.sc-pillar-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.sc-pillar--day .sc-pillar-label {
+  color: var(--accent-daymaster);
+}
+.sc-pillar-stem,
+.sc-pillar-branch {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+.sc-pillar--day .sc-pillar-stem,
+.sc-pillar--day .sc-pillar-branch {
+  color: var(--accent-daymaster);
+}
+.sc-pillar-stem { margin-bottom: 2px; }
+
+/* 五行條 */
+.sc-elements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.sc-element-row {
+  display: grid;
+  grid-template-columns: 26px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+}
+.sc-element-name {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.sc-element-bar {
+  height: 6px;
+  background: var(--surface-input);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.sc-element-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+}
+.sc-element-bar-fill--wood  { background: var(--wood); }
+.sc-element-bar-fill--fire  { background: var(--fire); }
+.sc-element-bar-fill--earth { background: var(--earth); }
+.sc-element-bar-fill--metal { background: var(--metal); }
+.sc-element-bar-fill--water { background: var(--water); }
+
+.sc-element-pct {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  letter-spacing: 1px;
+}
+
+/* 命格小標 */
+.sc-chart-formula {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+.sc-chart-formula strong {
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+  margin: 0 4px;
+}
+
+
+/* ============================================
+   5. 卡 3 · 能量輪廓卡 (Energy Card)
+   ============================================ */
+
+.sc-energy-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 五行能量圓圈陣列 */
+.sc-energy-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 28px;
+  align-items: end;
+}
+.sc-energy-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.sc-energy-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  position: relative;
+}
+/* 五行色背景 */
+.sc-energy-circle--wood  { background: var(--wood-bg); }
+.sc-energy-circle--fire  { background: var(--fire-bg); }
+.sc-energy-circle--earth { background: var(--earth-bg); }
+.sc-energy-circle--metal { background: var(--metal-bg); }
+.sc-energy-circle--water { background: var(--water-bg); }
+/* 用神金邊 */
+.sc-energy-circle--yongshen {
+  box-shadow: 0 0 0 2px var(--brand-primary);
+}
+.sc-energy-circle--yongshen::after {
+  content: '用';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sc-energy-name {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--text-primary);
+}
+.sc-energy-name--wood  { color: var(--wood); }
+.sc-energy-name--fire  { color: var(--fire); }
+.sc-energy-name--earth { color: var(--earth); }
+.sc-energy-name--metal { color: var(--metal); }
+.sc-energy-name--water { color: var(--water); }
+
+.sc-energy-pct {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* 能量描述段 */
+.sc-energy-quote {
+  background: var(--surface-card);
+  border-radius: 12px;
+  padding: 18px 16px;
+  margin-bottom: 14px;
+}
+.sc-energy-quote-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--brand-primary);
+  margin-bottom: 6px;
+}
+.sc-energy-quote-text {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+
+.sc-energy-formula {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+.sc-energy-formula strong {
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+
+/* ============================================
+   6. Share Section 重新組織 · 結果頁底部
+   ============================================
+   原本 4 個分享按鈕，新增「下載分享卡」主按鈕。
+   保持向下相容（既有 .share-btn 按鈕仍可運作）。
+*/
+
+#page-result .share-section {
+  margin-top: var(--space-2xl);
+}
+
+/* 主分享按鈕（金色漸層） */
+.share-card-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  background: linear-gradient(
+    180deg,
+    var(--brand-primary-light) 0%,
+    var(--brand-primary) 100%
+  );
+  color: var(--text-on-brand);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: var(--space-md);
+  transition: opacity 0.2s ease;
+}
+.share-card-trigger:hover { opacity: 0.92; }
+.share-card-trigger:active { transform: scale(0.99); }
+
+.share-card-trigger-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
+
+/* ============================================
+   7. Toast · 下載完成提示
+   ============================================ */
+.share-toast {
+  position: fixed;
+  bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text-primary);
+  color: var(--text-on-brand);
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  z-index: 250;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.share-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* ============================================
+   8. 桌機優化
+   ============================================ */
+@media (min-width: 768px) {
+  .share-modal-panel {
+    max-width: 460px;
+  }
+}
+
+
+/* ============================================
+   9. 列印關閉
+   ============================================ */
+@media print {
+  .share-modal,
+  .share-toast,
+  .share-card-trigger {
+    display: none !important;
+  }
+}
