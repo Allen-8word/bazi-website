@@ -158,7 +158,7 @@
     </div>
   </div>
 
-  <!-- 三張卡並排 -->
+  <!-- 四張卡並排 -->
   <div class="demo-cards-row">
 
     <div class="demo-card-section">
@@ -182,6 +182,13 @@
       </div>
     </div>
 
+    <div class="demo-card-section">
+      <h3>4. 金 句 卡 <span style="color:var(--brand-primary);font-size:11px;letter-spacing:2px">NEW</span></h3>
+      <div class="share-card-wrapper">
+        <div class="share-card-frame" id="demoFrame4"></div>
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -198,6 +205,7 @@
       <button class="share-tab active" type="button">日 主 人 格</button>
       <button class="share-tab" type="button">命 局 速 覽</button>
       <button class="share-tab" type="button">能 量 輪 廓</button>
+      <button class="share-tab" type="button">金 句</button>
     </div>
 
     <div class="share-modal-preview">
@@ -288,8 +296,12 @@ function refreshDemoCards(stem) {
       window.ShareCard.switchTab(2);
       setTimeout(() => {
         document.getElementById('demoFrame3').innerHTML = frame.innerHTML;
-        // 回到 tab 0
-        window.ShareCard.switchTab(0);
+        window.ShareCard.switchTab(3);
+        setTimeout(() => {
+          document.getElementById('demoFrame4').innerHTML = frame.innerHTML;
+          // 回到 tab 0
+          window.ShareCard.switchTab(0);
+        }, 50);
       }, 50);
     }, 50);
   }, 50);
