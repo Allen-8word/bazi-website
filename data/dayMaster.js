@@ -14,6 +14,7 @@
 const DAY_MASTER_PROFILES = {
   '甲': {
     stem: '甲', element: 'wood', yinYang: 'yang', elementName: '陽木',
+    personaName: '主幹型',
     imagery: '參天大樹', keywords: ['挺拔', '原則', '開創'],
     tagline: '不向命運低頭的棟樑',
     openingMetaphor: '你是「主幹型」的存在。不是會繞著別人轉的藤蔓，而是那棵自己往上長的樹。',
@@ -42,6 +43,7 @@ const DAY_MASTER_PROFILES = {
 
   '乙': {
     stem: '乙', element: 'wood', yinYang: 'yin', elementName: '陰木',
+    personaName: '藤蔓型',
     imagery: '藤蔓花草', keywords: ['柔韌', '靈活', '迂迴'],
     tagline: '柔韌而不可忽視的存在',
     openingMetaphor: '你是「藤蔓型」的存在。不是不夠強，是你懂得讓力——遇到障礙會找縫隙繞過去，而不是硬撞。',
@@ -70,6 +72,7 @@ const DAY_MASTER_PROFILES = {
 
   '丙': {
     stem: '丙', element: 'fire', yinYang: 'yang', elementName: '陽火',
+    personaName: '太陽型',
     imagery: '太陽之火', keywords: ['熱烈', '直接', '照亮'],
     tagline: '為他人照亮道路的太陽',
     openingMetaphor: '你是「太陽型」的存在。不是悄悄發光的那種，是會讓整個房間都注意到你進來了的那種。',
@@ -98,6 +101,7 @@ const DAY_MASTER_PROFILES = {
 
   '丁': {
     stem: '丁', element: 'fire', yinYang: 'yin', elementName: '陰火',
+    personaName: '燭火型',
     imagery: '燭光燈火', keywords: ['細膩', '溫暖', '專注'],
     tagline: '在暗處持續發光的燭火',
     openingMetaphor: '你是「燭光型」的存在。不像太陽那樣燒整個天空，但你會在某個人最需要光的時候，剛好在那裡。',
@@ -126,6 +130,7 @@ const DAY_MASTER_PROFILES = {
 
   '戊': {
     stem: '戊', element: 'earth', yinYang: 'yang', elementName: '陽土',
+    personaName: '山嶺型',
     imagery: '高山大地', keywords: ['厚重', '可靠', '守原則'],
     tagline: '讓人安心依靠的大地',
     openingMetaphor: '你是「大地型」的存在。不會閃閃發光，但你站在那裡，整個團隊就有重心。',
@@ -154,6 +159,7 @@ const DAY_MASTER_PROFILES = {
 
   '己': {
     stem: '己', element: 'earth', yinYang: 'yin', elementName: '陰土',
+    personaName: '田園型',
     imagery: '田園濕土', keywords: ['滋養', '包容', '務實'],
     tagline: '默默滋養萬物的田園',
     openingMetaphor: '你是「田園型」的存在。不會搶眼，但你在的地方，東西都會長得起來——人也是、事也是。',
@@ -182,6 +188,7 @@ const DAY_MASTER_PROFILES = {
 
   '庚': {
     stem: '庚', element: 'metal', yinYang: 'yang', elementName: '陽金',
+    personaName: '劍鋒型',
     imagery: '刀劍鋼鐵', keywords: ['果決', '正義', '改革'],
     tagline: '鋒利而正直的劍',
     openingMetaphor: '你是「刀刃型」的存在。不會圓融到讓所有人舒服，但你在的地方，事情會被切得清清楚楚。',
@@ -210,6 +217,7 @@ const DAY_MASTER_PROFILES = {
 
   '辛': {
     stem: '辛', element: 'metal', yinYang: 'yin', elementName: '陰金',
+    personaName: '珠寶型',
     imagery: '珠寶首飾', keywords: ['敏銳', '質感', '完美'],
     tagline: '細緻而珍貴的珠寶',
     openingMetaphor: '你是「珠寶型」的存在。不是越大越好，是越精緻越貴。你的價值不在數量，在於那種「一眼看出來不一樣」的細節。',
@@ -238,6 +246,7 @@ const DAY_MASTER_PROFILES = {
 
   '壬': {
     stem: '壬', element: 'water', yinYang: 'yang', elementName: '陽水',
+    personaName: '江河型',
     imagery: '江河大海', keywords: ['流動', '包容', '智慧'],
     tagline: '奔流不息的大江',
     openingMetaphor: '你是「大海型」的存在。你的容量大到可以裝下完全相反的東西——你能跟有錢人聊投資，下一秒跟流浪漢蹲在路邊抽菸。',
@@ -266,6 +275,7 @@ const DAY_MASTER_PROFILES = {
 
   '癸': {
     stem: '癸', element: 'water', yinYang: 'yin', elementName: '陰水',
+    personaName: '雨露型',
     imagery: '雨露泉水', keywords: ['細膩', '安靜', '深刻'],
     tagline: '潤物無聲的雨露',
     openingMetaphor: '你是「雨露型」的存在。不會像河水那樣轟轟流，但你會在別人需要的時候，剛好滋潤到那個點。',
