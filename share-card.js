@@ -20,14 +20,17 @@
 const state = {
   initialized: false,
   data: null,           // { pillars, dayStem, dayElement, name, gender, solarDate, lunarDate }
-  currentTab: 0,        // 0 = persona, 1 = chart, 2 = energy
-  rendering: false      // 截圖中（避免重複觸發）
+  currentTab: 0,        // 0 = persona, 1 = chart, 2 = energy, 3 = quote
+  rendering: false,     // 截圖中（避免重複觸發）
+  featuredQuote: '',    // 單句金句（persona 卡用，每次 init 隨機抽）
+  featuredQuotes3: []   // 三句金句（quote 卡用，每次 init 隨機抽 3 個）
 };
 
 const TABS = [
   { id: 'persona', label: '日 主', filename: 'persona' },
   { id: 'chart',   label: '命 局', filename: 'chart' },
-  { id: 'energy',  label: '能 量', filename: 'energy' }
+  { id: 'energy',  label: '能 量', filename: 'energy' },
+  { id: 'quote',   label: '金 句', filename: 'quote' }
 ];
 
 const ELEMENT_NAMES = {
@@ -84,6 +87,19 @@ const ShareCard = {
   init(data) {
     state.data = data;
     state.initialized = true;
+
+    // 每次 init 隨機抽選金句（鼓勵用戶多次造訪以拿到不同卡片）
+    const profile = (window.DAY_MASTER_PROFILES || {})[data.dayStem];
+    const scenarios = (profile && profile.nodScenarios) || [];
+    if (scenarios.length > 0) {
+      // persona 卡：抽 1 個當主視覺金句
+      state.featuredQuote = scenarios[Math.floor(Math.random() * scenarios.length)];
+      // quote 卡：抽 3 個不重複的
+      state.featuredQuotes3 = shuffleArray([...scenarios]).slice(0, 3);
+    } else {
+      state.featuredQuote = '';
+      state.featuredQuotes3 = [];
+    }
     // 觸發第一次 modal 開啟時才會 render
   },
 
@@ -206,6 +222,7 @@ function renderCurrentCard() {
   if (tab.id === 'persona')  frame.innerHTML = renderPersonaHTML();
   if (tab.id === 'chart')    frame.innerHTML = renderChartHTML();
   if (tab.id === 'energy')   frame.innerHTML = renderEnergyHTML();
+  if (tab.id === 'quote')    frame.innerHTML = renderQuoteHTML();
 
   // 渲染 QR code 到該卡的 .sc-qr 內
   renderQRCode();
@@ -251,7 +268,7 @@ function renderQRCode() {
 
 
 // ============================================
-// Template 1: 日主人格卡
+// Template 1: 日主人格卡（VIRAL 優化版）
 // ============================================
 function renderPersonaHTML() {
   const d = state.data;
@@ -261,6 +278,16 @@ function renderPersonaHTML() {
   const keywordsHTML = (profile.keywords || []).slice(0, 3).map(k =>
     `<span class="sc-keyword">${escapeHtml(k)}</span>`
   ).join('');
+
+  // 金句（從 nodScenarios 抽選，在 init 時已決定）
+  const quoteHTML = state.featuredQuote
+    ? `
+      <div class="sc-persona-quote">
+        <div class="sc-persona-quote-mark">你 會 ——</div>
+        <p class="sc-persona-quote-text">「${escapeHtml(state.featuredQuote)}」</p>
+      </div>
+    `
+    : '';
 
   return `
     <div class="sc-brand">
@@ -275,7 +302,11 @@ function renderPersonaHTML() {
         <span class="sc-persona-stem">${escapeHtml(d.dayStem)}</span>
       </div>
 
+      <div class="sc-persona-name">${escapeHtml(profile.personaName || '')}</div>
+
       <div class="sc-persona-imagery">${escapeHtml(profile.imagery || '')}</div>
+
+      ${quoteHTML}
 
       <div class="sc-divider"></div>
 
@@ -440,6 +471,55 @@ function renderEnergyHTML() {
 
 
 // ============================================
+// Template 4: 金句卡（Threads 友善 / VIRAL 優化）
+// ============================================
+function renderQuoteHTML() {
+  const d = state.data;
+  const profile = (window.DAY_MASTER_PROFILES || {})[d.dayStem] || {};
+  const quotes = state.featuredQuotes3 || [];
+
+  // 取日主對應的五行 class（套用 element-bg 作為主視覺強調）
+  const elClass = d.dayElement || 'metal';
+
+  const quotesHTML = quotes.length > 0
+    ? quotes.map((q, i) => `
+      <div class="sc-quote-item">
+        <span class="sc-quote-num">0${i + 1}</span>
+        <p class="sc-quote-text">${escapeHtml(q)}</p>
+      </div>
+    `).join('')
+    : '<div class="sc-quote-empty">資料載入中…</div>';
+
+  return `
+    <div class="sc-brand">
+      <span class="sc-brand-mark">BAZI · ATELIER</span>
+      <span class="sc-brand-tag">QUOTES</span>
+    </div>
+
+    <div class="sc-quote-content sc-quote-content--${elClass}">
+
+      <div class="sc-quote-header">
+        <div class="sc-quote-eyebrow">如 果 你 是 ${escapeHtml(d.dayStem)} 日 主</div>
+        <h2 class="sc-quote-title">你 會 ——</h2>
+      </div>
+
+      <div class="sc-quote-list">
+        ${quotesHTML}
+      </div>
+
+      <div class="sc-quote-identity">
+        <span class="sc-quote-identity-stem">${escapeHtml(d.dayStem)}</span>
+        <span class="sc-quote-identity-name">${escapeHtml(profile.personaName || '')}</span>
+      </div>
+
+    </div>
+
+    ${renderFooterHTML('找 你 的 日 主')}
+  `;
+}
+
+
+// ============================================
 // 共用：卡片底部（QR + 網址）
 // ============================================
 function renderFooterHTML(ctaText) {
@@ -466,6 +546,16 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+// Fisher-Yates 洗牌（用於從 nodScenarios 隨機抽 N 個不重複）
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 function showToast(msg) {

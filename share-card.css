@@ -302,26 +302,26 @@
   text-align: center;
 }
 
-/* 元素名（陽木/陰火...） */
+/* 元素名（陽木/陰火...）— Phase 10.5 微調間距 */
 .sc-persona-element {
   font-family: var(--font-serif);
   font-size: 13px;
   letter-spacing: 6px;
   color: var(--text-muted);
-  margin-top: 12px;
-  margin-bottom: 28px;
+  margin-top: 6px;
+  margin-bottom: 20px;
 }
 
-/* 大圓形日主 icon */
+/* 大圓形日主 icon — Phase 10.5 微調尺寸,讓出空間給金句卡 */
 .sc-persona-circle {
-  width: 180px;
-  height: 180px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background: var(--accent-daymaster-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   position: relative;
 }
 .sc-persona-circle::before {
@@ -334,19 +334,57 @@
 }
 .sc-persona-stem {
   font-family: var(--font-serif);
-  font-size: 96px;
+  font-size: 80px;
   color: var(--accent-daymaster);
   line-height: 1;
   font-weight: 500;
 }
 
-/* 意象（參天大樹） */
+/* 日主類型名（主幹型/藤蔓型/...）— Phase 10.5 新增為視覺主體 */
+.sc-persona-name {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  letter-spacing: 12px;
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-bottom: 6px;
+  /* letter-spacing 會讓最後一個字多出右側空白，視覺上偏左：補回去 */
+  padding-left: 12px;
+}
+
+/* 意象（參天大樹）— Phase 10.5 縮小成 subtitle */
 .sc-persona-imagery {
   font-family: var(--font-serif);
-  font-size: 22px;
-  letter-spacing: 8px;
-  color: var(--text-secondary);
-  margin-bottom: 18px;
+  font-size: 14px;
+  letter-spacing: 6px;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+  padding-left: 6px;
+}
+
+/* 金句鉤子（你會 —— 「nodScenario」）— Phase 10.5 viral 主體 */
+.sc-persona-quote {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin: 0 16px 24px;
+  position: relative;
+}
+.sc-persona-quote-mark {
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: 6px;
+  color: var(--brand-primary);
+  margin-bottom: 10px;
+}
+.sc-persona-quote-text {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: 1px;
 }
 
 /* 分隔線 */
@@ -361,11 +399,11 @@
 /* Tagline 一句話 */
 .sc-persona-tagline {
   font-family: var(--font-serif);
-  font-size: 26px;
-  line-height: 1.55;
-  letter-spacing: 3px;
-  color: var(--text-primary);
-  margin-bottom: 28px;
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
   font-weight: 500;
   max-width: 380px;
 }
@@ -623,6 +661,129 @@
 .sc-energy-formula strong {
   color: var(--text-primary);
   font-weight: var(--weight-medium);
+}
+
+
+/* ============================================
+   5.5 卡 4 · 金句卡（Threads 友善 / VIRAL 優化）
+   ============================================
+   Phase 10.5 新增。
+   策略：文字主導，最大化「截圖分享」潛力。
+   3 個 nodScenarios 為視覺主體，配合五行色強調。
+*/
+
+.sc-quote-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 24px 0;
+}
+
+/* 標題區 */
+.sc-quote-header {
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 28px;
+}
+.sc-quote-eyebrow {
+  font-family: var(--font-serif);
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.sc-quote-title {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  letter-spacing: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1;
+  margin: 0;
+  /* letter-spacing 補正 */
+  padding-left: 14px;
+}
+
+/* 金句列表 */
+.sc-quote-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  margin-bottom: 20px;
+}
+.sc-quote-item {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.sc-quote-num {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--brand-primary);
+  font-weight: 500;
+  min-width: 24px;
+  padding-top: 2px;
+}
+.sc-quote-text {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: 1px;
+  flex: 1;
+}
+
+/* 底部身份標籤（[甲] 主幹型） */
+.sc-quote-identity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 0 8px;
+  border-top: 1px solid var(--border-soft);
+}
+.sc-quote-identity-stem {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  color: var(--accent-daymaster);
+  font-weight: 500;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-daymaster-bg);
+  border-radius: 50%;
+}
+.sc-quote-identity-name {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  letter-spacing: 8px;
+  color: var(--text-primary);
+  font-weight: 500;
+  padding-left: 8px;
+}
+
+/* 五行色強調（各日主對應的左邊小裝飾條） */
+.sc-quote-content--wood .sc-quote-item   { border-left: 3px solid var(--wood); }
+.sc-quote-content--fire .sc-quote-item   { border-left: 3px solid var(--fire); }
+.sc-quote-content--earth .sc-quote-item  { border-left: 3px solid var(--earth); }
+.sc-quote-content--metal .sc-quote-item  { border-left: 3px solid var(--metal); }
+.sc-quote-content--water .sc-quote-item  { border-left: 3px solid var(--water); }
+
+.sc-quote-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 40px 0;
 }
 
 
