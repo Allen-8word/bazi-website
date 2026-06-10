@@ -73,17 +73,6 @@ function renderDayMaster(dayStem) {
 
   const keywordsHtml = profile.keywords.map(k => `<span>${k}</span>`).join('');
 
-  const misunderstoodHtml = profile.misunderstoodPoints.map(item => `
-    <div class="misunderstood-item">
-      <div class="mi-title">${item.title}</div>
-      <div class="mi-desc">${item.desc}</div>
-    </div>
-  `).join('');
-
-  const nodHtml = profile.nodScenarios.map(s =>
-    `<div class="nod-item">${s}</div>`
-  ).join('');
-
   el.innerHTML = `
     <div class="dm-imagery">
       <div class="stem-big el-${profile.element}-text">${profile.stem}</div>
@@ -93,16 +82,6 @@ function renderDayMaster(dayStem) {
     <div class="dm-keywords">${keywordsHtml}</div>
 
     <div class="dm-opening-metaphor">${profile.openingMetaphor}</div>
-
-    <div class="dm-section">
-      <div class="dm-section-title">三 個 你 常 被 誤 解 的 事</div>
-      ${misunderstoodHtml}
-    </div>
-
-    <div class="dm-section">
-      <div class="dm-section-title">你 會 在 心 裡 點 頭 的 場 景</div>
-      <div class="nod-scenarios">${nodHtml}</div>
-    </div>
 
     <div class="dm-section">
       <div class="dm-section-title">這 份 特 質 的 另 一 面</div>
@@ -221,7 +200,7 @@ function renderBodyStrengthAndPersonality(bodyStrength, energy) {
 function renderPersona(topTwo) {
   const el = document.getElementById('personaContent');
   if (!topTwo || topTwo.length === 0) {
-    el.innerHTML = '<p style="font-size:13px;color:#7A756D">命局十神分布平均，未呈現明顯主導十神</p>';
+    el.innerHTML = '<p style="font-size: 15px;color:#7A756D">命局十神分布平均，未呈現明顯主導十神</p>';
     return;
   }
 
@@ -250,7 +229,7 @@ function renderPersona(topTwo) {
     dualCardHtml += `
       <div class="persona-side sub">
         <div class="ps-role">輔 助</div>
-        <div class="ps-name" style="font-size:14px;color:#7A756D">無顯著</div>
+        <div class="ps-name" style="font-size: 16px;color:#7A756D">無顯著</div>
         <div class="ps-cat">命局十神結構偏單一</div>
       </div>
     `;
@@ -291,53 +270,6 @@ function renderPersona(topTwo) {
   el.innerHTML = dualCardHtml + summaryHtml + viewsHtml + tensionHtml;
 }
 
-function renderLifeScript(dayStem) {
-  // 人生劇本在「人格畫像」卡內顯示，依日主天干
-  const profile = window.DAY_MASTER_PROFILES[dayStem];
-  if (!profile || !profile.lifeScript) return '';
-
-  return `
-    <div class="life-script">
-      <div class="life-script-title">— 這 個 命 局 的 人 生 劇 本 —</div>
-      <div class="life-script-stage">
-        <div class="ls-stage-label">第 一 階 段</div>
-        <div>${profile.lifeScript.stage1}</div>
-      </div>
-      <div class="life-script-stage">
-        <div class="ls-stage-label">第 二 階 段</div>
-        <div>${profile.lifeScript.stage2}</div>
-      </div>
-      <div class="life-script-stage">
-        <div class="ls-stage-label">第 三 階 段</div>
-        <div>${profile.lifeScript.stage3}</div>
-      </div>
-    </div>
-  `;
-}
-
-function renderTenGodsBars(distribution) {
-  const sortedEntries = Object.entries(distribution)
-    .filter(([_, count]) => count > 0)
-    .sort((a, b) => b[1] - a[1]);
-  if (sortedEntries.length === 0) {
-    document.getElementById('tgBars').innerHTML = '<p style="text-align:center;color:#7A756D;font-size:13px">命盤十神統計中</p>';
-    return;
-  }
-  const maxCount = sortedEntries[0][1];
-  let html = '';
-  sortedEntries.forEach(([name, count]) => {
-    const pct = (count / maxCount) * 100;
-    html += `
-      <div class="tg-bar-row">
-        <span class="tg-name">${name}</span>
-        <div class="tg-bar"><div class="tg-bar-fill" style="width:${pct}%"></div></div>
-        <span class="tg-count">${count}</span>
-      </div>
-    `;
-  });
-  document.getElementById('tgBars').innerHTML = html;
-}
-
 /* ========= 段落 4：流年運勢預警 ========= */
 function renderFlowYear(analysisData, currentYearParam) {
   const stripEl = document.getElementById('fyYearStrip');
@@ -367,7 +299,7 @@ function renderFlowYear(analysisData, currentYearParam) {
       year, analysisData.dayStem, window.BRANCH_PROFILES, window.FLOW_YEAR_ELEMENTS
     );
     if (!fy) {
-      contentEl.innerHTML = `<p style="font-size:13px;color:#7A756D;text-align:center">${year} 年資料尚未收錄</p>`;
+      contentEl.innerHTML = `<p style="font-size: 15px;color:#7A756D;text-align:center">${year} 年資料尚未收錄</p>`;
       return;
     }
 
@@ -594,15 +526,6 @@ function init() {
   renderBodyStrengthAndPersonality(analysisData.bodyStrength, analysisData.elementEnergy);
   renderPersona(analysisData.topTwoTenGods);
 
-  // 在人格畫像區塊末尾插入「人生劇本」
-  const lifeScriptHtml = renderLifeScript(analysisData.dayStem);
-  if (lifeScriptHtml) {
-    const personaContent = document.getElementById('personaContent');
-    personaContent.insertAdjacentHTML('beforeend', lifeScriptHtml);
-  }
-
-  renderTenGodsBars(analysisData.tenGodsDistribution);
-
   // 計算初始流年（必須在流年資料表的範圍內）
   // 邏輯：優先用 URL 帶的 fy，若該年份不在資料表中（例如使用者帶的是大運起運年 1990、2018 等）
   //      則 fallback 到當前年份（new Date().getFullYear()）
@@ -681,15 +604,15 @@ function showPrintGuide(callback) {
   if (!overlay) { callback(); return; }
   const inner = overlay.querySelector('.pdf-overlay-inner');
   inner.innerHTML = `
-    <div style="font-family:'Noto Serif TC',serif;font-size:18px;color:#3D3A36;letter-spacing:2px;margin-bottom:12px">
+    <div style="font-family:'Noto Serif TC',serif;font-size: 21px;color:#3D3A36;letter-spacing:2px;margin-bottom:12px">
       準 備 開 啟 列 印 視 窗
     </div>
-    <div style="font-size:13px;color:#7A756D;line-height:1.9;margin-bottom:14px">
+    <div style="font-size: 15px;color:#7A756D;line-height:1.9;margin-bottom:14px">
       請在列印對話框中：<br>
       <b style="color:#C9A87C">「目的地」選擇「另存為 PDF」</b>，<br>
       然後點「儲存」即可下載
     </div>
-    <div style="font-size:11px;color:#8A857F;letter-spacing:1px">3 秒後自動開啟…</div>
+    <div style="font-size: 13px;color:#8A857F;letter-spacing:1px">3 秒後自動開啟…</div>
   `;
   overlay.classList.add('show');
   setTimeout(() => {
