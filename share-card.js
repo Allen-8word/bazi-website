@@ -22,7 +22,9 @@ const state = {
   data: null,           // { pillars, dayStem, dayElement, name, gender, solarDate, lunarDate }
   currentTab: 0,        // 0 = persona（僅保留日主人格卡）
   rendering: false,     // 截圖中（避免重複觸發）
-  featuredQuote: ''     // 單句金句（persona 卡用，每次 init 隨機抽）
+  featuredQuote: '',    // 單句金句（persona 卡用，每次 init 隨機抽）
+  cardBlob: null,       // 預先生成的 PNG blob（讓「分享」能在點擊當下立即觸發）
+  blobPromise: null     // 生成中的 Promise（避免重複生成）
 };
 
 const TABS = [
@@ -112,6 +114,8 @@ const ShareCard = {
     loadLibs().then(() => {
       renderCurrentCard();
       adjustPreviewScale();
+      // 背景預先生成 PNG：讓「分享」按鈕點下去能立即帶圖開啟系統分享面板
+      pregenerateBlob();
     }).catch(err => {
       console.error('[ShareCard] Failed to load libs:', err);
       showToast('載入失敗，請稍後再試');
@@ -141,55 +145,24 @@ const ShareCard = {
       return;
     }
 
-    const frame = document.getElementById('shareCardFrame');
-    if (!frame) return;
-
     state.rendering = true;
     const btn = document.getElementById('shareCardDownload');
     const originalText = btn ? btn.textContent : '';
     if (btn) { btn.disabled = true; btn.textContent = '生 成 中…'; }
 
-    // 截圖前需要：
-    // 1) 確認字體已 loaded（避免 fallback 字體被截到）
-    // 2) onclone 內把 transform: scale 移除 → 截圖能拿到完整 540×960
-    const fontReady = (document.fonts && document.fonts.ready)
-      ? document.fonts.ready
-      : Promise.resolve();
-
-    fontReady.then(() => {
-      return window.html2canvas(frame, {
-        scale: 2,                       // 540×960 → 1080×1920
-        useCORS: true,
-        backgroundColor: null,
-        logging: false,
-        // 把 wrapper 的 transform 移除（讓 html2canvas 拿到原尺寸）
-        onclone: (clonedDoc) => {
-          const clonedFrame = clonedDoc.getElementById('shareCardFrame');
-          if (clonedFrame) {
-            clonedFrame.style.transform = 'none';
-            clonedFrame.style.boxShadow = 'none';
-            clonedFrame.style.borderRadius = '0';
-          }
-        }
-      });
-    }).then(canvas => {
-      return new Promise(resolve => {
-        canvas.toBlob(blob => resolve(blob), 'image/png', 1);
-      });
-    }).then(blob => {
+    getCardBlob().then(blob => {
+      if (!blob) throw new Error('Blob generation failed');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const tab = TABS[state.currentTab];
-      const stem = state.data.dayStem || 'bazi';
-      a.download = `bazi-${tab.filename}-${stem}.png`;
+      a.download = getFileName();
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       showToast('已下載 · 可上傳到 IG 限時動態');
-      trackEvent('share_card_download', { tab: tab.id, day_stem: stem });
+      trackEvent('share_card_download', { tab: TABS[state.currentTab].id, day_stem: state.data.dayStem || '' });
     }).catch(err => {
       console.error('[ShareCard] Download failed:', err);
       showToast('下載失敗，請稍後再試');
@@ -197,11 +170,123 @@ const ShareCard = {
       state.rendering = false;
       if (btn) { btn.disabled = false; btn.textContent = originalText; }
     });
+  },
+
+  // 路線一：Web Share API 直接分享圖檔
+  // 手機點「分享」→ 系統分享面板（IG 限動 / Threads / FB / LINE…）
+  // 不支援的環境（多數電腦瀏覽器）→ 自動退回下載
+  share() {
+    if (state.rendering) return;
+
+    if (!canNativeShareFiles()) {
+      showToast('此裝置不支援直接分享 · 已改為下載');
+      this.download();
+      return;
+    }
+
+    // iOS 要求 navigator.share 必須在點擊手勢內呼叫，
+    // 所以只用「已預先生成」的 blob；還沒生成完就提示再點一次
+    if (!state.cardBlob) {
+      showToast('卡片生成中，請稍候再點一次');
+      getCardBlob();
+      return;
+    }
+
+    const file = new File([state.cardBlob], getFileName(), { type: 'image/png' });
+    if (!navigator.canShare({ files: [file] })) {
+      showToast('此裝置不支援直接分享 · 已改為下載');
+      this.download();
+      return;
+    }
+
+    navigator.share({ files: [file] }).then(() => {
+      showToast('已分享');
+      trackEvent('share_card_share', { tab: TABS[state.currentTab].id, day_stem: state.data.dayStem || '' });
+    }).catch(err => {
+      if (err && err.name === 'AbortError') return; // 使用者自己取消，不視為錯誤
+      console.error('[ShareCard] Share failed:', err);
+      showToast('分享失敗，請改用下載');
+    });
   }
 };
 
 // 暴露到 window
 window.ShareCard = ShareCard;
+
+
+// ============================================
+// PNG 生成（download / share 共用）
+// ============================================
+function generateCardBlob() {
+  const frame = document.getElementById('shareCardFrame');
+  if (!frame || !window.html2canvas) {
+    return Promise.reject(new Error('Frame or html2canvas not ready'));
+  }
+
+  // 截圖前需要：
+  // 1) 確認字體已 loaded（避免 fallback 字體被截到）
+  // 2) onclone 內把 transform: scale 移除 → 截圖能拿到完整 540×960
+  const fontReady = (document.fonts && document.fonts.ready)
+    ? document.fonts.ready
+    : Promise.resolve();
+
+  return fontReady.then(() => {
+    return window.html2canvas(frame, {
+      scale: 2,                       // 540×960 → 1080×1920
+      useCORS: true,
+      backgroundColor: null,
+      logging: false,
+      // 把 wrapper 的 transform 移除（讓 html2canvas 拿到原尺寸）
+      onclone: (clonedDoc) => {
+        const clonedFrame = clonedDoc.getElementById('shareCardFrame');
+        if (clonedFrame) {
+          clonedFrame.style.transform = 'none';
+          clonedFrame.style.boxShadow = 'none';
+          clonedFrame.style.borderRadius = '0';
+        }
+      }
+    });
+  }).then(canvas => {
+    return new Promise(resolve => {
+      canvas.toBlob(blob => resolve(blob), 'image/png', 1);
+    });
+  });
+}
+
+function pregenerateBlob() {
+  state.cardBlob = null;
+  state.blobPromise = generateCardBlob()
+    .then(blob => { state.cardBlob = blob; return blob; })
+    .catch(err => {
+      console.warn('[ShareCard] Pre-generate failed:', err);
+      state.blobPromise = null;
+      return null;
+    });
+  return state.blobPromise;
+}
+
+function getCardBlob() {
+  if (state.cardBlob) return Promise.resolve(state.cardBlob);
+  if (state.blobPromise) return state.blobPromise;
+  return pregenerateBlob();
+}
+
+function getFileName() {
+  const tab = TABS[state.currentTab];
+  const stem = (state.data && state.data.dayStem) || 'bazi';
+  return `bazi-${tab.filename}-${stem}.png`;
+}
+
+// 是否支援「分享檔案」（手機 Safari / Chrome 大多支援；電腦多半不支援）
+function canNativeShareFiles() {
+  if (!navigator.share || !navigator.canShare) return false;
+  try {
+    const testFile = new File([new Blob([''], { type: 'image/png' })], 't.png', { type: 'image/png' });
+    return navigator.canShare({ files: [testFile] });
+  } catch (e) {
+    return false;
+  }
+}
 
 
 // ============================================
@@ -413,6 +498,18 @@ function setupEvents() {
   // 下載按鈕
   const dl = document.getElementById('shareCardDownload');
   if (dl) dl.addEventListener('click', () => ShareCard.download());
+
+  // 分享按鈕（Web Share API）
+  // 不支援檔案分享的環境（多數電腦瀏覽器）→ 隱藏分享鈕、下載鈕升回主按鈕樣式
+  const shareBtn = document.getElementById('shareCardShare');
+  if (shareBtn) {
+    if (canNativeShareFiles()) {
+      shareBtn.addEventListener('click', () => ShareCard.share());
+    } else {
+      shareBtn.style.display = 'none';
+      if (dl) dl.classList.add('share-modal-download--primary');
+    }
+  }
 
   // 視窗大小變動 → 重算預覽尺寸
   window.addEventListener('resize', adjustPreviewScale);

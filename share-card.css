@@ -149,7 +149,8 @@
   gap: var(--space-sm);
 }
 
-.share-modal-download {
+/* 分享按鈕（主按鈕 · 金色漸層） */
+.share-modal-share {
   width: 100%;
   min-height: 48px;
   padding: 12px 20px;
@@ -167,6 +168,35 @@
   cursor: pointer;
   font-family: inherit;
   transition: opacity 0.2s ease;
+}
+.share-modal-share:hover { opacity: 0.92; }
+.share-modal-share:active { transform: scale(0.99); }
+
+/* 下載按鈕（次按鈕 · 描邊樣式）
+   電腦版不支援直接分享時，由 JS 加上 --primary 升回主按鈕 */
+.share-modal-download {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-primary);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s ease;
+}
+.share-modal-download--primary {
+  background: linear-gradient(
+    180deg,
+    var(--brand-primary-light) 0%,
+    var(--brand-primary) 100%
+  );
+  color: var(--text-on-brand);
+  border: none;
 }
 .share-modal-download:hover { opacity: 0.92; }
 .share-modal-download:disabled {
