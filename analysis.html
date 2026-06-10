@@ -1263,6 +1263,35 @@ body {
   display: block;
   margin-top: 4px;
 }
+
+/* ============================================
+   桌機排版修正（2026-06-10）
+   ============================================
+   問題：layout.css 的 Phase 12 桌機規則把「所有 .container」
+   都套上 min-height: 100vh + 浮起卡片效果。
+   本頁的 header 與 footer 內層也用了 .container，
+   導致桌機版出現兩塊整頁高的空白。
+   修正：header / footer 的內層 container 取消撐高，
+   並讓 header / footer 本身與主內容連成同一條內容柱。
+*/
+@media (min-width: 768px) {
+  .site-header .container,
+  .site-footer .container {
+    min-height: 0;
+    box-shadow: none;
+  }
+  .site-header,
+  .site-footer {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--surface-page, #FAF6EF);
+    box-shadow: 0 0 32px rgba(42, 37, 32, 0.05);
+  }
+  .site-footer {
+    margin-top: 0;
+  }
+}
 </style>
 </head>
 <body>
