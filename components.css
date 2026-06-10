@@ -657,19 +657,17 @@ select.input {
   color: var(--text-secondary);
 }
 
-/* 「想看更深?」引導句 */
-.ep-deep-hint {
-  margin-top: var(--space-md);
-  padding-top: var(--space-md);
-  border-top: 1px dashed var(--border-soft);
-  text-align: center;
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  line-height: var(--leading-relaxed);
+/* 「你是誰?」區塊：米色面板，與天賦/注意形成一致的三段節奏 */
+.ep-block--who {
+  background: var(--surface-muted);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
 }
-.ep-deep-hint strong {
-  color: var(--brand-primary);
+.ep-block--who .ep-text {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
   font-weight: var(--weight-medium);
+  letter-spacing: 0.5px;
 }
 
 

@@ -347,7 +347,7 @@ function renderEnergyProfile(pillars, dayStem){
       <div class="ep-color-list">${colorListHtml}</div>
     </div>
 
-    <div class="ep-block">
+    <div class="ep-block ep-block--who">
       <div class="ep-label">你 是 誰?</div>
       <p class="ep-text">${profile.tagline}。</p>
     </div>
@@ -361,11 +361,6 @@ function renderEnergyProfile(pillars, dayStem){
       <div class="ep-label">⚠ 需 要 注 意</div>
       <p class="ep-text">${shadowFirst}</p>
     </div>
-
-    <p class="ep-deep-hint">
-      以上是輪廓速覽 ─ 想看完整的「三個常被誤解的事」「點頭場景」「人生劇本」<br>
-      請點下方 <strong>查看詳細分析</strong>
-    </p>
   `;
 
   cardEl.style.display = '';
