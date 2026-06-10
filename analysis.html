@@ -376,7 +376,7 @@ body {
 .dm-imagery {
   position: relative;
   padding: 1.25rem 1rem;
-  background: linear-gradient(135deg, rgba(201, 168, 124, 0.08), rgba(139, 157, 131, 0.06));
+  background: linear-gradient(135deg, #F9F4EA, #F3F4EE); /* 實色，避免列印掉透明度變深 */
   border-radius: var(--radius-md);
   margin-bottom: 1rem;
 }
@@ -446,7 +446,7 @@ body {
   justify-content: space-between;
   gap: 16px;
   padding: 1rem;
-  background: linear-gradient(135deg, rgba(201, 168, 124, 0.1), rgba(139, 157, 131, 0.06));
+  background: linear-gradient(135deg, #F8F2E7, #F3F4EE); /* 實色，避免列印掉透明度變深 */
   border-radius: var(--radius-md);
   margin-bottom: 1rem;
 }
@@ -842,6 +842,38 @@ body {
     orphans: 2;
     widows: 2;
   }
+
+  /* 重點提示卡（為什麼今年重要）：
+     強制實色淡金底 + 深色字，杜絕列印引擎把背景印成深色蓋字 */
+  .fy-why {
+    background: #F8F3E9 !important;
+    background-image: none !important;
+    border-left: 3px solid #B89569 !important;
+    color: #2B2826 !important;
+  }
+  .fy-why .fy-why-label {
+    color: #8A6B43 !important;
+  }
+
+  /* 其餘使用漸層背景的區塊：列印時一律改為實色，
+     預防同樣的「漸層被印成深色」問題 */
+  .dm-imagery,
+  .dm-opening-metaphor {
+    background: #F9F4EA !important;
+    background-image: none !important;
+  }
+  .fy-highlight {
+    background: #F8F2E7 !important;
+    background-image: none !important;
+  }
+  .sister-card {
+    background: #FAF1E0 !important;
+    background-image: none !important;
+  }
+  .paywall-card {
+    background: #F9F5EC !important;
+    background-image: none !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -859,7 +891,7 @@ body {
   color: #3D3A36;
   padding: 1.25rem;
   margin: 1rem 0 1.5rem;
-  background: linear-gradient(135deg, rgba(201, 168, 124, 0.08), rgba(139, 157, 131, 0.05));
+  background: linear-gradient(135deg, #F9F4EA, #F5F6F1); /* 實色，避免列印掉透明度變深 */
   border-left: 3px solid var(--color-accent);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   letter-spacing: 0.5px;
@@ -1093,8 +1125,12 @@ body {
 }
 
 /* === 流年運勢：為什麼這年重要 + 事件類型 + 卡點 === */
+/* 重點提示卡（為什麼今年重要）
+   不用任何漸層：列印引擎處理漸層常出錯（會印成全飽和深色蓋住文字），
+   一律改用實色底 + 左側金色描邊；@media print 內另有強制覆寫保險 */
 .fy-why {
-  background: linear-gradient(135deg, rgba(201, 168, 124, 0.1), rgba(139, 157, 131, 0.06));
+  background: #F8F3E9;
+  border-left: 3px solid var(--color-accent);
   border-radius: var(--radius-md);
   padding: 14px 16px;
   margin: 1rem 0;
@@ -1105,7 +1141,8 @@ body {
 }
 .fy-why .fy-why-label {
   font-size: 13px;
-  color: var(--color-accent);
+  color: var(--color-accent-dark);
+  font-weight: 500;
   letter-spacing: 2px;
   margin-bottom: 6px;
 }
@@ -1199,7 +1236,7 @@ body {
 
 /* === 付費鉤子卡片 === */
 .paywall-card {
-  background: linear-gradient(135deg, rgba(107, 123, 140, 0.05), rgba(201, 168, 124, 0.05)) !important;
+  background: linear-gradient(135deg, #F4F5F8, #F9F5EC) !important; /* 實色，避免列印掉透明度變深 */
   border: 1px dashed var(--color-accent) !important;
 }
 .paywall-intro {
