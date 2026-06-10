@@ -534,15 +534,11 @@ function renderDayMasterCard(dayStem){
       <span class="daymaster-glyph">${profile.stem}</span>
     </div>
 
-    <h3 class="daymaster-tagline">${profile.stem}${profile.elementName.slice(1)}日主 · ${profile.tagline}</h3>
+    <h3 class="daymaster-tagline">${profile.tagline}</h3>
 
     <div class="tag-group tag-group--center">
       ${tagsHtml}
     </div>
-
-    <button class="btn-share" disabled title="即將開放">
-      <span aria-hidden="true">↗</span> 分享結果（即將開放）
-    </button>
   `;
   cardEl.style.display = '';
 }

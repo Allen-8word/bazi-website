@@ -307,34 +307,15 @@ select.input {
 }
 
 .daymaster-tagline {
+  font-family: var(--font-serif);
   font-size: var(--text-lg);
   font-weight: var(--weight-medium);
   color: var(--text-primary);
-  margin-bottom: var(--space-md);
+  margin: 0 auto var(--space-md);
+  max-width: 30em;
   letter-spacing: var(--tracking-wide);
+  line-height: var(--leading-loose);
 }
-
-/* 分享按鈕（暫時 disabled，等 Phase 10 啟動） */
-.btn-share {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: var(--space-md);
-  padding: 8px 16px;
-  background: var(--surface-input);
-  color: var(--text-secondary);
-  font-size: var(--text-sm);
-  border-radius: var(--radius-pill);
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease, opacity 0.2s ease;
-}
-.btn-share:hover { background: var(--surface-muted); }
-.btn-share:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-.btn-share:disabled:hover { background: var(--surface-input); }
 
 
 /* ============================================
