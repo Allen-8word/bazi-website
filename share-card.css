@@ -388,8 +388,44 @@
   font-size: 14px;
   letter-spacing: 6px;
   color: var(--text-muted);
-  margin-bottom: 22px;
+  margin-bottom: 14px; /* Phase 11：22px → 14px，吸收修仙區塊新增高度 */
   padding-left: 6px;
+}
+
+/* 修仙稱號區塊（青木劍修 · 劍修｜「一劍既出,寧折不彎」）— Phase 11 新增 */
+.sc-xianxia {
+  margin-bottom: 16px;
+}
+.sc-xianxia-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.sc-xianxia-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  letter-spacing: 5px;
+  color: var(--brand-primary-dark);
+  font-weight: 500;
+  padding-left: 5px; /* 補回 letter-spacing 尾端空白 */
+}
+.sc-xianxia-archetype {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  letter-spacing: 2px;
+  color: var(--brand-primary-dark);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px 2px 10px;
+  line-height: 1.4;
+}
+.sc-xianxia-tagline {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
 }
 
 /* 金句鉤子（你會 —— 「nodScenario」）— Phase 10.5 viral 主體 */

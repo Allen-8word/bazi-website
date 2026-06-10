@@ -353,6 +353,19 @@ function renderPersonaHTML() {
     `<span class="sc-keyword">${escapeHtml(k)}</span>`
   ).join('');
 
+  // 修仙稱號區塊（Phase 11：稱號 + 職業徽章 + 稱號特色）
+  const xianxiaHTML = profile.xianxiaTitle
+    ? `
+      <div class="sc-xianxia">
+        <div class="sc-xianxia-title-row">
+          <span class="sc-xianxia-title">${escapeHtml(profile.xianxiaTitle)}</span>
+          <span class="sc-xianxia-archetype">${escapeHtml(profile.xianxiaArchetype || '')}</span>
+        </div>
+        <div class="sc-xianxia-tagline">「${escapeHtml(profile.xianxiaTagline || '')}」</div>
+      </div>
+    `
+    : '';
+
   // 金句（從 nodScenarios 抽選，在 init 時已決定）
   const quoteHTML = state.featuredQuote
     ? `
@@ -379,6 +392,8 @@ function renderPersonaHTML() {
       <div class="sc-persona-name">${escapeHtml(profile.personaName || '')}</div>
 
       <div class="sc-persona-imagery">${escapeHtml(profile.imagery || '')}</div>
+
+      ${xianxiaHTML}
 
       ${quoteHTML}
 

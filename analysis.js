@@ -331,18 +331,18 @@ function renderFlowYear(analysisData, currentYearParam) {
     if (whyText) {
       html += `
         <div class="fy-why">
-          <div class="fy-why-label">為 什 麼 ${year} 對 你 特 別 重 要</div>
+          <div class="fy-why-label">${year} 年 · 你 的 劫 與 機 緣 從 何 而 來</div>
           ${whyText}
         </div>
       `;
     }
 
     // 具體會發生什麼（事件類型）— 從十神 outerView 抽取
-    html += `<div class="fy-events"><div class="fy-why-label" style="margin-bottom:10px">具 體 會 發 生 什 麼</div>`;
+    html += `<div class="fy-events"><div class="fy-why-label" style="margin-bottom:10px">劫 與 機 緣 · 具 體 場 景</div>`;
     if (stemTg) {
       html += `
         <div class="fy-event-item">
-          <div class="fy-event-title">事件類型一 · 流年天干「${fy.stemTenGod}」帶來的場景</div>
+          <div class="fy-event-title">天機一 · 流年天干「${fy.stemTenGod}」帶來的場景</div>
           <div class="fy-event-desc">${stemTg.outerView[0]}；${stemTg.outerView[1]}。</div>
         </div>
       `;
@@ -350,7 +350,7 @@ function renderFlowYear(analysisData, currentYearParam) {
     if (branchTg && fy.branchTenGod !== fy.stemTenGod) {
       html += `
         <div class="fy-event-item">
-          <div class="fy-event-title">事件類型二 · 流年地支「${fy.branchTenGod}」觸發的場景</div>
+          <div class="fy-event-title">天機二 · 流年地支「${fy.branchTenGod}」觸發的場景</div>
           <div class="fy-event-desc">${branchTg.outerView[0]}；${branchTg.outerView[1]}。</div>
         </div>
       `;
@@ -358,7 +358,7 @@ function renderFlowYear(analysisData, currentYearParam) {
     if (stemTg && stemTg.outerView[2]) {
       html += `
         <div class="fy-event-item">
-          <div class="fy-event-title">事件類型三 · 整體感受</div>
+          <div class="fy-event-title">天機三 · 整體感受</div>
           <div class="fy-event-desc">${stemTg.outerView[2]}${stemTg.outerView[3] ? '；' + stemTg.outerView[3] : ''}。</div>
         </div>
       `;
@@ -369,7 +369,7 @@ function renderFlowYear(analysisData, currentYearParam) {
     if (stemTg && stemTg.coreTension) {
       html += `
         <div class="fy-blocks">
-          <div class="fy-block-label">最 容 易 卡 住 的 地 方</div>
+          <div class="fy-block-label">心 魔 劫 · 最 容 易 卡 住 的 地 方</div>
           <div class="fy-block-item">${stemTg.coreTension.split('。')[0]}。</div>
           ${stemTg.coreTension.split('。')[1] ? `<div class="fy-block-item">${stemTg.coreTension.split('。')[1]}。</div>` : ''}
           ${stemTg.coreTension.split('練習：')[1] ? `<div class="fy-block-item">本年練習方向：${stemTg.coreTension.split('練習：')[1]}</div>` : ''}
@@ -490,7 +490,7 @@ function renderPaywall(year, dayStem, topTwo, ganZhi, stemTenGod, branchTenGod) 
     </div>
     ${featuresHtml}
     <button class="paywall-cta" id="btnPaywall" disabled>
-      解 鎖 完 整 ${year} 流 年 深 度 報 告
+      解 鎖 ${year} 完 整 渡 劫 指 南
       <span class="pc-price">（即將開放 · 訂閱 Email 搶先通知）</span>
     </button>
   `;
