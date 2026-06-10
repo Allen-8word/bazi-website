@@ -399,13 +399,13 @@
 /* Tagline 一句話 */
 .sc-persona-tagline {
   font-family: var(--font-serif);
-  font-size: 18px;
-  line-height: 1.5;
+  font-size: 22px;
+  line-height: 1.55;
   letter-spacing: 2px;
   color: var(--text-secondary);
   margin-bottom: 18px;
-  font-weight: 500;
-  max-width: 380px;
+  font-weight: 700;
+  max-width: 420px;
 }
 
 /* Keywords 膠囊 */
