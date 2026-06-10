@@ -4,7 +4,7 @@
    Phase 10
    功能：
      - 從 state.result 讀取命盤資料
-     - 渲染 3 種卡（人格 / 命局 / 能量）
+     - 渲染日主人格卡
      - 點下載 → html2canvas 截圖 1080×1920 PNG → 觸發瀏覽器下載
 
    暴露：window.ShareCard.init(data)、window.ShareCard.open()
@@ -20,17 +20,13 @@
 const state = {
   initialized: false,
   data: null,           // { pillars, dayStem, dayElement, name, gender, solarDate, lunarDate }
-  currentTab: 0,        // 0 = persona, 1 = chart, 2 = energy, 3 = quote
+  currentTab: 0,        // 0 = persona（僅保留日主人格卡）
   rendering: false,     // 截圖中（避免重複觸發）
-  featuredQuote: '',    // 單句金句（persona 卡用，每次 init 隨機抽）
-  featuredQuotes3: []   // 三句金句（quote 卡用，每次 init 隨機抽 3 個）
+  featuredQuote: ''     // 單句金句（persona 卡用，每次 init 隨機抽）
 };
 
 const TABS = [
-  { id: 'persona', label: '日 主', filename: 'persona' },
-  { id: 'chart',   label: '命 局', filename: 'chart' },
-  { id: 'energy',  label: '能 量', filename: 'energy' },
-  { id: 'quote',   label: '金 句', filename: 'quote' }
+  { id: 'persona', label: '日 主', filename: 'persona' }
 ];
 
 const ELEMENT_NAMES = {
@@ -94,11 +90,8 @@ const ShareCard = {
     if (scenarios.length > 0) {
       // persona 卡：抽 1 個當主視覺金句
       state.featuredQuote = scenarios[Math.floor(Math.random() * scenarios.length)];
-      // quote 卡：抽 3 個不重複的
-      state.featuredQuotes3 = shuffleArray([...scenarios]).slice(0, 3);
     } else {
       state.featuredQuote = '';
-      state.featuredQuotes3 = [];
     }
     // 觸發第一次 modal 開啟時才會 render
   },
@@ -218,11 +211,7 @@ function renderCurrentCard() {
   const frame = document.getElementById('shareCardFrame');
   if (!frame || !state.data) return;
 
-  const tab = TABS[state.currentTab];
-  if (tab.id === 'persona')  frame.innerHTML = renderPersonaHTML();
-  if (tab.id === 'chart')    frame.innerHTML = renderChartHTML();
-  if (tab.id === 'energy')   frame.innerHTML = renderEnergyHTML();
-  if (tab.id === 'quote')    frame.innerHTML = renderQuoteHTML();
+  frame.innerHTML = renderPersonaHTML();
 
   // 渲染 QR code 到該卡的 .sc-qr 內
   renderQRCode();
@@ -321,205 +310,6 @@ function renderPersonaHTML() {
 
 
 // ============================================
-// Template 2: 命局速覽卡
-// ============================================
-function renderChartHTML() {
-  const d = state.data;
-  const pillars = d.pillars || {};
-  const profile = (window.DAY_MASTER_PROFILES || {})[d.dayStem] || {};
-
-  const pillarOrder = ['year', 'month', 'day', 'hour'];
-  const labels = { year: '年', month: '月', day: '日', hour: '時' };
-
-  const pillarsHTML = pillarOrder.map(k => {
-    const p = pillars[k];
-    if (!p) return '';
-    const isDay = (k === 'day');
-    return `
-      <div class="sc-pillar ${isDay ? 'sc-pillar--day' : ''}">
-        <div class="sc-pillar-label">${labels[k]} 柱</div>
-        <div class="sc-pillar-stem">${escapeHtml(p.stem || '')}</div>
-        <div class="sc-pillar-branch">${escapeHtml(p.branch || '')}</div>
-      </div>
-    `;
-  }).join('');
-
-  // 計算五行能量
-  let energy = { wood:0, fire:0, earth:0, metal:0, water:0 };
-  let formulaText = '';
-  if (window.BAZI_ENGINE && window.BRANCH_PROFILES) {
-    try {
-      energy = window.BAZI_ENGINE.calculateElementEnergy(pillars, window.BRANCH_PROFILES);
-      const bodyStrength = window.BAZI_ENGINE.determineBodyStrength(energy, d.dayElement);
-      formulaText = bodyStrength.type || '';
-    } catch (e) {
-      console.warn('[ShareCard] Energy calc failed:', e);
-    }
-  }
-
-  const elementOrder = ['wood', 'fire', 'earth', 'metal', 'water'];
-  const elementsHTML = elementOrder.map(el => {
-    const pct = Math.round(energy[el] || 0);
-    return `
-      <div class="sc-element-row">
-        <span class="sc-element-name">${ELEMENT_NAMES[el]}</span>
-        <div class="sc-element-bar">
-          <div class="sc-element-bar-fill sc-element-bar-fill--${el}" style="width:${pct}%"></div>
-        </div>
-        <span class="sc-element-pct">${pct}%</span>
-      </div>
-    `;
-  }).join('');
-
-  const formula = formulaText
-    ? `<div class="sc-chart-formula">日主 <strong>${escapeHtml(profile.elementName || '')}</strong> · 命格 <strong>${escapeHtml(formulaText)}</strong></div>`
-    : `<div class="sc-chart-formula">日主 <strong>${escapeHtml(profile.elementName || '')}</strong></div>`;
-
-  return `
-    <div class="sc-brand">
-      <span class="sc-brand-mark">BAZI · ATELIER</span>
-      <span class="sc-brand-tag">CHART</span>
-    </div>
-
-    <div class="sc-chart-content">
-      <div class="sc-section-title">四 柱 八 字</div>
-
-      <div class="sc-pillars">${pillarsHTML}</div>
-
-      <div class="sc-section-subtitle">五 行 分 布</div>
-
-      <div class="sc-elements-list">${elementsHTML}</div>
-
-      ${formula}
-    </div>
-
-    ${renderFooterHTML('排 你 的 命 盤')}
-  `;
-}
-
-
-// ============================================
-// Template 3: 能量輪廓卡
-// ============================================
-function renderEnergyHTML() {
-  const d = state.data;
-  const pillars = d.pillars || {};
-  const profile = (window.DAY_MASTER_PROFILES || {})[d.dayStem] || {};
-
-  // 計算五行能量 + 用神
-  let energy = { wood:0, fire:0, earth:0, metal:0, water:0 };
-  let favorable = [];
-  if (window.BAZI_ENGINE && window.BRANCH_PROFILES && window.FAVORABLE_ELEMENTS) {
-    try {
-      energy = window.BAZI_ENGINE.calculateElementEnergy(pillars, window.BRANCH_PROFILES);
-      const bodyStrength = window.BAZI_ENGINE.determineBodyStrength(energy, d.dayElement);
-      const favData = window.FAVORABLE_ELEMENTS[d.dayElement] &&
-                      window.FAVORABLE_ELEMENTS[d.dayElement][bodyStrength.type];
-      favorable = favData ? favData.favorable : [];
-    } catch (e) {
-      console.warn('[ShareCard] Energy calc failed:', e);
-    }
-  }
-
-  const elementOrder = ['wood', 'fire', 'earth', 'metal', 'water'];
-  const circlesHTML = elementOrder.map(el => {
-    const pct = Math.round(energy[el] || 0);
-    const isYong = favorable.includes(el);
-    return `
-      <div class="sc-energy-cell">
-        <div class="sc-energy-circle sc-energy-circle--${el} ${isYong ? 'sc-energy-circle--yongshen' : ''}">
-          <span class="sc-energy-name sc-energy-name--${el}">${ELEMENT_NAMES[el]}</span>
-        </div>
-        <div class="sc-energy-pct">${pct}%</div>
-      </div>
-    `;
-  }).join('');
-
-  // 引用 dayMaster.js 的 openingMetaphor（如果沒有，退回 tagline + imagery）
-  const energyText = profile.openingMetaphor
-    || (profile.imagery + '。' + profile.tagline)
-    || '能量充沛而獨特';
-
-  const yongText = favorable.length > 0
-    ? favorable.map(el => ELEMENT_NAMES[el]).join(' · ')
-    : '無顯著';
-
-  return `
-    <div class="sc-brand">
-      <span class="sc-brand-mark">BAZI · ATELIER</span>
-      <span class="sc-brand-tag">ENERGY</span>
-    </div>
-
-    <div class="sc-energy-content">
-      <div class="sc-section-title">能 量 輪 廓</div>
-
-      <div class="sc-energy-grid">${circlesHTML}</div>
-
-      <div class="sc-energy-quote">
-        <div class="sc-energy-quote-label">— 你 的 能 量 —</div>
-        <div class="sc-energy-quote-text">${escapeHtml(energyText)}</div>
-      </div>
-
-      <div class="sc-energy-formula">
-        用神 · <strong>${escapeHtml(yongText)}</strong>
-      </div>
-    </div>
-
-    ${renderFooterHTML('看 你 的 能 量')}
-  `;
-}
-
-
-// ============================================
-// Template 4: 金句卡（Threads 友善 / VIRAL 優化）
-// ============================================
-function renderQuoteHTML() {
-  const d = state.data;
-  const profile = (window.DAY_MASTER_PROFILES || {})[d.dayStem] || {};
-  const quotes = state.featuredQuotes3 || [];
-
-  // 取日主對應的五行 class（套用 element-bg 作為主視覺強調）
-  const elClass = d.dayElement || 'metal';
-
-  const quotesHTML = quotes.length > 0
-    ? quotes.map((q, i) => `
-      <div class="sc-quote-item">
-        <span class="sc-quote-num">0${i + 1}</span>
-        <p class="sc-quote-text">${escapeHtml(q)}</p>
-      </div>
-    `).join('')
-    : '<div class="sc-quote-empty">資料載入中…</div>';
-
-  return `
-    <div class="sc-brand">
-      <span class="sc-brand-mark">BAZI · ATELIER</span>
-      <span class="sc-brand-tag">QUOTES</span>
-    </div>
-
-    <div class="sc-quote-content sc-quote-content--${elClass}">
-
-      <div class="sc-quote-header">
-        <div class="sc-quote-eyebrow">如 果 你 是 ${escapeHtml(d.dayStem)} 日 主</div>
-        <h2 class="sc-quote-title">你 會 ——</h2>
-      </div>
-
-      <div class="sc-quote-list">
-        ${quotesHTML}
-      </div>
-
-      <div class="sc-quote-identity">
-        <span class="sc-quote-identity-stem">${escapeHtml(d.dayStem)}</span>
-        <span class="sc-quote-identity-name">${escapeHtml(profile.personaName || '')}</span>
-      </div>
-
-    </div>
-
-    ${renderFooterHTML('找 你 的 日 主')}
-  `;
-}
-
-
-// ============================================
 // 共用：卡片底部（QR + 網址）
 // ============================================
 function renderFooterHTML(ctaText) {
@@ -549,14 +339,6 @@ function escapeHtml(str) {
 }
 
 // Fisher-Yates 洗牌（用於從 nodScenarios 隨機抽 N 個不重複）
-function shuffleArray(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 function showToast(msg) {
   let toast = document.getElementById('shareCardToast');
