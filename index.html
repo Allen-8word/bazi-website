@@ -24,25 +24,34 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/tokens.css">
-<link rel="stylesheet" href="/components.css">
-<link rel="stylesheet" href="/layout.css">
-<link rel="stylesheet" href="/sections.css">
-<link rel="stylesheet" href="/mobile-polish.css">
-<link rel="stylesheet" href="/share-card.css">
+<link rel="stylesheet" href="/tokens.css?v=13">
+<link rel="stylesheet" href="/components.css?v=13">
+<link rel="stylesheet" href="/layout.css?v=13">
+<link rel="stylesheet" href="/sections.css?v=13">
+<link rel="stylesheet" href="/mobile-polish.css?v=13">
+<link rel="stylesheet" href="/share-card.css?v=13">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true });
+  const GA_MEASUREMENT_ID = '';
+  if (GA_MEASUREMENT_ID) {
+    const gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_MEASUREMENT_ID;
+    document.head.appendChild(gaScript);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', GA_MEASUREMENT_ID, { 'anonymize_ip': true });
+  }
 </script>
 
 <script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', 'YOUR_PIXEL_ID');
-fbq('track', 'PageView');
+  const META_PIXEL_ID = '';
+  if (META_PIXEL_ID) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', META_PIXEL_ID);
+    fbq('track', 'PageView');
+  }
 </script>
 
 <script type="application/ld+json">
@@ -152,6 +161,13 @@ body {
 .field.error input, .field.error select {
   border-color: var(--color-error);
   background: var(--color-error-bg);
+}
+.field-hint {
+  margin-top: 5px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--color-text-sub);
+  letter-spacing: 0.3px;
 }
 
 .gender-picker {
@@ -796,6 +812,7 @@ body {
             <option value="singapore">新加坡</option>
             <option value="malaysia">吉隆坡 · 馬來西亞</option>
           </select>
+          <div class="field-hint">目前依出生時辰排盤，出生地僅作資料標記。</div>
         </div>
         <div class="field">
           <label for="iMinute">分（選填）</label>
@@ -814,26 +831,6 @@ body {
         該離職創業，還是留在大公司？<br>
         這位合夥人，是貴人還是劫財？<br>
         明明很努力，為什麼總是差一步？
-      </p>
-    </div>
-
-    <!-- Phase 4 新增：日主快速連結（未來功能，目前 disabled） -->
-    <div class="quick-links">
-      <p class="quick-links-title">想直接看某個日主的完整解析?</p>
-      <div class="tag-group">
-        <button class="btn-pill" disabled>甲木日主</button>
-        <button class="btn-pill" disabled>乙木日主</button>
-        <button class="btn-pill" disabled>丙火日主</button>
-        <button class="btn-pill" disabled>丁火日主</button>
-        <button class="btn-pill" disabled>戊土日主</button>
-        <button class="btn-pill" disabled>己土日主</button>
-        <button class="btn-pill" disabled>庚金日主</button>
-        <button class="btn-pill" disabled>辛金日主</button>
-        <button class="btn-pill" disabled>壬水日主</button>
-        <button class="btn-pill" disabled>癸水日主</button>
-      </div>
-      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:8px;text-align:center;letter-spacing:1px">
-        即將開放 · 敬請期待
       </p>
     </div>
 
@@ -1018,12 +1015,12 @@ body {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/lunar.js"></script>
-<script src="./data/dayMaster.js"></script>
-<script src="./data/branches.js"></script>
-<script src="./data/elements.js"></script>
-<script src="./data/engine.js"></script>
-<script src="./app.js"></script>
-<script src="./share-card.js"></script>
+<script src="./data/dayMaster.js?v=13"></script>
+<script src="./data/branches.js?v=13"></script>
+<script src="./data/elements.js?v=13"></script>
+<script src="./data/engine.js?v=13"></script>
+<script src="./app.js?v=13"></script>
+<script src="./share-card.js?v=13"></script>
 
 </body>
 </html>

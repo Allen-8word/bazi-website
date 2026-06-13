@@ -290,6 +290,14 @@ function findCurrentDyIndex(daYun){
   return idx;
 }
 
+function getInitialFlowYear(dy){
+  const nowY = new Date().getFullYear();
+  if(!dy) return nowY;
+  const start = dy.startYear;
+  const end = dy.startYear + 9;
+  return nowY >= start && nowY <= end ? nowY : start;
+}
+
 function getElementClass(element){
   return 'el-' + element;
 }
@@ -612,9 +620,7 @@ function renderResult(){
   });
 
   state.selectedDyIdx = findCurrentDyIndex(r.daYun);
-  state.selectedYear = r.daYun[state.selectedDyIdx]
-    ? r.daYun[state.selectedDyIdx].startYear
-    : new Date().getFullYear();
+  state.selectedYear = getInitialFlowYear(r.daYun[state.selectedDyIdx]);
   renderDaYun();
   renderBarnum(r.dayElement);
 
@@ -653,7 +659,7 @@ function renderDaYun(){
     el.addEventListener('click', () => {
       state.selectedDyIdx = +el.dataset.idx;
       const dy = state.result.daYun[state.selectedDyIdx];
-      state.selectedYear = dy.startYear;
+      state.selectedYear = getInitialFlowYear(dy);
       track('dayun_switch', { age: dy.startAge, ganzhi: dy.ganZhi });
       renderDaYun();
       renderFlowYears();
@@ -761,13 +767,20 @@ function handleEmailSubmit(e){
   e.preventDefault();
   const email = document.getElementById('iEmail').value.trim();
   if(!email || !email.includes('@')) return;
+  const FORMSPREE_URL = '';
+
+  if(!FORMSPREE_URL){
+    const successEl = document.getElementById('emailSuccess');
+    document.getElementById('emailForm').style.display = 'none';
+    successEl.textContent = '訂閱功能設定中，請稍後再回來查看開放通知';
+    successEl.classList.add('show');
+    return;
+  }
 
   track('email_subscribe', {
     day_stem: state.result && state.result.dayStem,
     day_element: state.result && state.result.dayElement
   });
-
-  const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
 
   fetch(FORMSPREE_URL, {
     method: 'POST',
@@ -875,7 +888,7 @@ function init(){
         'fy=' + state.selectedYear,
         state.name ? 'n=' + encodeURIComponent(state.name) : null
       ].filter(Boolean).join('&');
-      window.location.href = './analysis.html#' + hashParams;
+      window.location.href = './analysis.html?v=13#' + hashParams;
     });
   }
 

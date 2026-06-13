@@ -152,9 +152,11 @@ https://bazi-website-abc123.vercel.app
 1. 回到 GitHub 的 `bazi-website` 儲存庫
 2. 點 `index.html`
 3. 點右上角鉛筆圖示（編輯）
-4. 用 Ctrl+F（Mac 是 Cmd+F）搜尋 `G-XXXXXXXXXX`
-5. 你會找到 2 個地方，**兩個都要改**，把 `G-XXXXXXXXXX` 換成你的實際 ID
+4. 用 Ctrl+F（Mac 是 Cmd+F）搜尋 `GA_MEASUREMENT_ID`
+5. 把 `const GA_MEASUREMENT_ID = '';` 改成你的實際 ID，例如 `const GA_MEASUREMENT_ID = 'G-ABC1234567';`
 6. 拉到頁面最下方，點 `Commit changes`
+
+如果你暫時不設定 GA，保持空字串即可；網站不會載入追蹤碼，也不會出現錯誤。
 
 Vercel 會自動偵測到變更並重新部署，大約 30 秒後新版上線。
 
@@ -184,9 +186,11 @@ Vercel 會自動偵測到變更並重新部署，大約 30 秒後新版上線。
 1. 回到 GitHub 的 `bazi-website` 儲存庫
 2. 點 `app.js`
 3. 點右上角鉛筆圖示
-4. 用 Ctrl+F 搜尋 `YOUR_FORM_ID`
-5. 把整段 `https://formspree.io/f/YOUR_FORM_ID` 替換為你的實際網址
+4. 用 Ctrl+F 搜尋 `FORMSPREE_URL`
+5. 把 `const FORMSPREE_URL = '';` 改成你的實際網址，例如 `const FORMSPREE_URL = 'https://formspree.io/f/abcd1234';`
 6. 拉到底，點 `Commit changes`
+
+如果你暫時不設定 Formspree，訂閱表單會顯示「訂閱功能設定中」，不會假裝已成功送出。
 
 ---
 
@@ -197,10 +201,11 @@ Vercel 會自動偵測到變更並重新部署，大約 30 秒後新版上線。
 1. 前往 https://www.facebook.com/business/tools/meta-pixel
 2. 建立 Pixel，取一個名字（如「八字命盤 Pixel」）
 3. 取得 Pixel ID（一組 15 位數字）
-4. 在 GitHub 編輯 `index.html`，搜尋 `YOUR_PIXEL_ID`，替換為實際 ID
-5. 儲存
+4. 在 GitHub 編輯 `index.html`，搜尋 `META_PIXEL_ID`
+5. 把 `const META_PIXEL_ID = '';` 改成你的實際 ID
+6. 儲存
 
-**如果你還沒有 FB 廣告帳號，這步可以跳過，之後再做也行。**
+**如果你還沒有 FB 廣告帳號，這步可以跳過，保持空字串即可。**
 
 ---
 
