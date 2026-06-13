@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>輸入區塊 Demo · Phase 4 視覺驗證</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/sections.css">
+
+<style>
+/* demo 頁面容器 */
+.demo-wrap {
+  max-width: var(--container-desktop);
+  margin: 0 auto;
+}
+
+.verify-section {
+  max-width: var(--container-desktop);
+  margin: var(--space-3xl) auto 0;
+  padding: 0 var(--space-lg) var(--space-4xl);
+}
+
+.verify-section h2 {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+.verify-list {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border: 0.5px solid var(--border-soft);
+}
+
+.verify-item {
+  padding: var(--space-sm) 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.verify-item::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-md);
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="demo-wrap">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="brand-line">
+      <span class="brand-mark">BAZI · ATELIER</span>
+      <button class="menu-btn" aria-label="選單">
+        <span class="menu-icon"><span></span></span>
+      </button>
+    </div>
+    <h1 class="page-title">八字命盤旅程</h1>
+    <p class="page-subtitle">輸入生辰、取得八字命格解析與五行能量觀察</p>
+  </header>
+
+  <!-- 輸入區塊 -->
+  <section class="input-section">
+
+    <div class="card">
+      <h3 class="card-title">輸入生辰,開始計算你的八字</h3>
+      <p class="stat-line">
+        已有 <strong>10,000+</strong> 人次完成計算,累積超過
+        <strong>1,000+</strong> 份專屬客製化分析報告。
+      </p>
+
+      <!-- 出生日期 -->
+      <div class="form-field">
+        <label class="form-label">出生日期</label>
+        <div class="input-group input-group--date">
+          <input class="input" type="number" placeholder="1990" min="1900" max="2100">
+          <input class="input" type="number" placeholder="08" min="1" max="12">
+          <input class="input" type="number" placeholder="15" min="1" max="31">
+        </div>
+      </div>
+
+      <!-- 出生時辰 -->
+      <div class="form-field">
+        <label class="form-label">
+          出生時辰
+          <button class="form-hint" type="button" id="btnUnknownHour">不知道時辰?</button>
+        </label>
+        <select class="input">
+          <option>請選擇時辰</option>
+          <option>子時（23:00–01:00）</option>
+          <option>丑時（01:00–03:00）</option>
+          <option>寅時（03:00–05:00）</option>
+          <option>卯時（05:00–07:00）</option>
+          <option>辰時（07:00–09:00）</option>
+          <option>巳時（09:00–11:00）</option>
+          <option>午時（11:00–13:00）</option>
+          <option>未時（13:00–15:00）</option>
+          <option>申時（15:00–17:00）</option>
+          <option>酉時（17:00–19:00）</option>
+          <option>戌時（19:00–21:00）</option>
+          <option>亥時（21:00–23:00）</option>
+        </select>
+      </div>
+
+      <!-- 出生地點 -->
+      <div class="form-field">
+        <label class="form-label">出生地點</label>
+        <select class="input">
+          <option>臺北市</option>
+          <option>新北市</option>
+          <option>桃園市</option>
+          <option>臺中市</option>
+          <option>臺南市</option>
+          <option>高雄市</option>
+          <option>其他</option>
+        </select>
+      </div>
+
+      <button class="btn-primary">排出八字命盤</button>
+    </div>
+
+    <!-- 快速連結 -->
+    <div class="quick-links">
+      <p class="quick-links-title">想直接看某個日主的完整解析?</p>
+      <div class="tag-group">
+        <button class="btn-pill">甲木日主</button>
+        <button class="btn-pill">乙木日主</button>
+        <button class="btn-pill">丙火日主</button>
+        <button class="btn-pill">丁火日主</button>
+        <button class="btn-pill">戊土日主</button>
+        <button class="btn-pill">己土日主</button>
+        <button class="btn-pill">庚金日主</button>
+        <button class="btn-pill">辛金日主</button>
+        <button class="btn-pill">壬水日主</button>
+        <button class="btn-pill">癸水日主</button>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- 「不知道時辰」Modal（預設隱藏，點按鈕後顯示） -->
+<div class="modal-overlay" id="unknownHourModal">
+  <div class="modal">
+    <h3 class="modal-title">不知道時辰也沒關係</h3>
+    <p class="modal-text">
+      我們可以根據其他三柱先給你方向性的分析，等你補上時辰後再生成完整命盤。
+    </p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="btnCancelHour">取消</button>
+      <button class="btn-dark" id="btnUseThreePillars">先用三柱開始</button>
+    </div>
+  </div>
+</div>
+
+<!-- 驗收清單 -->
+<div class="verify-section">
+  <h2>✓ Phase 4 驗收標準</h2>
+  <div class="verify-list">
+    <div class="verify-item">表單在 375px 寬度下正常顯示</div>
+    <div class="verify-item">「10,000+」「1,000+」這兩個數字用金色強調</div>
+    <div class="verify-item">「不知道時辰?」連結是金色底線</div>
+    <div class="verify-item">主按鈕「排出八字命盤」有金色漸層</div>
+    <div class="verify-item">快速連結 pills 自動 wrap，超過螢幕寬度時換行</div>
+    <div class="verify-item">點擊「不知道時辰?」會跳出 Modal（覆蓋層 + 兩個按鈕）</div>
+    <div class="verify-item">Modal 內按「取消」會關閉</div>
+    <div class="verify-item">所有顏色與字級皆引用 tokens 變數</div>
+  </div>
+</div>
+
+<script>
+// 「不知道時辰」彈窗控制
+const modal = document.getElementById('unknownHourModal');
+const btnOpen = document.getElementById('btnUnknownHour');
+const btnCancel = document.getElementById('btnCancelHour');
+const btnUseThreePillars = document.getElementById('btnUseThreePillars');
+
+btnOpen.addEventListener('click', () => modal.classList.add('show'));
+btnCancel.addEventListener('click', () => modal.classList.remove('show'));
+btnUseThreePillars.addEventListener('click', () => {
+  modal.classList.remove('show');
+  alert('demo 提示：實際串接時這裡會自動填入「不指定時辰」並開始計算');
+});
+
+// 點擊覆蓋層空白處也關閉
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) modal.classList.remove('show');
+});
+</script>
+
+</body>
+</html>
