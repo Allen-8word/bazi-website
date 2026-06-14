@@ -852,6 +852,11 @@ function handleEmailSubmit(e){
   });
 
   if(!FORMSPREE_URL){
+    const successEl = document.getElementById('emailSuccess');
+    if(successEl){
+      successEl.textContent = '名單功能設定中';
+      successEl.classList.add('show');
+    }
     console.warn('FORMSPREE_URL not configured');
     return;
   }
