@@ -320,6 +320,38 @@ function findCurrentDyIndex(daYun){
   return idx;
 }
 
+function findDyIndexForYear(daYun, year){
+  return daYun.findIndex(dy => year >= dy.startYear && year <= dy.startYear + 9);
+}
+
+function getClosestDisplayYear(daYun, year){
+  if(!daYun || daYun.length === 0) return year;
+  const firstYear = daYun[0].startYear;
+  const lastYear = daYun[daYun.length - 1].startYear + 9;
+  return Math.min(lastYear, Math.max(firstYear, year));
+}
+
+function getDefaultFlowSelection(daYun){
+  const currentYear = new Date().getFullYear();
+  const currentDyIdx = findDyIndexForYear(daYun, currentYear);
+  if(currentDyIdx >= 0){
+    return { dyIdx: currentDyIdx, year: currentYear };
+  }
+  const fallbackYear = getClosestDisplayYear(daYun, currentYear);
+  const fallbackDyIdx = findDyIndexForYear(daYun, fallbackYear);
+  return {
+    dyIdx: fallbackDyIdx >= 0 ? fallbackDyIdx : findCurrentDyIndex(daYun),
+    year: fallbackYear
+  };
+}
+
+function getDefaultYearForDaYun(dy){
+  const currentYear = new Date().getFullYear();
+  return currentYear >= dy.startYear && currentYear <= dy.startYear + 9
+    ? currentYear
+    : dy.startYear;
+}
+
 function getElementClass(element){
   return 'el-' + element;
 }
@@ -694,10 +726,9 @@ function renderResult(){
     `);
   });
 
-  state.selectedDyIdx = findCurrentDyIndex(r.daYun);
-  state.selectedYear = r.daYun[state.selectedDyIdx]
-    ? r.daYun[state.selectedDyIdx].startYear
-    : new Date().getFullYear();
+  const defaultFlow = getDefaultFlowSelection(r.daYun);
+  state.selectedDyIdx = defaultFlow.dyIdx;
+  state.selectedYear = defaultFlow.year;
   renderDaYun();
   renderBarnum(r.dayElement);
 
@@ -737,7 +768,7 @@ function renderDaYun(){
     el.addEventListener('click', () => {
       state.selectedDyIdx = +el.dataset.idx;
       const dy = state.result.daYun[state.selectedDyIdx];
-      state.selectedYear = dy.startYear;
+      state.selectedYear = getDefaultYearForDaYun(dy);
       track('dayun_switch', { age: dy.startAge, ganzhi: dy.ganZhi });
       renderDaYun();
       renderFlowYears();
@@ -778,6 +809,11 @@ function renderFlowYears(){
       renderFlowYears();
     });
   });
+
+  const activeCell = grid.querySelector('.flowyear-cell.active');
+  if(activeCell && typeof activeCell.scrollIntoView === 'function'){
+    activeCell.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
 
   renderFlowYearTags();
 }
@@ -960,8 +996,6 @@ function init(){
       document.getElementById('page-result').classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       hideLoading();
-      // 結果頁進入後，啟動 sticky CTA observer
-      initStickyCta();
     }, 450);
   });
 
@@ -970,8 +1004,6 @@ function init(){
     document.getElementById('page-result').classList.remove('active');
     document.getElementById('page-home').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Phase 11: 回首頁時隱藏 sticky CTA
-    hideStickyCta();
   });
 
   document.querySelectorAll('.share-btn').forEach(b => {
@@ -980,38 +1012,6 @@ function init(){
 
   document.getElementById('emailForm').addEventListener('submit', handleEmailSubmit);
   renderLineCTA();
-
-  const btnViewAnalysis = document.getElementById('btnViewAnalysis');
-  if (btnViewAnalysis) {
-    btnViewAnalysis.addEventListener('click', () => {
-      track('view_analysis_click', {
-        day_stem: state.result && state.result.dayStem,
-        day_element: state.result && state.result.dayElement
-      });
-      const hashParams = [
-        'y=' + state.year,
-        'm=' + state.month,
-        'd=' + state.day,
-        'h=' + state.hour,
-        'mi=' + state.minute,
-        'g=' + state.gender,
-        't=' + state.calendarType,
-        'fy=' + state.selectedYear,
-        state.name ? 'n=' + encodeURIComponent(state.name) : null
-      ].filter(Boolean).join('&');
-      window.location.href = './analysis.html#' + hashParams;
-    });
-  }
-
-  // Phase 11: Sticky CTA 點擊 → 觸發既有的「查看詳細分析」邏輯
-  // 不重複寫 hashParams 組裝，直接呼叫 btnViewAnalysis 的 click
-  const stickyCtaBtn = document.getElementById('stickyCtaBtn');
-  if (stickyCtaBtn && btnViewAnalysis) {
-    stickyCtaBtn.addEventListener('click', () => {
-      track('sticky_cta_click', {});
-      btnViewAnalysis.click();
-    });
-  }
 
   // Phase 10: 下載 IG 分享卡按鈕
   const btnShareCard = document.getElementById('btnShareCard');
@@ -1045,66 +1045,6 @@ function showLoading() {
 function hideLoading() {
   const el = document.getElementById('loadingOverlay');
   if (el) el.classList.remove('show');
-}
-
-// --- Sticky CTA 控制（IntersectionObserver）---
-let stickyObserver = null;
-let stickyObserverTarget = null;
-
-function initStickyCta() {
-  const sticky = document.getElementById('stickyCta');
-  const target = document.querySelector('#page-result .analysis-cta');
-  if (!sticky || !target) return;
-
-  // 若已初始化過、且 target 沒換 → 直接重新顯示判斷一次
-  if (stickyObserver && stickyObserverTarget === target) {
-    // 已掛載，無需重新建立
-    return;
-  }
-
-  // 清掉舊的（保險）
-  if (stickyObserver) {
-    try { stickyObserver.disconnect(); } catch(e) {}
-  }
-
-  // 規則：
-  // - 當「查看詳細分析」原始 CTA 區塊「看不到」時 → 顯示 sticky CTA
-  // - 看得到時（已經在使用者眼前） → 隱藏 sticky CTA
-  // rootMargin: -50% 0px -20% 0px 表示「視窗中下段」進入時才視為可見
-  stickyObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        hideStickyCta();
-      } else {
-        // 但只有在結果頁啟用時才顯示
-        const resultActive = document.getElementById('page-result').classList.contains('active');
-        if (resultActive) showStickyCta();
-      }
-    });
-  }, {
-    root: null,
-    rootMargin: '0px 0px -20% 0px',
-    threshold: 0
-  });
-
-  stickyObserver.observe(target);
-  stickyObserverTarget = target;
-}
-
-function showStickyCta() {
-  const el = document.getElementById('stickyCta');
-  if (el) {
-    el.classList.add('show');
-    el.setAttribute('aria-hidden', 'false');
-  }
-}
-
-function hideStickyCta() {
-  const el = document.getElementById('stickyCta');
-  if (el) {
-    el.classList.remove('show');
-    el.setAttribute('aria-hidden', 'true');
-  }
 }
 
 if(document.readyState === 'loading'){

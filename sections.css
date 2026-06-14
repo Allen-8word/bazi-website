@@ -47,19 +47,6 @@
   font-weight: var(--weight-medium);
 }
 
-/* 快速連結區（卡片下方的日主膠囊群） */
-.quick-links {
-  margin-top: var(--space-xl);
-  padding: 0 4px;
-}
-
-.quick-links-title {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-md);
-}
-
-
 /* ============================================
    彈窗 · Modal（給「不知道時辰?」用）
    ============================================

@@ -135,6 +135,30 @@ function renderXianxiaSummary(profile) {
   cardEl.hidden = false;
 }
 
+function getFlowYearList() {
+  return Object.keys(window.FLOW_YEAR_ELEMENTS || {}).map(Number).sort((a, b) => a - b);
+}
+
+function getClosestFlowYear(years, year) {
+  if (!years.length) return year;
+  if (year <= years[0]) return years[0];
+  if (year >= years[years.length - 1]) return years[years.length - 1];
+  return years.reduce((closest, candidate) =>
+    Math.abs(candidate - year) < Math.abs(closest - year) ? candidate : closest
+  , years[0]);
+}
+
+function getInitialFlowYear(params) {
+  const years = getFlowYearList();
+  const requestedYear = +params.fy;
+  if (requestedYear && years.includes(requestedYear)) return requestedYear;
+
+  const currentYear = new Date().getFullYear();
+  if (years.includes(currentYear)) return currentYear;
+
+  return getClosestFlowYear(years, currentYear);
+}
+
 /* ========= 段落 1：命主特質 ========= */
 function renderDayMaster(dayStem) {
   const profile = window.DAY_MASTER_PROFILES[dayStem];
@@ -344,11 +368,11 @@ function renderPersona(topTwo) {
 function renderFlowYear(analysisData, currentYearParam) {
   const stripEl = document.getElementById('fyYearStrip');
   const contentEl = document.getElementById('fyContent');
-  const years = Object.keys(window.FLOW_YEAR_ELEMENTS).map(Number).sort();
-  const minYear = Math.min(...years);
-  const maxYear = Math.max(...years);
+  const years = getFlowYearList();
   const nowYear = new Date().getFullYear();
-  const selectedYear = Math.min(maxYear, Math.max(minYear, currentYearParam || nowYear));
+  const selectedYear = years.includes(currentYearParam)
+    ? currentYearParam
+    : getClosestFlowYear(years, currentYearParam || nowYear);
 
   // 流年快選列
   let stripHtml = '';
@@ -363,6 +387,10 @@ function renderFlowYear(analysisData, currentYearParam) {
     `;
   });
   stripEl.innerHTML = stripHtml;
+  const activeYearCell = stripEl.querySelector('.fy-year-cell.active');
+  if (activeYearCell && typeof activeYearCell.scrollIntoView === 'function') {
+    activeYearCell.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
 
   function renderFyContent(year) {
     const fy = window.BAZI_ENGINE.calculateFlowYearAnalysis(
@@ -467,6 +495,9 @@ function renderFlowYear(analysisData, currentYearParam) {
     cell.addEventListener('click', () => {
       stripEl.querySelectorAll('.fy-year-cell').forEach(c => c.classList.remove('active'));
       cell.classList.add('active');
+      if (typeof cell.scrollIntoView === 'function') {
+        cell.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
       const newYear = +cell.dataset.year;
       renderFyContent(newYear);
 
@@ -574,11 +605,12 @@ function init() {
   const params = parseHash();
   const result = calculatePillars(params);
   if (!result) { showError(); return; }
+  const initialFlowYear = getInitialFlowYear(params);
 
   const analysisData = window.BAZI_ENGINE.buildAnalysisData(
     result.pillars,
     params.g || 'male',
-    +params.fy || new Date().getFullYear(),
+    initialFlowYear,
     {
       BRANCH_PROFILES: window.BRANCH_PROFILES,
       FLOW_YEAR_ELEMENTS: window.FLOW_YEAR_ELEMENTS
@@ -598,17 +630,6 @@ function init() {
   renderElementRadar(analysisData.elementEnergy);
   renderBodyStrengthAndPersonality(analysisData.bodyStrength, analysisData.elementEnergy);
   renderPersona(analysisData.topTwoTenGods);
-
-  // 計算初始流年（必須在流年資料表的範圍內）
-  // 邏輯：優先用 URL 帶的 fy，若該年份不在資料表中（例如使用者帶的是大運起運年 1990、2018 等）
-  //      則 fallback 到當前年份（new Date().getFullYear()）
-  const flowYearKeys = Object.keys(window.FLOW_YEAR_ELEMENTS).map(Number);
-  const minFlowYear = Math.min(...flowYearKeys);
-  const maxFlowYear = Math.max(...flowYearKeys);
-  const requestedYear = +params.fy || new Date().getFullYear();
-  const initialFlowYear = (requestedYear >= minFlowYear && requestedYear <= maxFlowYear)
-    ? requestedYear
-    : new Date().getFullYear();
 
   renderFlowYear(analysisData, initialFlowYear);
   renderSisterWord(analysisData.dayStem, analysisData.topTwoTenGods);

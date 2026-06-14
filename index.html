@@ -702,50 +702,6 @@ body {
   .email-form button { padding: 12px; }
 }
 
-.analysis-cta {
-  background: linear-gradient(135deg, rgba(201, 168, 124, 0.12), rgba(139, 157, 131, 0.08));
-  border: 1.5px solid var(--color-accent);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem 1.25rem;
-  margin-bottom: 1.25rem;
-  text-align: center;
-}
-.analysis-cta-tag {
-  font-size: 11px;
-  color: var(--color-accent);
-  letter-spacing: 4px;
-  margin-bottom: 10px;
-}
-.analysis-cta h3 {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 19px;
-  color: var(--color-text);
-  font-weight: 500;
-  margin-bottom: 10px;
-  letter-spacing: 1.5px;
-}
-.analysis-cta p {
-  font-size: 13px;
-  color: var(--color-text-sub);
-  line-height: 1.85;
-  margin-bottom: 1.25rem;
-}
-.btn-analysis {
-  background: var(--color-accent);
-  color: #FFF;
-  border: none;
-  padding: 13px 28px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  letter-spacing: 4px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-.btn-analysis:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
-.btn-analysis:active { transform: scale(0.98); }
-
 .xianxia-card {
   margin-bottom: 1rem;
   border-color: rgba(201, 168, 124, 0.35);
@@ -976,26 +932,6 @@ body {
       </p>
     </div>
 
-    <!-- Phase 4 新增：日主快速連結（未來功能，目前 disabled） -->
-    <div class="quick-links">
-      <p class="quick-links-title">想直接看某個日主的完整解析?</p>
-      <div class="tag-group">
-        <button class="btn-pill" disabled>甲木日主</button>
-        <button class="btn-pill" disabled>乙木日主</button>
-        <button class="btn-pill" disabled>丙火日主</button>
-        <button class="btn-pill" disabled>丁火日主</button>
-        <button class="btn-pill" disabled>戊土日主</button>
-        <button class="btn-pill" disabled>己土日主</button>
-        <button class="btn-pill" disabled>庚金日主</button>
-        <button class="btn-pill" disabled>辛金日主</button>
-        <button class="btn-pill" disabled>壬水日主</button>
-        <button class="btn-pill" disabled>癸水日主</button>
-      </div>
-      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:8px;text-align:center;letter-spacing:1px">
-        完整報告開放中，加入 LINE 優先通知。
-      </p>
-    </div>
-
     <div class="trust-block">
       <div class="stats">
         <div>
@@ -1087,18 +1023,6 @@ body {
       <div class="barnum-biz" id="bnBiz"></div>
     </div>
 
-    <div class="analysis-cta">
-      <div class="analysis-cta-inner">
-        <div class="analysis-cta-tag">— 完 整 報 告 —</div>
-        <h3>查看你的完整仙途報告</h3>
-        <p>
-          含五行能量雷達圖、十神結構分布<br>
-          綜合人格畫像與流年運勢解析
-        </p>
-        <button class="btn-analysis" id="btnViewAnalysis">查看完整仙途報告 →</button>
-      </div>
-    </div>
-
     <section class="line-cta-card" id="lineCtaSection">
       <h3>想看更完整的本命仙途報告？</h3>
       <p>加入 LINE，領取完整仙途報告開放通知，並獲得每月年度機緣提醒。</p>
@@ -1150,11 +1074,6 @@ body {
   </nav>
   <p class="footer-copyright">內容僅供命理參考。© 2026 本命仙盤. All rights reserved.</p>
 </footer>
-
-<!-- Phase 11: Sticky CTA（結果頁底部固定按鈕） -->
-<div class="sticky-cta" id="stickyCta" aria-hidden="true">
-  <button class="sticky-cta-btn" id="stickyCtaBtn" type="button">查看完整仙途報告 →</button>
-</div>
 
 <!-- Phase 10: IG 限動分享卡 Modal -->
 <div class="share-modal" id="shareCardModal" aria-hidden="true" role="dialog" aria-labelledby="shareCardTitle">

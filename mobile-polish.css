@@ -3,9 +3,8 @@
    ============================================
    Phase 11 涵蓋：
      1. 觸控目標最小 44×44px（Apple HIG / WCAG 2.5.5）
-     2. Sticky CTA（結果頁底部固定分享按鈕）
-     3. iOS notch / home indicator 安全區域
-     4. Loading 狀態（金色圓圈 spinner）
+     2. iOS notch / home indicator 安全區域
+     3. Loading 狀態（金色圓圈 spinner）
 
    依賴：tokens.css（顏色、字級、間距、圓角）
    版本：v1.0（Phase 11 行動裝置打磨）
@@ -84,100 +83,11 @@
 
 
 /* ============================================
-   2. Sticky CTA · 固定底部分享按鈕
-   ============================================
-   行為：
-     - 只在 #page-result 啟用時顯示
-     - 由 IntersectionObserver 控制：當原 .analysis-cta
-       未進入視窗時顯示，看到原 CTA 時自動隱藏
-     - 含 iOS safe-area-inset-bottom（home indicator）
-*/
-
-.sticky-cta {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 50;
-
-  /* 上方留半透明漸層淡入，避免硬切線 */
-  background: linear-gradient(
-    to bottom,
-    rgba(250, 246, 239, 0) 0%,
-    var(--surface-page) 24%,
-    var(--surface-page) 100%
-  );
-
-  /* 底部留 home indicator 空間 */
-  padding:
-    var(--space-md)
-    var(--space-lg)
-    calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
-
-  /* 預設隱藏（淡出 + 下移） */
-  opacity: 0;
-  transform: translateY(8px);
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-/* 顯示時的狀態（由 JS 加 .show） */
-.sticky-cta.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* 內部按鈕（沿用 btn-primary 金色漸層風格） */
-.sticky-cta-btn {
-  width: 100%;
-  min-height: 48px;
-  padding: 12px 20px;
-  background: linear-gradient(
-    180deg,
-    var(--brand-primary-light) 0%,
-    var(--brand-primary) 100%
-  );
-  color: var(--text-on-brand);
-  font-size: var(--text-md);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wider);
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  /* 加一點陰影營造「浮在頁面上」的層次感 */
-  box-shadow: 0 4px 16px rgba(207, 174, 133, 0.32);
-  transition: opacity 0.2s ease, transform 0.1s ease;
-}
-.sticky-cta-btn:hover { opacity: 0.92; }
-.sticky-cta-btn:active { transform: scale(0.99); }
-
-/* 桌機（768+）時 sticky CTA 也要居中於 560px 容器內 */
-@media (min-width: 768px) {
-  .sticky-cta {
-    max-width: var(--container-desktop);
-    margin: 0 auto;
-    /* 由於 fixed 定位，left/right 0 + max-width + margin auto 來居中 */
-  }
-}
-
-
-/* ============================================
-   3. iOS Notch / Home Indicator 安全區域
+   2. iOS Notch / Home Indicator 安全區域
    ============================================
    說明：搭配 index.html 的
    <meta viewport-fit="cover"> 一起運作
 */
-
-/* 結果頁底部要保留空間給 sticky CTA + home indicator
-   避免最後一個元素被遮住 */
-#page-result.active {
-  padding-bottom: calc(
-    96px
-    + env(safe-area-inset-bottom, 0px)
-  );
-}
 
 /* Footer 也要適度抬高，避免 iPhone home bar 蓋掉「© 2026」 */
 .page-footer {
@@ -189,7 +99,7 @@
 
 
 /* ============================================
-   4. Loading 狀態 · 金色圓圈 Spinner
+   3. Loading 狀態 · 金色圓圈 Spinner
    ============================================
    行為：
      - 點「立即排盤」按鈕時短暫顯示
@@ -302,16 +212,11 @@ a, button, .btn-pill, .share-btn,
 /* ============================================
    6. 列印時關閉行動裝置裝飾
    ============================================
-   sticky CTA、loading 等不應出現在列印 PDF
+   loading 等不應出現在列印 PDF
 */
 
 @media print {
-  .sticky-cta,
   .loading-overlay {
     display: none !important;
-  }
-
-  #page-result.active {
-    padding-bottom: 0;
   }
 }
