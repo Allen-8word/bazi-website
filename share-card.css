@@ -492,6 +492,83 @@
   color: var(--text-secondary);
 }
 
+.sc-xiantu-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.sc-xiantu-kicker {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  letter-spacing: 7px;
+  color: var(--brand-primary-dark);
+  margin: 10px 0 28px;
+  padding-left: 7px;
+}
+.sc-xiantu-circle {
+  width: 132px;
+  height: 132px;
+  margin-bottom: 20px;
+  background: rgba(201, 168, 124, 0.18);
+}
+.sc-xiantu-root {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+.sc-xiantu-title {
+  font-family: var(--font-serif);
+  font-size: 33px;
+  line-height: 1.35;
+  letter-spacing: 8px;
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+  margin-bottom: 8px;
+  padding-left: 8px;
+}
+.sc-xiantu-subtitle {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--brand-primary-dark);
+  margin-bottom: 20px;
+}
+.sc-xiantu-keywords {
+  margin-bottom: 24px;
+}
+.sc-xiantu-panel {
+  width: 100%;
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  border: 0.5px solid var(--border-soft);
+}
+.sc-xiantu-panel-soft {
+  background: rgba(255,255,255,0.62);
+}
+.sc-xiantu-label {
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: 6px;
+  color: var(--brand-primary);
+  margin-bottom: 10px;
+  padding-left: 6px;
+}
+.sc-xiantu-panel p {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0;
+  letter-spacing: 1px;
+}
+
 
 /* ============================================
    4. 卡 2 · 命局速覽卡 (Chart Card)

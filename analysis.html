@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="theme-color" content="#F5F1EB">
 
-<title>命理分析報告｜八字命盤</title>
-<meta name="description" content="依傳統命理典籍推算的詳細分析報告，包含命主特質、五行能量分布、十神結構與流年運勢。">
+<title>完整仙途報告｜本命仙盤</title>
+<meta name="description" content="以八字命理為底層，整理你的本命靈根、五行靈氣、命格技能樹與年度機緣。">
 <meta name="robots" content="noindex">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/tokens.css?v=13">
-<link rel="stylesheet" href="/components.css?v=13">
-<link rel="stylesheet" href="/layout.css?v=13">
-<link rel="stylesheet" href="/sections.css?v=13">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/sections.css">
 
 <style>
 :root {
@@ -111,6 +111,75 @@ body {
   border: 1px solid var(--bg-secondary);
   box-shadow: var(--shadow-soft);
   margin-bottom: 1.25rem;
+}
+.xianxia-report-card {
+  border-color: rgba(201, 168, 124, 0.38);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245,241,235,0.82));
+}
+.xianxia-report-card[hidden] { display: none; }
+.xianxia-report-head {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.xianxia-report-kicker {
+  font-size: 12px;
+  color: var(--color-accent);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+.xianxia-report-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 25px;
+  letter-spacing: 3px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+.xianxia-report-root {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(139, 157, 131, 0.14);
+  color: var(--color-main);
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+.xianxia-report-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 1rem 0;
+}
+.xianxia-report-keywords span {
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--bg-primary);
+  color: var(--color-text);
+  font-size: 13px;
+}
+.xianxia-report-grid {
+  display: grid;
+  gap: 10px;
+}
+.xianxia-report-item {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(232, 226, 213, 0.72);
+}
+.xianxia-report-item strong {
+  display: block;
+  color: var(--color-mystic);
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+}
+.xianxia-report-item p {
+  color: #4D4944;
+  font-size: 14px;
+  line-height: 1.85;
+  margin: 0;
 }
 .card-section-title {
   font-family: 'Noto Serif TC', serif;
@@ -1335,7 +1404,7 @@ body {
 
 <header class="site-header">
   <div class="container">
-    <div class="brand">八 字 命 盤</div>
+    <div class="brand">本 命 仙 盤</div>
   </div>
 </header>
 
@@ -1356,12 +1425,17 @@ body {
 <div id="reportContent" style="display:none">
 
   <div class="report-header" id="reportHeader">
-    <div class="badge">命 理 分 析 報 告</div>
+    <div class="badge">完 整 仙 途 報 告</div>
     <h1 id="rptName">命主</h1>
     <div class="meta" id="rptMeta"></div>
+    <div class="meta">以八字命理為底層，整理你的本命靈根、五行靈氣、命格技能樹與年度機緣。</div>
   </div>
 
   <div id="pdfArea">
+
+  <div class="report-card xianxia-report-card" id="cardXianxiaSummary" hidden>
+    <div id="xianxiaSummaryContent"></div>
+  </div>
 
   <!-- 一、命主特質 -->
   <div class="report-card" id="cardDayMaster">
@@ -1413,7 +1487,7 @@ body {
 
   <!-- PDF 內專用頁尾（僅在 PDF 中顯示） -->
   <div class="pdf-footer" id="pdfFooter">
-    本報告由「八字命盤」線上工具生成 · 報告生成日期：<span id="pdfGenDate"></span>
+    本報告由「本命仙盤」線上工具生成 · 報告生成日期：<span id="pdfGenDate"></span>
   </div>
 
   </div><!-- /#pdfArea -->
@@ -1442,12 +1516,14 @@ body {
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/lunar.js"></script>
-<script src="./data/dayMaster.js?v=13"></script>
-<script src="./data/branches.js?v=13"></script>
-<script src="./data/tenGods.js?v=13"></script>
-<script src="./data/elements.js?v=13"></script>
-<script src="./data/engine.js?v=13"></script>
-<script src="./analysis.js?v=13"></script>
+<script src="./data/dayMaster.js"></script>
+<script src="./data/branches.js"></script>
+<script src="./data/tenGods.js"></script>
+<script src="./data/elements.js"></script>
+<script src="./data/engine.js"></script>
+<script src="./data/xianxia-map.js?v=10"></script>
+<script src="./data/bazi-xianxia-profile.js?v=10"></script>
+<script src="./analysis.js"></script>
 
 </body>
 </html>

@@ -19,8 +19,8 @@
 // ============================================
 const state = {
   initialized: false,
-  data: null,           // { pillars, dayStem, dayElement, name, gender, solarDate, lunarDate }
-  currentTab: 0,        // 0 = persona（僅保留日主人格卡）
+  data: null,           // { pillars, dayStem, dayElement, name, gender, solarDate, lunarDate, xianxiaProfile }
+  currentTab: 0,        // 0 = xianxia/persona（僅保留一張主分享卡）
   rendering: false,     // 截圖中（避免重複觸發）
   featuredQuote: '',    // 單句金句（persona 卡用，每次 init 隨機抽）
   cardBlob: null,       // 預先生成的 PNG blob（讓「分享」能在點擊當下立即觸發）
@@ -28,7 +28,7 @@ const state = {
 };
 
 const TABS = [
-  { id: 'persona', label: '日 主', filename: 'persona' }
+  { id: 'xianxia', label: '仙 途', filename: 'benming-xiantu' }
 ];
 
 const ELEMENT_NAMES = {
@@ -105,6 +105,8 @@ const ShareCard = {
     }
     const modal = document.getElementById('shareCardModal');
     if (!modal) return;
+    const titleEl = document.getElementById('shareCardTitle');
+    if (titleEl) titleEl.textContent = '下 載 本 命 仙 途 卡';
 
     // 動畫先把 modal 顯示出來，lib 在背景載入
     modal.classList.add('show');
@@ -348,6 +350,8 @@ function renderPersonaHTML() {
   const d = state.data;
   const profile = (window.DAY_MASTER_PROFILES || {})[d.dayStem];
   if (!profile) return '<div style="padding:40px">資料不足</div>';
+  const xianxiaProfile = getXianxiaProfile();
+  if (xianxiaProfile) return renderXianxiaHTML(xianxiaProfile, profile);
 
   const keywordsHTML = (profile.keywords || []).slice(0, 3).map(k =>
     `<span class="sc-keyword">${escapeHtml(k)}</span>`
@@ -405,6 +409,62 @@ function renderPersonaHTML() {
     </div>
 
     ${renderFooterHTML('掃 我 也 算 一 個')}
+  `;
+}
+
+function getXianxiaProfile() {
+  if (state.data && state.data.xianxiaProfile) return state.data.xianxiaProfile;
+  if (!window.XIANXIA_MAP || !window.BAZI_XIANXIA_PROFILE || typeof window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile !== 'function') {
+    return null;
+  }
+  try {
+    return window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile({
+      baziResult: state.data
+    });
+  } catch (e) {
+    console.warn('[ShareCard] Xianxia profile build failed:', e);
+    return null;
+  }
+}
+
+function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
+  const d = state.data;
+  const keywordsHTML = (xianxiaProfile.keywords || []).slice(0, 4).map(k =>
+    `<span class="sc-keyword">${escapeHtml(k)}</span>`
+  ).join('');
+  const reminder = xianxiaProfile.shareLine || xianxiaProfile.phrase || xianxiaProfile.challenge || '';
+
+  return `
+    <div class="sc-brand">
+      <span class="sc-brand-mark">本 命 仙 盤</span>
+      <span class="sc-brand-tag">XIANTU</span>
+    </div>
+
+    <div class="sc-xiantu-content">
+      <div class="sc-xiantu-kicker">我 的 本 命 仙 途 卡</div>
+
+      <div class="sc-persona-circle sc-xiantu-circle">
+        <span class="sc-persona-stem">${escapeHtml(d.dayStem)}</span>
+      </div>
+
+      <div class="sc-xiantu-root">${escapeHtml(xianxiaProfile.spiritRoot)}</div>
+      <div class="sc-xiantu-title">${escapeHtml(xianxiaProfile.title)}</div>
+      <div class="sc-xiantu-subtitle">${escapeHtml((dayMasterProfile && dayMasterProfile.elementName) || '')} · 本命靈根</div>
+
+      <div class="sc-keywords sc-xiantu-keywords">${keywordsHTML}</div>
+
+      <div class="sc-xiantu-panel">
+        <div class="sc-xiantu-label">修 行 提 醒</div>
+        <p>${escapeHtml(reminder)}</p>
+      </div>
+
+      <div class="sc-xiantu-panel sc-xiantu-panel-soft">
+        <div class="sc-xiantu-label">命 格 天 賦</div>
+        <p>${escapeHtml(xianxiaProfile.gift)}</p>
+      </div>
+    </div>
+
+    ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
   `;
 }
 

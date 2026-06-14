@@ -16,6 +16,15 @@
 
 const Solar = window.Solar;
 
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function parseHash() {
   const hash = window.location.hash.replace(/^#/, '');
   const params = {};
@@ -63,6 +72,67 @@ function calculatePillars(params) {
 function showError() {
   document.getElementById('errBox').classList.add('show');
   document.getElementById('reportContent').style.display = 'none';
+}
+
+function buildXianxiaProfile(result, analysisData) {
+  if (!window.XIANXIA_MAP || !window.BAZI_XIANXIA_PROFILE || typeof window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile !== 'function') {
+    console.warn('XIANXIA module not loaded');
+    return null;
+  }
+
+  try {
+    return window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile({
+      baziResult: {
+        pillars: result.pillars,
+        dayStem: analysisData.dayStem,
+        dayElement: analysisData.dayElement,
+        elementEnergy: analysisData.elementEnergy
+      }
+    });
+  } catch (e) {
+    console.warn('XIANXIA profile build failed', e);
+    return null;
+  }
+}
+
+function renderXianxiaSummary(profile) {
+  const cardEl = document.getElementById('cardXianxiaSummary');
+  const contentEl = document.getElementById('xianxiaSummaryContent');
+  if (!cardEl || !contentEl) return;
+
+  if (!profile) {
+    cardEl.hidden = true;
+    contentEl.innerHTML = '';
+    return;
+  }
+
+  const keywordsHtml = (profile.keywords || []).slice(0, 4).map(keyword =>
+    `<span>${escapeHtml(keyword)}</span>`
+  ).join('');
+
+  contentEl.innerHTML = `
+    <div class="xianxia-report-head">
+      <div class="xianxia-report-kicker">本 命 仙 途 摘 要</div>
+      <div class="xianxia-report-title">${escapeHtml(profile.title)}</div>
+      <div class="xianxia-report-root">本命靈根：${escapeHtml(profile.spiritRoot)}</div>
+    </div>
+    <div class="xianxia-report-keywords">${keywordsHtml}</div>
+    <div class="xianxia-report-grid">
+      <div class="xianxia-report-item">
+        <strong>命格天賦</strong>
+        <p>${escapeHtml(profile.gift)}</p>
+      </div>
+      <div class="xianxia-report-item">
+        <strong>修行課題</strong>
+        <p>${escapeHtml(profile.challenge)}</p>
+      </div>
+      <div class="xianxia-report-item">
+        <strong>五行靈氣提醒</strong>
+        <p>${escapeHtml(profile.elementAuraSummary)}</p>
+      </div>
+    </div>
+  `;
+  cardEl.hidden = false;
 }
 
 /* ========= 段落 1：命主特質 ========= */
@@ -519,6 +589,9 @@ function init() {
   const displayName = params.n ? decodeURIComponent(params.n) : '命主';
   document.getElementById('rptName').textContent = displayName + ' · ' + (params.g === 'female' ? '女命' : '男命');
   document.getElementById('rptMeta').textContent = '國曆 ' + result.solarDate + ' · 農曆 ' + result.lunarDate;
+
+  const xianxiaProfile = buildXianxiaProfile(result, analysisData);
+  renderXianxiaSummary(xianxiaProfile);
 
   // 渲染六個段落
   renderDayMaster(analysisData.dayStem);
