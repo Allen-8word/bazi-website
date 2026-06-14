@@ -24,34 +24,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/tokens.css?v=13">
-<link rel="stylesheet" href="/components.css?v=13">
-<link rel="stylesheet" href="/layout.css?v=13">
-<link rel="stylesheet" href="/sections.css?v=13">
-<link rel="stylesheet" href="/mobile-polish.css?v=13">
-<link rel="stylesheet" href="/share-card.css?v=13">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/sections.css">
+<link rel="stylesheet" href="/mobile-polish.css">
+<link rel="stylesheet" href="/share-card.css">
 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
-  const GA_MEASUREMENT_ID = '';
-  if (GA_MEASUREMENT_ID) {
-    const gaScript = document.createElement('script');
-    gaScript.async = true;
-    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_MEASUREMENT_ID;
-    document.head.appendChild(gaScript);
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', GA_MEASUREMENT_ID, { 'anonymize_ip': true });
-  }
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true });
 </script>
 
 <script>
-  const META_PIXEL_ID = '';
-  if (META_PIXEL_ID) {
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', META_PIXEL_ID);
-    fbq('track', 'PageView');
-  }
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', 'YOUR_PIXEL_ID');
+fbq('track', 'PageView');
 </script>
 
 <script type="application/ld+json">
@@ -161,13 +152,6 @@ body {
 .field.error input, .field.error select {
   border-color: var(--color-error);
   background: var(--color-error-bg);
-}
-.field-hint {
-  margin-top: 5px;
-  font-size: 10px;
-  line-height: 1.5;
-  color: var(--color-text-sub);
-  letter-spacing: 0.3px;
 }
 
 .gender-picker {
@@ -752,6 +736,118 @@ body {
 }
 .btn-analysis:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
 .btn-analysis:active { transform: scale(0.98); }
+
+.xianxia-card {
+  margin-bottom: 1rem;
+  border-color: rgba(201, 168, 124, 0.35);
+}
+.xianxia-card[hidden] { display: none; }
+.xianxia-kicker {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.xianxia-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 24px;
+  line-height: 1.35;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.spirit-root-badge {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 12px;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(139, 157, 131, 0.12);
+  color: var(--color-main);
+  font-size: var(--text-md);
+  letter-spacing: 2px;
+}
+.xianxia-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.xianxia-keywords span {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-input);
+  color: var(--text-secondary);
+  font-size: var(--text-md);
+}
+.xianxia-summary {
+  color: var(--text-secondary);
+  font-size: var(--text-lg);
+  line-height: 1.9;
+}
+.xianxia-points {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.xianxia-point {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-input);
+}
+.xianxia-point strong {
+  display: block;
+  color: var(--color-mystic);
+  font-size: var(--text-sm);
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+}
+.xianxia-point p {
+  color: var(--text-secondary);
+  font-size: var(--text-md);
+  line-height: 1.8;
+}
+.line-cta-card {
+  margin: 1rem 0;
+  padding: 1.5rem 1.25rem;
+  background: linear-gradient(135deg, rgba(139, 157, 131, 0.12), rgba(201, 168, 124, 0.12));
+  border: 1px solid rgba(201, 168, 124, 0.28);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+.line-cta-card h3 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.line-cta-card p {
+  color: var(--text-secondary);
+  font-size: var(--text-md);
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+.line-cta-btn {
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-main);
+  color: #FFF;
+  padding: 13px 16px;
+  font-family: inherit;
+  font-size: var(--text-lg);
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+.line-cta-status {
+  min-height: 18px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
 </style>
 </head>
 <body>
@@ -763,8 +859,8 @@ body {
       <span class="menu-icon"><span></span></span>
     </button>
   </div>
-  <h1 class="page-title">八字命盤旅程</h1>
-  <p class="page-subtitle">輸入生辰、取得八字命格解析與五行能量觀察</p>
+  <h1 class="page-title">本命仙盤</h1>
+  <p class="page-subtitle">測出你的本命靈根與修仙命格</p>
 </header>
 
 <main>
@@ -812,7 +908,6 @@ body {
             <option value="singapore">新加坡</option>
             <option value="malaysia">吉隆坡 · 馬來西亞</option>
           </select>
-          <div class="field-hint">目前依出生時辰排盤，出生地僅作資料標記。</div>
         </div>
         <div class="field">
           <label for="iMinute">分（選填）</label>
@@ -822,7 +917,7 @@ body {
 
       <div class="error-msg" id="errMsg"></div>
 
-      <button class="btn-primary" id="btnSubmit">立 即 排 盤 · 免 費</button>
+      <button class="btn-primary" id="btnSubmit">啟動我的本命仙盤</button>
     </div>
 
     <div class="empathy-block">
@@ -831,6 +926,26 @@ body {
         該離職創業，還是留在大公司？<br>
         這位合夥人，是貴人還是劫財？<br>
         明明很努力，為什麼總是差一步？
+      </p>
+    </div>
+
+    <!-- Phase 4 新增：日主快速連結（未來功能，目前 disabled） -->
+    <div class="quick-links">
+      <p class="quick-links-title">想直接看某個日主的完整解析?</p>
+      <div class="tag-group">
+        <button class="btn-pill" disabled>甲木日主</button>
+        <button class="btn-pill" disabled>乙木日主</button>
+        <button class="btn-pill" disabled>丙火日主</button>
+        <button class="btn-pill" disabled>丁火日主</button>
+        <button class="btn-pill" disabled>戊土日主</button>
+        <button class="btn-pill" disabled>己土日主</button>
+        <button class="btn-pill" disabled>庚金日主</button>
+        <button class="btn-pill" disabled>辛金日主</button>
+        <button class="btn-pill" disabled>壬水日主</button>
+        <button class="btn-pill" disabled>癸水日主</button>
+      </div>
+      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:8px;text-align:center;letter-spacing:1px">
+        即將開放 · 敬請期待
       </p>
     </div>
 
@@ -850,7 +965,7 @@ body {
         </div>
       </div>
       <p class="desc">
-        本平台採用傳統四柱八字古法，結合現代演算法排盤<br>
+        以傳統八字命理為底層，轉譯成更好懂、更有趣的本命仙途解析<br>
         所有資料不上傳伺服器，僅在你的瀏覽器內運算
       </p>
     </div>
@@ -867,6 +982,10 @@ body {
       <div class="name" id="rName">命主 · 男命</div>
       <div class="date" id="rDate"></div>
     </div>
+
+    <section class="card xianxia-card" id="xianxiaProfileSection" hidden>
+      <div id="rXianxiaProfile"></div>
+    </section>
 
     <!-- Phase 5: 日主展示卡（由 app.js 動態填入內容） -->
     <section class="daymaster-card card card--center" id="rDayMasterCard" style="display:none">
@@ -932,6 +1051,13 @@ body {
         <button class="btn-analysis" id="btnViewAnalysis">查 看 詳 細 分 析 →</button>
       </div>
     </div>
+
+    <section class="line-cta-card" id="lineCtaSection">
+      <h3>想看更完整的本命仙途報告？</h3>
+      <p>加入 LINE，領取完整仙途報告開放通知，並獲得每月年度機緣提醒。</p>
+      <button class="line-cta-btn" id="btnLineCta" type="button">加入 LINE 領取完整仙途報告</button>
+      <div class="line-cta-status" id="lineCtaStatus" aria-live="polite"></div>
+    </section>
 
     <div class="coming-soon">
       <div class="tag-line">即 將 開 放</div>
@@ -1015,12 +1141,14 @@ body {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/lunar.js"></script>
-<script src="./data/dayMaster.js?v=13"></script>
-<script src="./data/branches.js?v=13"></script>
-<script src="./data/elements.js?v=13"></script>
-<script src="./data/engine.js?v=13"></script>
-<script src="./app.js?v=13"></script>
-<script src="./share-card.js?v=13"></script>
+<script src="./data/dayMaster.js"></script>
+<script src="./data/branches.js"></script>
+<script src="./data/elements.js"></script>
+<script src="./data/engine.js"></script>
+<script src="./data/xianxia-map.js?v=10"></script>
+<script src="./data/bazi-xianxia-profile.js?v=10"></script>
+<script src="./app.js"></script>
+<script src="./share-card.js"></script>
 
 </body>
 </html>

@@ -130,6 +130,8 @@ const BARNUM = {
   }
 };
 
+const LINE_OFFICIAL_URL = '';
+
 const state = {
   calendarType: 'solar',
   gender: 'male',
@@ -141,6 +143,7 @@ const state = {
   minute: 0,
   location: 'taipei',
   result: null,
+  xianxiaProfile: null,
   selectedDyIdx: 0,
   selectedYear: new Date().getFullYear()
 };
@@ -152,6 +155,32 @@ function track(eventName, props){
   }
   if(typeof window.fbq === 'function'){
     try { window.fbq('trackCustom', eventName, safeProps); } catch(e) {}
+  }
+}
+
+function escapeHtml(str){
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildXianxiaProfile(result){
+  if(!window.XIANXIA_MAP || !window.BAZI_XIANXIA_PROFILE || typeof window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile !== 'function'){
+    console.warn('XIANXIA module not loaded');
+    return null;
+  }
+  try {
+    const profile = window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile({
+      baziResult: result
+    });
+    if(!profile) console.warn('XIANXIA profile not available');
+    return profile;
+  } catch(e) {
+    console.warn('XIANXIA profile build failed', e);
+    return null;
   }
 }
 
@@ -288,14 +317,6 @@ function findCurrentDyIndex(daYun){
     if(daYun[i].startYear <= nowY){ idx = i; break; }
   }
   return idx;
-}
-
-function getInitialFlowYear(dy){
-  const nowY = new Date().getFullYear();
-  if(!dy) return nowY;
-  const start = dy.startYear;
-  const end = dy.startYear + 9;
-  return nowY >= start && nowY <= end ? nowY : start;
 }
 
 function getElementClass(element){
@@ -551,6 +572,52 @@ function renderDayMasterCard(dayStem){
   cardEl.style.display = '';
 }
 
+function renderXianxiaProfile(profile){
+  const sectionEl = document.getElementById('xianxiaProfileSection');
+  const contentEl = document.getElementById('rXianxiaProfile');
+  if(!sectionEl || !contentEl) return;
+  if(!profile){
+    sectionEl.hidden = true;
+    contentEl.innerHTML = '';
+    return;
+  }
+
+  const keywordsHtml = (profile.keywords || []).slice(0, 4).map(keyword =>
+    `<span>${escapeHtml(keyword)}</span>`
+  ).join('');
+
+  contentEl.innerHTML = `
+    <div class="xianxia-kicker">本 命 仙 途 總 覽</div>
+    <h2 class="xianxia-title">${escapeHtml(profile.title)}</h2>
+    <span class="spirit-root-badge">本命靈根：${escapeHtml(profile.spiritRoot)}</span>
+    <div class="xianxia-keywords">${keywordsHtml}</div>
+    <p class="xianxia-summary">${escapeHtml(profile.summary)}</p>
+    <div class="xianxia-points">
+      <div class="xianxia-point">
+        <strong>命格天賦</strong>
+        <p>${escapeHtml(profile.gift)}</p>
+      </div>
+      <div class="xianxia-point">
+        <strong>修行課題</strong>
+        <p>${escapeHtml(profile.challenge)}</p>
+      </div>
+      <div class="xianxia-point">
+        <strong>五行靈氣提醒</strong>
+        <p>${escapeHtml(profile.elementAuraSummary)}</p>
+      </div>
+      <div class="xianxia-point">
+        <strong>一句提醒</strong>
+        <p>${escapeHtml(profile.shareLine || profile.phrase)}</p>
+      </div>
+    </div>
+  `;
+  sectionEl.hidden = false;
+  track('xianxia_profile_viewed', {
+    day_stem: profile.dayStem || '',
+    title: profile.title || ''
+  });
+}
+
 
 function renderResult(){
   const r = state.result;
@@ -559,6 +626,8 @@ function renderResult(){
   const displayName = state.name || '命主';
   document.getElementById('rName').textContent = displayName + ' · ' + (state.gender === 'male' ? '男命' : '女命');
   document.getElementById('rDate').textContent = '國曆 ' + r.solarDate + ' · 農曆 ' + r.lunarDate;
+
+  renderXianxiaProfile(r.xianxiaProfile || state.xianxiaProfile);
 
   // Phase 5: 渲染日主展示卡
   renderDayMasterCard(r.pillars.day.stem);
@@ -620,7 +689,9 @@ function renderResult(){
   });
 
   state.selectedDyIdx = findCurrentDyIndex(r.daYun);
-  state.selectedYear = getInitialFlowYear(r.daYun[state.selectedDyIdx]);
+  state.selectedYear = r.daYun[state.selectedDyIdx]
+    ? r.daYun[state.selectedDyIdx].startYear
+    : new Date().getFullYear();
   renderDaYun();
   renderBarnum(r.dayElement);
 
@@ -633,7 +704,8 @@ function renderResult(){
       name: state.name,
       gender: state.gender,
       solarDate: r.solarDate,
-      lunarDate: r.lunarDate
+      lunarDate: r.lunarDate,
+      xianxiaProfile: r.xianxiaProfile || state.xianxiaProfile
     });
   }
 }
@@ -659,7 +731,7 @@ function renderDaYun(){
     el.addEventListener('click', () => {
       state.selectedDyIdx = +el.dataset.idx;
       const dy = state.result.daYun[state.selectedDyIdx];
-      state.selectedYear = getInitialFlowYear(dy);
+      state.selectedYear = dy.startYear;
       track('dayun_switch', { age: dy.startAge, ganzhi: dy.ganZhi });
       renderDaYun();
       renderFlowYears();
@@ -767,20 +839,13 @@ function handleEmailSubmit(e){
   e.preventDefault();
   const email = document.getElementById('iEmail').value.trim();
   if(!email || !email.includes('@')) return;
-  const FORMSPREE_URL = '';
-
-  if(!FORMSPREE_URL){
-    const successEl = document.getElementById('emailSuccess');
-    document.getElementById('emailForm').style.display = 'none';
-    successEl.textContent = '訂閱功能設定中，請稍後再回來查看開放通知';
-    successEl.classList.add('show');
-    return;
-  }
 
   track('email_subscribe', {
     day_stem: state.result && state.result.dayStem,
     day_element: state.result && state.result.dayElement
   });
+
+  const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
 
   fetch(FORMSPREE_URL, {
     method: 'POST',
@@ -797,6 +862,26 @@ function handleEmailSubmit(e){
 
   document.getElementById('emailForm').style.display = 'none';
   document.getElementById('emailSuccess').classList.add('show');
+}
+
+function renderLineCTA(){
+  const btn = document.getElementById('btnLineCta');
+  const statusEl = document.getElementById('lineCtaStatus');
+  if(!btn) return;
+
+  btn.addEventListener('click', () => {
+    track('line_cta_click', {
+      configured: !!LINE_OFFICIAL_URL
+    });
+
+    if(!LINE_OFFICIAL_URL){
+      if(statusEl) statusEl.textContent = 'LINE 官方帳號設定中，請稍後再試。';
+      console.warn('LINE_OFFICIAL_URL not configured');
+      return;
+    }
+
+    window.open(LINE_OFFICIAL_URL, '_blank', 'noopener');
+  });
 }
 
 function init(){
@@ -838,7 +923,15 @@ function init(){
     const r = calculate();
     if(!r) return;
     state.result = r;
+    state.xianxiaProfile = buildXianxiaProfile(r);
+    state.result.xianxiaProfile = state.xianxiaProfile;
     track('chart_generated', { day_stem: r.dayStem, day_element: r.dayElement });
+    if(state.xianxiaProfile){
+      track('xianxia_profile_generated', {
+        day_stem: r.dayStem,
+        title: state.xianxiaProfile.title
+      });
+    }
 
     // Phase 11: 顯示 loading 遮罩 → 300ms 後切換頁面
     // 雖然計算是同步的、其實不需要等待，但給使用者一個「正在排盤」的感受
@@ -869,6 +962,7 @@ function init(){
   });
 
   document.getElementById('emailForm').addEventListener('submit', handleEmailSubmit);
+  renderLineCTA();
 
   const btnViewAnalysis = document.getElementById('btnViewAnalysis');
   if (btnViewAnalysis) {
@@ -888,7 +982,7 @@ function init(){
         'fy=' + state.selectedYear,
         state.name ? 'n=' + encodeURIComponent(state.name) : null
       ].filter(Boolean).join('&');
-      window.location.href = './analysis.html?v=13#' + hashParams;
+      window.location.href = './analysis.html#' + hashParams;
     });
   }
 
