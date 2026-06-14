@@ -31,18 +31,27 @@
 <link rel="stylesheet" href="/mobile-polish.css">
 <link rel="stylesheet" href="/share-card.css">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true });
+  const GA_MEASUREMENT_ID = '';
+  if (GA_MEASUREMENT_ID) {
+    const gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_MEASUREMENT_ID);
+    document.head.appendChild(gaScript);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_MEASUREMENT_ID, { 'anonymize_ip': true });
+  }
 </script>
 
 <script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', 'YOUR_PIXEL_ID');
-fbq('track', 'PageView');
+  const META_PIXEL_ID = '';
+  if (META_PIXEL_ID) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', META_PIXEL_ID);
+    window.fbq('track', 'PageView');
+  }
 </script>
 
 <script type="application/ld+json">
@@ -1006,7 +1015,7 @@ body {
 
     <!-- Phase 7: 五行分布卡（由 app.js 動態填入） -->
     <section class="five-elements card" id="rFiveElementsCard" style="display:none">
-      <div class="section-title">五 行 分 布</div>
+      <div class="section-title">五 行 靈 氣（五行分布）</div>
       <div class="elements-grid" id="rFiveElements"></div>
       <p class="elements-hint" id="rElementsHint"></p>
     </section>
@@ -1023,12 +1032,12 @@ body {
 
     <div class="card">
       <div class="dayun-header">
-        <h3>大 運 流 年</h3>
+        <h3>境 界 轉 換 期（大運）</h3>
         <span class="hint">點擊切換 →</span>
       </div>
       <div class="dayun-list" id="rDyList"></div>
       <div class="flowyear-section">
-        <div class="flowyear-title" id="rFyTitle">當前大運 流年</div>
+        <div class="flowyear-title" id="rFyTitle">當前境界轉換期 · 年度機緣</div>
         <div class="flowyear-grid" id="rFyGrid"></div>
         <div class="tag-row" id="rTags"></div>
       </div>
@@ -1043,12 +1052,12 @@ body {
     <div class="analysis-cta">
       <div class="analysis-cta-inner">
         <div class="analysis-cta-tag">— 完 整 報 告 —</div>
-        <h3>查看你的命理詳細分析</h3>
+        <h3>查看你的完整仙途報告</h3>
         <p>
           含五行能量雷達圖、十神結構分布<br>
           綜合人格畫像與流年運勢解析
         </p>
-        <button class="btn-analysis" id="btnViewAnalysis">查 看 詳 細 分 析 →</button>
+        <button class="btn-analysis" id="btnViewAnalysis">查看完整仙途報告 →</button>
       </div>
     </div>
 
@@ -1093,7 +1102,7 @@ body {
 </main>
 
 <footer class="page-footer">
-  <div class="footer-brand">八字命盤 · BAZI ATELIER</div>
+  <div class="footer-brand">本命仙盤 · BAZI ATELIER</div>
   <nav class="footer-nav">
     <a href="/privacy.html">隱私權政策</a>
     <span class="footer-nav-sep">·</span>
@@ -1101,12 +1110,12 @@ body {
     <span class="footer-nav-sep">·</span>
     <a href="mailto:hello@your-domain.com">聯絡我們</a>
   </nav>
-  <p class="footer-copyright">內容僅供命理參考。© 2026 八字命盤. All rights reserved.</p>
+  <p class="footer-copyright">內容僅供命理參考。© 2026 本命仙盤. All rights reserved.</p>
 </footer>
 
 <!-- Phase 11: Sticky CTA（結果頁底部固定按鈕） -->
 <div class="sticky-cta" id="stickyCta" aria-hidden="true">
-  <button class="sticky-cta-btn" id="stickyCtaBtn" type="button">查 看 詳 細 分 析 →</button>
+  <button class="sticky-cta-btn" id="stickyCtaBtn" type="button">查看完整仙途報告 →</button>
 </div>
 
 <!-- Phase 10: IG 限動分享卡 Modal -->

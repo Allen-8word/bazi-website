@@ -131,6 +131,7 @@ const BARNUM = {
 };
 
 const LINE_OFFICIAL_URL = '';
+const FORMSPREE_URL = '';
 
 const state = {
   calendarType: 'solar',
@@ -585,6 +586,7 @@ function renderXianxiaProfile(profile){
   const keywordsHtml = (profile.keywords || []).slice(0, 4).map(keyword =>
     `<span>${escapeHtml(keyword)}</span>`
   ).join('');
+  const tenGodSummary = profile.tenGodSummary || '命格技能樹可搭配十神分布，作為理解行動模式與人際互動的參考。';
 
   contentEl.innerHTML = `
     <div class="xianxia-kicker">本 命 仙 途 總 覽</div>
@@ -604,6 +606,10 @@ function renderXianxiaProfile(profile){
       <div class="xianxia-point">
         <strong>五行靈氣提醒</strong>
         <p>${escapeHtml(profile.elementAuraSummary)}</p>
+      </div>
+      <div class="xianxia-point">
+        <strong>命格技能樹提醒</strong>
+        <p>${escapeHtml(tenGodSummary)}</p>
       </div>
       <div class="xianxia-point">
         <strong>一句提醒</strong>
@@ -745,7 +751,7 @@ function renderFlowYears(){
   const r = state.result;
   const dy = r.daYun[state.selectedDyIdx];
   document.getElementById('rFyTitle').textContent =
-    dy.startAge + '-' + (dy.startAge + 9) + ' 歲 · ' + dy.ganZhi + ' 大運流年';
+    dy.startAge + '-' + (dy.startAge + 9) + ' 歲 · ' + dy.ganZhi + ' 境界轉換期 · 年度機緣';
 
   const grid = document.getElementById('rFyGrid');
   grid.innerHTML = '';
@@ -845,7 +851,10 @@ function handleEmailSubmit(e){
     day_element: state.result && state.result.dayElement
   });
 
-  const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
+  if(!FORMSPREE_URL){
+    console.warn('FORMSPREE_URL not configured');
+    return;
+  }
 
   fetch(FORMSPREE_URL, {
     method: 'POST',
@@ -858,10 +867,13 @@ function handleEmailSubmit(e){
       gender: state.gender,
       source: 'bazi_result_page'
     })
-  }).catch(() => {});
-
-  document.getElementById('emailForm').style.display = 'none';
-  document.getElementById('emailSuccess').classList.add('show');
+  }).then(response => {
+    if(!response.ok) throw new Error('Formspree request failed');
+    document.getElementById('emailForm').style.display = 'none';
+    document.getElementById('emailSuccess').classList.add('show');
+  }).catch(err => {
+    console.warn('Email subscribe failed', err);
+  });
 }
 
 function renderLineCTA(){
@@ -1002,6 +1014,10 @@ function init(){
     btnShareCard.addEventListener('click', () => {
       track('share_card_open', {
         day_stem: state.result && state.result.dayStem
+      });
+      track('xianxia_share_card_open', {
+        day_stem: state.result && state.result.dayStem,
+        title: state.xianxiaProfile && state.xianxiaProfile.title
       });
       if (window.ShareCard) {
         window.ShareCard.open();

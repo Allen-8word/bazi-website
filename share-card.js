@@ -165,6 +165,7 @@ const ShareCard = {
 
       showToast('已下載 · 可上傳到 IG 限時動態');
       trackEvent('share_card_download', { tab: TABS[state.currentTab].id, day_stem: state.data.dayStem || '' });
+      trackEvent('xianxia_share_card_download', { tab: TABS[state.currentTab].id, day_stem: state.data.dayStem || '' });
     }).catch(err => {
       console.error('[ShareCard] Download failed:', err);
       showToast('下載失敗，請稍後再試');
