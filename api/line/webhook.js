@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 
 const LINE_REPLY_API_URL = 'https://api.line.me/v2/bot/message/reply';
+const BAZI_SITE_URL = 'https://bazi-website-one.vercel.app';
 
 function bodyToBuffer(body) {
   if (Buffer.isBuffer(body)) return body;
@@ -55,22 +56,22 @@ function buildFaqReply(text) {
   const normalizedText = String(text || '').trim();
 
   if (['測驗', '排盤', '開始', '本命仙盤'].some(keyword => normalizedText.includes(keyword))) {
-    return '你可以先到本命仙盤網站完成免費測驗，輸入出生資料後，就能看到你的本命靈根、五行靈氣與年度機緣。完成後也可以把本命仙途卡分享給朋友。';
+    return '你可以先到本命仙盤網站完成免費測驗：\n' + BAZI_SITE_URL + '\n\n輸入出生資料後，就能看到你的本命靈根、五行靈氣與年度機緣，也可以下載本命仙途卡分享給朋友。';
   }
 
   if (['完整報告', '仙途報告', '報告'].some(keyword => normalizedText.includes(keyword))) {
-    return '完整仙途報告正在開放準備中，未來會包含更完整的五行、十神、流年與修行課題解析。你可以先完成免費測驗，我們會優先透過 LINE 通知開放消息。';
+    return '完整仙途報告正在開放準備中，未來會包含更完整的五行、十神、流年與修行課題解析。\n\n你可以先完成免費測驗，後續開放會優先透過 LINE 通知你。';
   }
 
   if (['出生時間', '不知道時辰', '時辰不知道'].some(keyword => normalizedText.includes(keyword))) {
-    return '如果不知道精準分鐘，可以先不填分鐘；如果不確定時辰，可以先選最接近的時間作為參考。八字排盤會受出生時辰影響，之後若有更準確資料，可以再重新測一次。';
+    return '如果不知道精準分鐘，可以先不填分鐘；如果不確定時辰，可以先選最接近的時間作為參考。\n\n八字排盤會受出生時辰影響，之後若有更準確資料，也可以再重新測一次。';
   }
 
   if (['真人', '客服', '人工'].some(keyword => normalizedText.includes(keyword))) {
-    return '我已收到你的需求，若需要真人協助，請留下你想詢問的問題，稍後會由真人回覆你。';
+    return '我已收到你的需求。如果需要真人協助，請直接留下你想詢問的問題，稍後會由真人回覆你。';
   }
 
-  return '這裡是本命仙盤 LINE 小助手。你可以輸入：測驗、完整報告、出生時間不知道、真人客服，我會協助你找到下一步。';
+  return '這裡是本命仙盤 LINE 小助手。\n\n你可以輸入：\n・測驗\n・完整報告\n・出生時間不知道\n・真人客服\n\n我會協助你找到下一步。';
 }
 
 async function replyToLine(replyToken, text, channelAccessToken) {
@@ -98,8 +99,13 @@ async function replyToLine(replyToken, text, channelAccessToken) {
 }
 
 module.exports = async function handler(req, res) {
+  if (req.method === 'GET') {
+    res.status(200).send('LINE webhook endpoint is running');
+    return;
+  }
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+    res.setHeader('Allow', 'GET, POST');
     res.status(405).json({ error: 'Method Not Allowed' });
     return;
   }
@@ -150,19 +156,17 @@ module.exports = async function handler(req, res) {
     event.message.type === 'text'
   );
 
-  try {
-    await Promise.all(textMessageEvents.map(event =>
-      replyToLine(
+  await Promise.all(textMessageEvents.map(async event => {
+    try {
+      await replyToLine(
         event.replyToken,
         buildFaqReply(event.message.text),
         channelAccessToken
-      )
-    ));
-  } catch (error) {
-    console.error('Failed to reply to LINE webhook event', error);
-    res.status(500).json({ error: 'Failed to reply to LINE event' });
-    return;
-  }
+      );
+    } catch (error) {
+      console.error('Failed to reply to LINE webhook event', error);
+    }
+  }));
 
   res.status(200).json({ ok: true });
 };
