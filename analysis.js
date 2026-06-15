@@ -74,7 +74,7 @@ function showError() {
   document.getElementById('reportContent').style.display = 'none';
 }
 
-function buildXianxiaProfile(result, analysisData) {
+function buildXianxiaProfile(result, analysisData, gender) {
   if (!window.XIANXIA_MAP || !window.BAZI_XIANXIA_PROFILE || typeof window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile !== 'function') {
     console.warn('XIANXIA module not loaded');
     return null;
@@ -87,7 +87,8 @@ function buildXianxiaProfile(result, analysisData) {
         dayStem: analysisData.dayStem,
         dayElement: analysisData.dayElement,
         elementEnergy: analysisData.elementEnergy
-      }
+      },
+      gender: gender === 'female' ? 'female' : 'male'
     });
   } catch (e) {
     console.warn('XIANXIA profile build failed', e);
@@ -622,7 +623,7 @@ function init() {
   document.getElementById('rptName').textContent = displayName + ' · ' + (params.g === 'female' ? '女命' : '男命');
   document.getElementById('rptMeta').textContent = '國曆 ' + result.solarDate + ' · 農曆 ' + result.lunarDate;
 
-  const xianxiaProfile = buildXianxiaProfile(result, analysisData);
+  const xianxiaProfile = buildXianxiaProfile(result, analysisData, params.g);
   renderXianxiaSummary(xianxiaProfile);
 
   // 渲染六個段落

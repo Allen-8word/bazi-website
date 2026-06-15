@@ -420,7 +420,8 @@ function getXianxiaProfile() {
   }
   try {
     return window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile({
-      baziResult: state.data
+      baziResult: state.data,
+      gender: state.data && state.data.gender
     });
   } catch (e) {
     console.warn('[ShareCard] Xianxia profile build failed:', e);

@@ -175,7 +175,8 @@ function buildXianxiaProfile(result){
   }
   try {
     const profile = window.BAZI_XIANXIA_PROFILE.buildXianxiaProfile({
-      baziResult: result
+      baziResult: result,
+      gender: state.gender
     });
     if(!profile) console.warn('XIANXIA profile not available');
     return profile;
