@@ -249,7 +249,7 @@ const uiLabels = {
   fullReport: '完整仙途報告',
   viewAnalysisCTA: '解鎖完整仙途報告',
   shareCardTitle: '我的本命仙途卡',
-  lineCTA: '加入 LINE 領取完整仙途報告'
+  lineCTA: '加入 LINE 接收通知'
 };
 
 function getDayStemXianxiaProfile(dayStem){
