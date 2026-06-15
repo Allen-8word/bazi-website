@@ -4,6 +4,14 @@
 const Solar = window.Solar;
 const Lunar = window.Lunar;
 
+const SITE_CONFIG = {
+  LINE_OFFICIAL_URL: 'https://lin.ee/TPJlzkZ',
+  FORMSPREE_URL: ''
+};
+
+const LINE_OFFICIAL_URL = SITE_CONFIG.LINE_OFFICIAL_URL.trim();
+const FORMSPREE_URL = SITE_CONFIG.FORMSPREE_URL.trim();
+
 const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 
@@ -129,9 +137,6 @@ const BARNUM = {
     biz: '你的命格適合「整合型」合夥位置，但必須避免成為所有風險的最終承擔者。'
   }
 };
-
-const LINE_OFFICIAL_URL = '';
-const FORMSPREE_URL = '';
 
 const state = {
   calendarType: 'solar',
@@ -929,11 +934,12 @@ function renderLineCTA(){
     });
 
     if(!LINE_OFFICIAL_URL){
-      if(statusEl) statusEl.textContent = 'LINE 官方帳號設定中，請稍後再試。';
+      if(statusEl) statusEl.textContent = 'LINE 官方帳號設定中';
       console.warn('LINE_OFFICIAL_URL not configured');
       return;
     }
 
+    if(statusEl) statusEl.textContent = '';
     window.open(LINE_OFFICIAL_URL, '_blank', 'noopener');
   });
 }
