@@ -32,12 +32,15 @@ function getMainTenGod(baziResult){
 
 function buildXianxiaProfile(input){
   const baziResult = input && input.baziResult;
+  const normalizedGender = input && input.gender === 'female' ? 'female' : 'male';
   const map = window.XIANXIA_MAP;
   if(!baziResult || !map) return null;
 
   const dayStem = baziResult.dayStem || (baziResult.pillars && baziResult.pillars.day && baziResult.pillars.day.stem);
   const dayProfile = map.getDayStemXianxiaProfile(dayStem);
   if(!dayProfile) return null;
+  const title = (dayProfile.genderTitles && dayProfile.genderTitles[normalizedGender]) || dayProfile.title;
+  const shortTitle = (dayProfile.genderShortTitles && dayProfile.genderShortTitles[normalizedGender]) || dayProfile.shortTitle;
 
   const elementEnergy = getElementEnergy(baziResult);
   const mainElement = getTopElement(elementEnergy) || baziResult.dayElement;
@@ -54,10 +57,10 @@ function buildXianxiaProfile(input){
 
   return {
     spiritRoot: dayProfile.spiritRoot,
-    title: dayProfile.title,
-    shortTitle: dayProfile.shortTitle,
+    title,
+    shortTitle,
     keywords: dayProfile.keywords || [],
-    summary: '你的本命靈根為' + dayProfile.spiritRoot + '，命格稱號是' + dayProfile.title + '。' + dayProfile.phrase,
+    summary: '你的本命靈根為' + dayProfile.spiritRoot + '，命格稱號是' + title + '。' + dayProfile.phrase,
     gift: dayProfile.gift,
     challenge: dayProfile.challenge,
     elementAuraSummary,
