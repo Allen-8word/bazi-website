@@ -796,17 +796,37 @@ body {
   line-height: 1.8;
   margin-bottom: 14px;
 }
+.line-cta-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
 .line-cta-btn {
   width: 100%;
   border: none;
   border-radius: var(--radius-md);
-  background: var(--color-main);
+  background: #06C755;
   color: #FFF;
   padding: 13px 16px;
   font-family: inherit;
   font-size: var(--text-lg);
   letter-spacing: 2px;
   cursor: pointer;
+}
+.line-cta-secondary-btn {
+  width: 100%;
+  border: 1px solid rgba(139, 157, 131, 0.35);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--color-main);
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: var(--text-md);
+  letter-spacing: 1.5px;
+  cursor: pointer;
+}
+.line-cta-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.82);
 }
 .line-cta-status {
   min-height: 18px;
@@ -1025,9 +1045,16 @@ body {
     </div>
 
     <section class="line-cta-card" id="lineCtaSection">
-      <h3>想看更完整的本命仙途報告？</h3>
-      <p>加入 LINE，領取完整仙途報告開放通知，並獲得每月年度機緣提醒。</p>
-      <button class="line-cta-btn" id="btnLineCta" type="button">加入 LINE 領取完整仙途報告</button>
+      <h3>想接收完整仙途報告開放通知？</h3>
+      <p>加入 LINE，接收完整仙途報告開放通知，並獲得每月年度機緣提醒。</p>
+      <div class="line-cta-actions">
+        <button class="line-cta-btn" id="btnLineCta" type="button">
+          加入 LINE 接收通知
+        </button>
+        <button class="line-cta-secondary-btn" id="btnOpenAnalysisFromLineCta" type="button">
+          查看我的完整仙途報告
+        </button>
+      </div>
       <div class="line-cta-status" id="lineCtaStatus" aria-live="polite"></div>
     </section>
 
@@ -1112,8 +1139,8 @@ body {
 <script src="./data/branches.js"></script>
 <script src="./data/elements.js"></script>
 <script src="./data/engine.js"></script>
-<script src="./data/xianxia-map.js?v=10.1"></script>
-<script src="./data/bazi-xianxia-profile.js?v=10.1"></script>
+<script src="./data/xianxia-map.js?v=10.2"></script>
+<script src="./data/bazi-xianxia-profile.js?v=10.2"></script>
 <script src="./app.js"></script>
 <script src="./share-card.js"></script>
 

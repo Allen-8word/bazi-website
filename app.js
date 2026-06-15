@@ -894,6 +894,7 @@ function buildAnalysisHash(){
     ['h', state.hour],
     ['mi', state.minute || 0],
     ['g', state.gender],
+    ['loc', state.location],
     ['n', state.name || '命主'],
     ['fy', state.selectedYear || new Date().getFullYear()]
   ];
@@ -906,7 +907,7 @@ function buildAnalysisHash(){
 function openAnalysisPage(){
   const hash = buildAnalysisHash();
   if(!hash){
-    console.warn('Analysis page cannot open before chart result is ready');
+    console.warn('Cannot open analysis page: missing result state');
     return;
   }
 
