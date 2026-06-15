@@ -883,6 +883,41 @@ function handleShare(type){
   }
 }
 
+function buildAnalysisHash(){
+  if(!state.result) return '';
+
+  const params = [
+    ['t', state.calendarType],
+    ['y', state.year],
+    ['m', state.month],
+    ['d', state.day],
+    ['h', state.hour],
+    ['mi', state.minute || 0],
+    ['g', state.gender],
+    ['n', state.name || '命主'],
+    ['fy', state.selectedYear || new Date().getFullYear()]
+  ];
+
+  return params
+    .map(([key, value]) => key + '=' + encodeURIComponent(String(value)))
+    .join('&');
+}
+
+function openAnalysisPage(){
+  const hash = buildAnalysisHash();
+  if(!hash){
+    console.warn('Analysis page cannot open before chart result is ready');
+    return;
+  }
+
+  track('analysis_open', {
+    source: 'line_cta',
+    year: state.selectedYear,
+    day_stem: state.result && state.result.dayStem
+  });
+  window.location.href = './analysis.html#' + hash;
+}
+
 function handleEmailSubmit(e){
   e.preventDefault();
   const email = document.getElementById('iEmail').value.trim();
@@ -925,10 +960,10 @@ function handleEmailSubmit(e){
 
 function renderLineCTA(){
   const btn = document.getElementById('btnLineCta');
+  const analysisBtn = document.getElementById('btnOpenAnalysisFromLineCta');
   const statusEl = document.getElementById('lineCtaStatus');
-  if(!btn) return;
 
-  btn.addEventListener('click', () => {
+  if(btn) btn.addEventListener('click', () => {
     track('line_cta_click', {
       configured: !!LINE_OFFICIAL_URL
     });
@@ -942,6 +977,8 @@ function renderLineCTA(){
     if(statusEl) statusEl.textContent = '';
     window.open(LINE_OFFICIAL_URL, '_blank', 'noopener');
   });
+
+  if(analysisBtn) analysisBtn.addEventListener('click', openAnalysisPage);
 }
 
 function init(){
