@@ -629,10 +629,16 @@ function renderXianxiaProfile(profile){
   contentEl.innerHTML = `
     <div class="xianxia-kicker">本 命 仙 途 總 覽</div>
     <h2 class="xianxia-title">${escapeHtml(profile.title)}</h2>
-    <span class="spirit-root-badge">本命靈根：${escapeHtml(profile.spiritRoot)}</span>
+    <span class="spirit-root-badge">本命靈根：${escapeHtml(profile.spiritRoot)}${profile.yinYang ? ' · ' + escapeHtml(profile.yinYang) : ''}</span>
     <div class="xianxia-keywords">${keywordsHtml}</div>
     <p class="xianxia-summary">${escapeHtml(profile.summary)}</p>
     <div class="xianxia-points">
+      ${profile.essence ? `
+      <div class="xianxia-point">
+        <strong>本象與性格</strong>
+        <p>${escapeHtml(profile.essence)}</p>
+      </div>
+      ` : ''}
       <div class="xianxia-point">
         <strong>命格天賦</strong>
         <p>${escapeHtml(profile.gift)}</p>

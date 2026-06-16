@@ -115,10 +115,16 @@ function renderXianxiaSummary(profile) {
     <div class="xianxia-report-head">
       <div class="xianxia-report-kicker">本 命 仙 途 摘 要</div>
       <div class="xianxia-report-title">${escapeHtml(profile.title)}</div>
-      <div class="xianxia-report-root">本命靈根：${escapeHtml(profile.spiritRoot)}</div>
+      <div class="xianxia-report-root">本命靈根：${escapeHtml(profile.spiritRoot)}${profile.yinYang ? ' · ' + escapeHtml(profile.yinYang) : ''}</div>
     </div>
     <div class="xianxia-report-keywords">${keywordsHtml}</div>
     <div class="xianxia-report-grid">
+      ${profile.essence ? `
+      <div class="xianxia-report-item">
+        <strong>本象與性格</strong>
+        <p>${escapeHtml(profile.essence)}</p>
+      </div>
+      ` : ''}
       <div class="xianxia-report-item">
         <strong>命格天賦</strong>
         <p>${escapeHtml(profile.gift)}</p>

@@ -539,14 +539,34 @@
   margin-bottom: 20px;
 }
 .sc-xiantu-keywords {
-  margin-bottom: 24px;
+  margin-bottom: 18px;
+}
+.sc-portrait-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 14px 0 12px;
+  max-height: 390px;
+  overflow: hidden;
+  position: relative;
+}
+.sc-portrait-img {
+  max-width: 78%;
+  max-height: 390px;
+  object-fit: contain;
+  display: block;
+  filter: grayscale(100%);
+}
+.sc-portrait-placeholder {
+  display: none;
 }
 .sc-xiantu-panel {
   width: 100%;
   background: var(--surface-card);
   border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  margin-bottom: 14px;
+  padding: 15px 18px;
+  margin-bottom: 10px;
   border: 0.5px solid var(--border-soft);
 }
 .sc-xiantu-panel-soft {

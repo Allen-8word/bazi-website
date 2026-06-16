@@ -35,6 +35,8 @@ const ELEMENT_NAMES = {
   wood: '木', fire: '火', earth: '土', metal: '金', water: '水'
 };
 
+let portraitMapWarned = false;
+
 // 取得品牌網址 + tagline
 function getShareUrl() {
   // 使用當前頁的 origin（生產為 vercel 網域，本地為 file://）
@@ -429,12 +431,35 @@ function getXianxiaProfile() {
   }
 }
 
+function getXianxiaPortrait(xianxiaProfile) {
+  if (!window.XIANXIA_PORTRAIT_MAP || typeof window.XIANXIA_PORTRAIT_MAP.getPortrait !== 'function') {
+    if (!portraitMapWarned) {
+      console.warn('[ShareCard] XIANXIA_PORTRAIT_MAP not loaded');
+      portraitMapWarned = true;
+    }
+    return null;
+  }
+
+  const data = state.data || {};
+  const dayStem = (xianxiaProfile && xianxiaProfile.dayStem) || data.dayStem;
+  const gender = (xianxiaProfile && xianxiaProfile.gender) || data.gender || 'male';
+  return window.XIANXIA_PORTRAIT_MAP.getPortrait(dayStem, gender);
+}
+
 function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
   const d = state.data;
   const keywordsHTML = (xianxiaProfile.keywords || []).slice(0, 4).map(k =>
     `<span class="sc-keyword">${escapeHtml(k)}</span>`
   ).join('');
   const reminder = xianxiaProfile.shareLine || xianxiaProfile.phrase || xianxiaProfile.challenge || '';
+  const portrait = getXianxiaPortrait(xianxiaProfile);
+  const portraitHTML = portrait
+    ? `
+      <div class="sc-portrait-wrap">
+        <img class="sc-portrait-img" src="${escapeHtml(portrait.src)}" alt="${escapeHtml(portrait.alt)}" onerror="this.closest('.sc-portrait-wrap').style.display='none';">
+      </div>
+    `
+    : '';
 
   return `
     <div class="sc-brand">
@@ -451,18 +476,15 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
 
       <div class="sc-xiantu-root">${escapeHtml(xianxiaProfile.spiritRoot)}</div>
       <div class="sc-xiantu-title">${escapeHtml(xianxiaProfile.title)}</div>
-      <div class="sc-xiantu-subtitle">${escapeHtml((dayMasterProfile && dayMasterProfile.elementName) || '')} · 本命靈根</div>
+      <div class="sc-xiantu-subtitle">${escapeHtml(xianxiaProfile.yinYang || (dayMasterProfile && dayMasterProfile.elementName) || '')} · ${escapeHtml(xianxiaProfile.essence || '本命靈根')}</div>
 
       <div class="sc-keywords sc-xiantu-keywords">${keywordsHTML}</div>
+
+      ${portraitHTML}
 
       <div class="sc-xiantu-panel">
         <div class="sc-xiantu-label">修 行 提 醒</div>
         <p>${escapeHtml(reminder)}</p>
-      </div>
-
-      <div class="sc-xiantu-panel sc-xiantu-panel-soft">
-        <div class="sc-xiantu-label">命 格 天 賦</div>
-        <p>${escapeHtml(xianxiaProfile.gift)}</p>
       </div>
     </div>
 
