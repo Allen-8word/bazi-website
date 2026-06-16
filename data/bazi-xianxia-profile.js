@@ -39,8 +39,8 @@ function buildXianxiaProfile(input){
   const dayStem = baziResult.dayStem || (baziResult.pillars && baziResult.pillars.day && baziResult.pillars.day.stem);
   const dayProfile = map.getDayStemXianxiaProfile(dayStem);
   if(!dayProfile) return null;
-  const title = (dayProfile.genderTitles && dayProfile.genderTitles[normalizedGender]) || dayProfile.title;
-  const shortTitle = (dayProfile.genderShortTitles && dayProfile.genderShortTitles[normalizedGender]) || dayProfile.shortTitle;
+  const title = (dayProfile.genderTitles && dayProfile.genderTitles[normalizedGender]) || dayProfile.title || '';
+  const shortTitle = (dayProfile.genderShortTitles && dayProfile.genderShortTitles[normalizedGender]) || dayProfile.shortTitle || title;
 
   const elementEnergy = getElementEnergy(baziResult);
   const mainElement = getTopElement(elementEnergy) || baziResult.dayElement;
@@ -57,8 +57,11 @@ function buildXianxiaProfile(input){
 
   return {
     spiritRoot: dayProfile.spiritRoot,
+    yinYang: dayProfile.yinYang || '',
+    essence: dayProfile.essence || '',
     title,
     shortTitle,
+    gender: normalizedGender,
     keywords: dayProfile.keywords || [],
     summary: '你的本命靈根為' + dayProfile.spiritRoot + '，命格稱號是' + title + '。' + dayProfile.phrase,
     gift: dayProfile.gift,
