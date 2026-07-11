@@ -669,6 +669,104 @@ function renderXianxiaProfile(profile){
 }
 
 
+/**
+ * 生命靈數整合 Phase B：渲染生命靈數卡
+ * - 依賴 data/numerology.js（window.NUMEROLOGY）；若未載入則安靜隱藏，不影響排盤主流程
+ * - 卓越數依知識庫顯示邏輯：優先顯示昆蟲原型角色，標示「11／2」格式，先講基礎數課題再講卓越數使命
+ */
+function renderNumerology(year, month, day){
+  const sectionEl = document.getElementById('rNumerologySection');
+  const contentEl = document.getElementById('rNumerologyContent');
+  if(!sectionEl || !contentEl) return;
+
+  if(!window.NUMEROLOGY || !year || !month || !day){
+    sectionEl.hidden = true;
+    contentEl.innerHTML = '';
+    return;
+  }
+
+  const p = window.NUMEROLOGY.getProfileByBirthday(year, month, day);
+  if(!p){
+    sectionEl.hidden = true;
+    contentEl.innerHTML = '';
+    return;
+  }
+
+  const keywordsHtml = (p.keywords || []).slice(0, 6).map(k =>
+    `<span>${escapeHtml(k)}</span>`
+  ).join('');
+
+  const strengthsText = (p.strengths || []).slice(0, 3).join('、');
+  const lessonsText = (p.lessons || []).slice(0, 3).join('、');
+
+  if(p.isMaster){
+    // 卓越數：昆蟲原型角色 + 基礎數課題層次
+    const base = p.baseProfile;
+    contentEl.innerHTML = `
+      <div class="xianxia-kicker">生 命 靈 數</div>
+      <div class="numerology-number">${escapeHtml(p.displayLabel)}</div>
+      <h2 class="xianxia-title">${escapeHtml(p.stageName)}</h2>
+      <span class="numerology-master-badge">卓越數 · ${escapeHtml(p.insectName)} · ${escapeHtml(p.masterTitle)}</span>
+      <div class="xianxia-keywords">${keywordsHtml}</div>
+      <p class="xianxia-summary">${escapeHtml(p.matchReason)}</p>
+      <div class="xianxia-points">
+        <div class="xianxia-point">
+          <strong>核心標語</strong>
+          <p>${escapeHtml(p.slogan)}</p>
+        </div>
+        ${base ? `
+        <div class="xianxia-point">
+          <strong>先修的基礎數課題（${escapeHtml(String(p.baseNumber))} · ${escapeHtml(base.stageName)}）</strong>
+          <p>${escapeHtml(p.earlyChallenge)}。卓越數持有者常先經歷基礎數的課題，內在整合後，較能展現高階能量。</p>
+        </div>
+        ` : ''}
+        <div class="xianxia-point">
+          <strong>成熟後的高階展現</strong>
+          <p>${escapeHtml(p.matureExpression)}</p>
+        </div>
+        <div class="xianxia-point">
+          <strong>天賦亮點</strong>
+          <p>${escapeHtml(strengthsText)}</p>
+        </div>
+        <div class="xianxia-point">
+          <strong>成長課題</strong>
+          <p>${escapeHtml(lessonsText)}</p>
+        </div>
+      </div>
+    `;
+  } else {
+    // 一般靈數：蝴蝶階段角色
+    contentEl.innerHTML = `
+      <div class="xianxia-kicker">生 命 靈 數</div>
+      <div class="numerology-number">${escapeHtml(p.displayLabel || String(p.number))}</div>
+      <h2 class="xianxia-title">${escapeHtml(p.stageName)}</h2>
+      <span class="spirit-root-badge">蝴蝶階段：${escapeHtml(p.butterflyStage)} · ${escapeHtml(p.archetype)}</span>
+      <div class="xianxia-keywords">${keywordsHtml}</div>
+      <p class="xianxia-summary">${escapeHtml(p.symbolism)}</p>
+      <div class="xianxia-points">
+        <div class="xianxia-point">
+          <strong>核心標語</strong>
+          <p>${escapeHtml(p.slogan)}</p>
+        </div>
+        <div class="xianxia-point">
+          <strong>天賦亮點</strong>
+          <p>${escapeHtml(strengthsText)}</p>
+        </div>
+        <div class="xianxia-point">
+          <strong>成長課題</strong>
+          <p>${escapeHtml(lessonsText)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  sectionEl.hidden = false;
+  track('numerology_viewed', {
+    life_path: p.calc ? String(p.calc.lifePath) : '',
+    is_master: p.isMaster ? '1' : '0'
+  });
+}
+
 function renderResult(){
   const r = state.result;
   if(!r) return;
@@ -678,6 +776,9 @@ function renderResult(){
   document.getElementById('rDate').textContent = '國曆 ' + r.solarDate + ' · 農曆 ' + r.lunarDate;
 
   renderXianxiaProfile(r.xianxiaProfile || state.xianxiaProfile);
+
+  // 生命靈數整合 Phase B: 渲染生命靈數卡（獨立區塊，資料來源 data/numerology.js）
+  renderNumerology(state.year, state.month, state.day);
 
   // Phase 5: 渲染日主展示卡
   renderDayMasterCard(r.pillars.day.stem);

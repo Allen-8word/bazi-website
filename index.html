@@ -775,6 +775,32 @@ body {
   font-size: var(--text-md);
   line-height: 1.8;
 }
+/* 生命靈數整合 Phase B：生命靈數卡（沿用 xianxia 樣式體系與 tokens） */
+.numerology-card {
+  margin-bottom: 1rem;
+  border-color: rgba(201, 168, 124, 0.35);
+}
+.numerology-card[hidden] { display: none; }
+.numerology-number {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 44px;
+  line-height: 1.1;
+  color: var(--color-accent);
+  text-align: center;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+}
+.numerology-master-badge {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 10px;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-daymaster-bg);
+  color: var(--accent-daymaster);
+  font-size: var(--text-md);
+  letter-spacing: 2px;
+}
 .line-cta-card {
   margin: 1rem 0;
   padding: 1.5rem 1.25rem;
@@ -1021,6 +1047,11 @@ body {
       <div id="rEpContent"></div>
     </section>
 
+    <!-- 生命靈數整合 Phase B: 生命靈數卡（由 app.js 動態填入，資料來源 data/numerology.js） -->
+    <section class="card numerology-card" id="rNumerologySection" hidden>
+      <div id="rNumerologyContent"></div>
+    </section>
+
     <div class="disclaimer-note">
       命盤資訊依傳統四柱八字古法推算，僅供命理參考，不構成任何醫療、財務、法律或人際決策建議。
     </div>
@@ -1139,10 +1170,11 @@ body {
 <script src="./data/branches.js"></script>
 <script src="./data/elements.js"></script>
 <script src="./data/engine.js"></script>
+<script src="./data/numerology.js?v=1.0"></script>
 <script src="./data/xianxia-map.js?v=10.3"></script>
 <script src="./data/bazi-xianxia-profile.js?v=10.3"></script>
 <script src="./data/xianxia-portrait-map.js?v=10.3"></script>
-<script src="./app.js?v=10.3"></script>
+<script src="./app.js?v=11.0"></script>
 <script src="./share-card.js?v=10.3"></script>
 
 </body>
