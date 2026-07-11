@@ -15,8 +15,8 @@ const DAY_MASTER_PROFILES = {
   '甲': {
     stem: '甲', element: 'wood', yinYang: 'yang', elementName: '陽木',
     personaName: '主幹型',
-    xianxiaTitle: '青木劍修', xianxiaArchetype: '劍修',
-    xianxiaTagline: '一劍既出,寧折不彎',
+    xianxiaTitle: '青木麟龍', xianxiaArchetype: '守護型靈獸',
+    xianxiaTagline: '筆直生長,寧折不彎',
     imagery: '參天大樹', keywords: ['挺拔', '原則', '開創'],
     tagline: '你天生挺拔堅強，總能為人遮風擋雨',
     openingMetaphor: '你是「主幹型」的存在。不是會繞著別人轉的藤蔓，而是那棵自己往上長的樹。',
@@ -46,7 +46,7 @@ const DAY_MASTER_PROFILES = {
   '乙': {
     stem: '乙', element: 'wood', yinYang: 'yin', elementName: '陰木',
     personaName: '藤蔓型',
-    xianxiaTitle: '靈植御藤師', xianxiaArchetype: '靈植師',
+    xianxiaTitle: '花藤靈狐', xianxiaArchetype: '靈巧型靈獸',
     xianxiaTagline: '看似柔軟,纏住就不放手',
     imagery: '藤蔓花草', keywords: ['柔韌', '靈活', '迂迴'],
     tagline: '你心思柔軟細膩，懂得用溫柔化解風雨',
@@ -77,7 +77,7 @@ const DAY_MASTER_PROFILES = {
   '丙': {
     stem: '丙', element: 'fire', yinYang: 'yang', elementName: '陽火',
     personaName: '太陽型',
-    xianxiaTitle: '烈陽真君', xianxiaArchetype: '體修',
+    xianxiaTitle: '日曜小朱雀', xianxiaArchetype: '暖陽型靈獸',
     xianxiaTagline: '走到哪裡,哪裡就是白天',
     imagery: '太陽之火', keywords: ['熱烈', '直接', '照亮'],
     tagline: '你熱情又開朗，總是默默照亮身邊的人',
@@ -108,7 +108,7 @@ const DAY_MASTER_PROFILES = {
   '丁': {
     stem: '丁', element: 'fire', yinYang: 'yin', elementName: '陰火',
     personaName: '燭火型',
-    xianxiaTitle: '燭龍燈師', xianxiaArchetype: '燈師',
+    xianxiaTitle: '星燈靈梟', xianxiaArchetype: '慧光型靈獸',
     xianxiaTagline: '不燒山,只照亮你心裡那條路',
     imagery: '燭光燈火', keywords: ['細膩', '溫暖', '專注'],
     tagline: '你專注且體貼，總在暗處給人穩定溫暖',
@@ -139,7 +139,7 @@ const DAY_MASTER_PROFILES = {
   '戊': {
     stem: '戊', element: 'earth', yinYang: 'yang', elementName: '陽土',
     personaName: '山嶺型',
-    xianxiaTitle: '鎮嶽守山人', xianxiaArchetype: '護法',
+    xianxiaTitle: '嶽岩靈龜', xianxiaArchetype: '磐石型靈獸',
     xianxiaTagline: '天塌下來,先砸到我再說',
     imagery: '高山大地', keywords: ['厚重', '可靠', '守原則'],
     tagline: '你沉穩又可靠，用寬厚的包容承載一切',
@@ -170,8 +170,8 @@ const DAY_MASTER_PROFILES = {
   '己': {
     stem: '己', element: 'earth', yinYang: 'yin', elementName: '陰土',
     personaName: '田園型',
-    xianxiaTitle: '靈田丹師', xianxiaArchetype: '丹師',
-    xianxiaTagline: '默默種田,養活整個宗門',
+    xianxiaTitle: '穀穗靈兔', xianxiaArchetype: '滋養型靈獸',
+    xianxiaTagline: '默默種田,餵飽整座村子',
     imagery: '田園濕土', keywords: ['滋養', '包容', '務實'],
     tagline: '你溫厚而務實，總用細膩的心滋養萬物',
     openingMetaphor: '你是「田園型」的存在。不會搶眼，但你在的地方，東西都會長得起來——人也是、事也是。',
@@ -201,8 +201,8 @@ const DAY_MASTER_PROFILES = {
   '庚': {
     stem: '庚', element: 'metal', yinYang: 'yang', elementName: '陽金',
     personaName: '劍鋒型',
-    xianxiaTitle: '破軍刀修', xianxiaArchetype: '刀修',
-    xianxiaTagline: '別人談判,我直接拔刀',
+    xianxiaTitle: '白刃幼虎', xianxiaArchetype: '剛毅型靈獸',
+    xianxiaTagline: '別人還在談,我的銀刃尾巴已出鞘',
     imagery: '刀劍鋼鐵', keywords: ['果決', '正義', '改革'],
     tagline: '你果決且直率，天生帶著讓人欽佩的正義',
     openingMetaphor: '你是「刀刃型」的存在。不會圓融到讓所有人舒服，但你在的地方，事情會被切得清清楚楚。',
@@ -232,8 +232,8 @@ const DAY_MASTER_PROFILES = {
   '辛': {
     stem: '辛', element: 'metal', yinYang: 'yin', elementName: '陰金',
     personaName: '珠寶型',
-    xianxiaTitle: '琉璃器師', xianxiaArchetype: '煉器師',
-    xianxiaTagline: '完美主義,連法寶都要對稱',
+    xianxiaTitle: '月銀靈貂', xianxiaArchetype: '雅緻型靈獸',
+    xianxiaTagline: '完美主義,連毛流都要對稱',
     imagery: '珠寶首飾', keywords: ['敏銳', '質感', '完美'],
     tagline: '你優雅而敏銳，一舉一動都追求極致完美',
     openingMetaphor: '你是「珠寶型」的存在。不是越大越好，是越精緻越貴。你的價值不在數量，在於那種「一眼看出來不一樣」的細節。',
@@ -263,8 +263,8 @@ const DAY_MASTER_PROFILES = {
   '壬': {
     stem: '壬', element: 'water', yinYang: 'yang', elementName: '陽水',
     personaName: '江河型',
-    xianxiaTitle: '滄瀾遊俠', xianxiaArchetype: '遊俠',
-    xianxiaTagline: '整個修真界都是我的地圖',
+    xianxiaTitle: '滄海鯨龍', xianxiaArchetype: '遠航型靈獸',
+    xianxiaTagline: '整片海洋都是我的地圖',
     imagery: '江河大海', keywords: ['流動', '包容', '智慧'],
     tagline: '你心胸格外開闊，擁有包容萬物的智慧',
     openingMetaphor: '你是「大海型」的存在。你的容量大到可以裝下完全相反的東西——你能跟有錢人聊投資，下一秒跟流浪漢蹲在路邊抽菸。',
@@ -294,7 +294,7 @@ const DAY_MASTER_PROFILES = {
   '癸': {
     stem: '癸', element: 'water', yinYang: 'yin', elementName: '陰水',
     personaName: '雨露型',
-    xianxiaTitle: '玄雨謀士', xianxiaArchetype: '謀士',
+    xianxiaTitle: '月露水母鹿', xianxiaArchetype: '靜露型靈獸',
     xianxiaTagline: '潤物無聲,佈局十年',
     imagery: '雨露泉水', keywords: ['細膩', '安靜', '深刻'],
     tagline: '你體貼且善解人意，默默堅持到最後',
