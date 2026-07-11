@@ -28,7 +28,7 @@ const state = {
 };
 
 const TABS = [
-  { id: 'xianxia', label: '仙 途', filename: 'benming-xiantu' }
+  { id: 'xianxia', label: '靈 獸', filename: 'benming-lingshou' }
 ];
 
 const ELEMENT_NAMES = {
@@ -108,7 +108,7 @@ const ShareCard = {
     const modal = document.getElementById('shareCardModal');
     if (!modal) return;
     const titleEl = document.getElementById('shareCardTitle');
-    if (titleEl) titleEl.textContent = '下 載 本 命 仙 途 卡';
+    if (titleEl) titleEl.textContent = '下 載 本 命 靈 獸 卡';
 
     // 動畫先把 modal 顯示出來，lib 在背景載入
     modal.classList.add('show');
@@ -468,7 +468,7 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
     </div>
 
     <div class="sc-xiantu-content">
-      <div class="sc-xiantu-kicker">我 的 本 命 仙 途 卡</div>
+      <div class="sc-xiantu-kicker">我 的 本 命 靈 獸 卡</div>
 
       <div class="sc-persona-circle sc-xiantu-circle">
         <span class="sc-persona-stem">${escapeHtml(d.dayStem)}</span>

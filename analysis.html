@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#F5F1EB">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-<title>完整仙途報告｜本命仙盤</title>
+<title>完整靈獸報告｜本命仙盤</title>
 <meta name="description" content="以八字命理為底層，整理你的本命靈根、五行靈氣、命格技能樹與年度機緣。">
 <meta name="robots" content="noindex">
 
@@ -398,6 +398,121 @@ body {
 }
 #errBox.show { display: block; }
 
+/* === AI 命盤提問 === */
+.bazi-ai-chat-card {
+  border-color: rgba(201, 168, 124, 0.42);
+  background: linear-gradient(180deg, #FFFFFF, #FBF7EF);
+}
+.bazi-ai-chat-card[hidden] { display: none; }
+.bazi-ai-chat__header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.bazi-ai-chat__kicker {
+  font-size: 12px;
+  color: var(--color-accent);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+.bazi-ai-chat__header h2 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 23px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.bazi-ai-chat__header p {
+  color: var(--color-text-sub);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.bazi-ai-chat__textarea {
+  width: 100%;
+  min-height: 112px;
+  resize: vertical;
+  border: 1px solid #E8E2D5;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.8;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bazi-ai-chat__textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(201, 168, 124, 0.14);
+}
+.bazi-ai-chat__textarea:disabled {
+  background: #F5F1EB;
+  color: var(--color-text-sub);
+}
+.bazi-ai-chat__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+.bazi-ai-chat__mode {
+  color: var(--color-text-sub);
+  font-size: 13px;
+}
+.bazi-ai-chat__button {
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: #FFFFFF;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 500;
+  letter-spacing: 2px;
+  min-height: 44px;
+  padding: 10px 22px;
+  box-shadow: 0 2px 8px rgba(201, 168, 124, 0.28);
+  transition: background 0.2s, transform 0.2s, opacity 0.2s;
+}
+.bazi-ai-chat__button:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
+.bazi-ai-chat__button:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none;
+}
+.bazi-ai-chat__error {
+  display: none;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(184, 84, 84, 0.32);
+  border-radius: var(--radius-md);
+  background: #FCF3F3;
+  color: var(--color-neg);
+  font-size: 14px;
+}
+.bazi-ai-chat__error.show { display: block; }
+.bazi-ai-chat__answer {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(201, 168, 124, 0.28);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.82);
+}
+.bazi-ai-chat__answer.show { display: block; }
+.bazi-ai-chat__answer-title {
+  color: var(--color-mystic);
+  font-size: 13px;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+.bazi-ai-chat__answer-body {
+  color: var(--color-text);
+  font-size: 15px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+}
+
 /* === 動作列：返回 + 下載 PDF === */
 .action-bar {
   display: flex;
@@ -585,6 +700,7 @@ body {
 .pdf-mode .action-bar,
 .pdf-mode .site-header,
 .pdf-mode .site-footer,
+.pdf-mode .bazi-ai-chat-card,
 .pdf-mode .fy-year-strip {
   display: none !important;
 }
@@ -606,6 +722,7 @@ body {
   .action-bar,
   .site-header,
   .site-footer,
+  .bazi-ai-chat-card,
   .fy-year-strip,
   .pdf-overlay,
   #errBox {
@@ -951,6 +1068,8 @@ body {
   .element-summary { grid-template-columns: repeat(5, 1fr); gap: 4px; }
   .element-summary .el-label, .element-summary .el-value { font-size: 13px; }
   .tg-bar-row .tg-name { width: 40px; font-size: 13px; }
+  .bazi-ai-chat__actions { align-items: stretch; flex-direction: column; }
+  .bazi-ai-chat__button { width: 100%; }
 }
 
 /* === 命主特質：誤解三點 / 點頭場景 / 陰影面 === */
@@ -1426,7 +1545,7 @@ body {
 <div id="reportContent" style="display:none">
 
   <div class="report-header" id="reportHeader">
-    <div class="badge">完 整 仙 途 報 告</div>
+    <div class="badge">完 整 靈 獸 報 告</div>
     <h1 id="rptName">命主</h1>
     <div class="meta" id="rptMeta"></div>
     <div class="meta">以八字命理為底層，整理你的本命靈根、五行靈氣、命格技能樹與年度機緣。</div>
@@ -1493,6 +1612,30 @@ body {
 
   </div><!-- /#pdfArea -->
 
+  <div class="report-card bazi-ai-chat-card" id="cardBaziAIChat">
+    <div class="bazi-ai-chat__header">
+      <div class="bazi-ai-chat__kicker">AI 命 盤 問 答</div>
+      <h2>向你的本命仙盤提問</h2>
+      <p>你可以根據目前命盤，詢問工作、感情、財運、人際、流年方向。</p>
+    </div>
+    <textarea
+      class="bazi-ai-chat__textarea"
+      id="baziAIQuestion"
+      rows="4"
+      maxlength="500"
+      placeholder="例如：我 2026 年適合換工作嗎？"
+    ></textarea>
+    <div class="bazi-ai-chat__actions">
+      <span class="bazi-ai-chat__mode" id="baziAIMode">目前為免費概要分析</span>
+      <button class="bazi-ai-chat__button" id="baziAISubmit" type="button">開始分析</button>
+    </div>
+    <div class="bazi-ai-chat__error" id="baziAIError"></div>
+    <div class="bazi-ai-chat__answer" id="baziAIAnswer">
+      <div class="bazi-ai-chat__answer-title">命 盤 回 覆</div>
+      <div class="bazi-ai-chat__answer-body" id="baziAIAnswerBody"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- PDF 下載中遮罩 -->
@@ -1517,14 +1660,14 @@ body {
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/lunar.js"></script>
-<script src="./data/dayMaster.js"></script>
+<script src="./data/dayMaster.js?v=11.0"></script>
 <script src="./data/branches.js"></script>
 <script src="./data/tenGods.js"></script>
 <script src="./data/elements.js"></script>
 <script src="./data/engine.js"></script>
-<script src="./data/xianxia-map.js?v=10.3"></script>
+<script src="./data/xianxia-map.js?v=11.0"></script>
 <script src="./data/bazi-xianxia-profile.js?v=10.3"></script>
-<script src="./analysis.js?v=10.3"></script>
+<script src="./analysis.js?v=11.0"></script>
 
 </body>
 </html>

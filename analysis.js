@@ -113,7 +113,7 @@ function renderXianxiaSummary(profile) {
 
   contentEl.innerHTML = `
     <div class="xianxia-report-head">
-      <div class="xianxia-report-kicker">本 命 仙 途 摘 要</div>
+      <div class="xianxia-report-kicker">本 命 靈 獸 摘 要</div>
       <div class="xianxia-report-title">${escapeHtml(profile.title)}</div>
       <div class="xianxia-report-root">本命靈根：${escapeHtml(profile.spiritRoot)}${profile.yinYang ? ' · ' + escapeHtml(profile.yinYang) : ''}</div>
     </div>
@@ -130,7 +130,7 @@ function renderXianxiaSummary(profile) {
         <p>${escapeHtml(profile.gift)}</p>
       </div>
       <div class="xianxia-report-item">
-        <strong>修行課題</strong>
+        <strong>成長課題</strong>
         <p>${escapeHtml(profile.challenge)}</p>
       </div>
       <div class="xianxia-report-item">
@@ -607,6 +607,148 @@ function renderPaywall(year, dayStem, topTwo, ganZhi, stemTenGod, branchTenGod) 
 // 暴露為全域函式，讓流年切換時可以同步呼叫
 window.renderPaywallSync = renderPaywall;
 
+function buildBaziAIChartData(params, result, analysisData, xianxiaProfile) {
+  const flowYear = analysisData.flowYear || {};
+  const flowThemes = [flowYear.stemTenGod, flowYear.branchTenGod].filter(Boolean);
+
+  return {
+    name: params.n || '命主',
+    gender: params.g === 'female' ? 'female' : 'male',
+    birth: {
+      calendar: params.t || 'solar',
+      year: +params.y || null,
+      month: +params.m || null,
+      day: +params.d || null,
+      hour: +params.h || null,
+      minute: +params.mi || 0,
+      location: params.loc || null,
+      solarDate: result.solarDate,
+      lunarDate: result.lunarDate
+    },
+    pillars: result.pillars,
+    bazi: {
+      dayMaster: analysisData.dayStem,
+      dayElement: analysisData.dayElement,
+      selfStrength: analysisData.bodyStrength && analysisData.bodyStrength.type,
+      supportRatio: analysisData.bodyStrength && analysisData.bodyStrength.supportRatio,
+      fiveElements: analysisData.elementEnergy,
+      tenGodsDistribution: analysisData.tenGodsDistribution,
+      mainTenGod: analysisData.topTwoTenGods && analysisData.topTwoTenGods[0],
+      supportTenGod: analysisData.topTwoTenGods && analysisData.topTwoTenGods[1]
+    },
+    annualFortune: flowYear.year
+      ? {
+          year: flowYear.year,
+          ganZhi: flowYear.ganZhi,
+          themes: flowThemes,
+          elements: flowYear.elements,
+          note: flowYear.note
+        }
+      : null,
+    reportSummary: xianxiaProfile
+      ? {
+          title: xianxiaProfile.title,
+          spiritRoot: xianxiaProfile.spiritRoot,
+          talent: xianxiaProfile.gift,
+          lesson: xianxiaProfile.challenge,
+          reminder: xianxiaProfile.elementAuraSummary,
+          keywords: xianxiaProfile.keywords
+        }
+      : null,
+    analysisData: {
+      selectedYear: analysisData.selectedYear,
+      topTwoTenGods: analysisData.topTwoTenGods,
+      bodyStrength: analysisData.bodyStrength,
+      flowYear: analysisData.flowYear
+    }
+  };
+}
+
+async function askBaziAI({ chartData, question, mode }) {
+  const res = await fetch('/api/bazi-chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chartData,
+      question,
+      mode
+    })
+  });
+
+  let data = null;
+  try {
+    data = await res.json();
+  } catch (e) {
+    data = null;
+  }
+
+  if (!res.ok || !data || !data.success) {
+    throw new Error((data && data.error) || '分析失敗，請稍後再試。');
+  }
+
+  return data.answer;
+}
+
+function initBaziAIChat(chartData, isPaid) {
+  const cardEl = document.getElementById('cardBaziAIChat');
+  const questionEl = document.getElementById('baziAIQuestion');
+  const buttonEl = document.getElementById('baziAISubmit');
+  const errorEl = document.getElementById('baziAIError');
+  const answerEl = document.getElementById('baziAIAnswer');
+  const answerBodyEl = document.getElementById('baziAIAnswerBody');
+  const modeEl = document.getElementById('baziAIMode');
+
+  if (!cardEl || !questionEl || !buttonEl || !errorEl || !answerEl || !answerBodyEl) return;
+
+  // TODO: 串接付款狀態後，將 mode 改為 isPaid ? "paid" : "free"
+  const mode = isPaid ? 'paid' : 'free';
+  if (modeEl) modeEl.textContent = mode === 'paid' ? '目前為完整付費分析' : '目前為免費概要分析';
+
+  const setError = message => {
+    errorEl.textContent = message || '';
+    errorEl.classList.toggle('show', Boolean(message));
+  };
+
+  const setAnswer = message => {
+    answerBodyEl.textContent = message || '';
+    answerEl.classList.toggle('show', Boolean(message));
+  };
+
+  const setLoading = loading => {
+    questionEl.disabled = loading;
+    buttonEl.disabled = loading;
+    buttonEl.textContent = loading ? '正在解析你的命盤機緣...' : '開始分析';
+  };
+
+  buttonEl.addEventListener('click', async () => {
+    const question = questionEl.value.trim();
+
+    if (!question) {
+      setError('請先輸入你想詢問的問題。');
+      setAnswer('');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setAnswer('');
+
+    try {
+      const answer = await askBaziAI({ chartData, question, mode });
+      setAnswer(answer);
+      if (typeof window.gtag === 'function') {
+        try { window.gtag('event', 'bazi_ai_chat_success', { mode }); } catch (e) {}
+      }
+    } catch (err) {
+      setError((err && err.message) || '分析失敗，請稍後再試。');
+    } finally {
+      setLoading(false);
+    }
+  });
+}
+
 /* ========= 主初始化 ========= */
 function init() {
   const params = parseHash();
@@ -652,6 +794,9 @@ function init() {
     fyForPaywall ? fyForPaywall.stemTenGod : '',
     fyForPaywall ? fyForPaywall.branchTenGod : ''
   );
+
+  const aiChartData = buildBaziAIChartData(params, result, analysisData, xianxiaProfile);
+  initBaziAIChat(aiChartData, false);
 
   document.getElementById('btnBack').addEventListener('click', () => {
     if (document.referrer && document.referrer.indexOf(window.location.host) >= 0) {

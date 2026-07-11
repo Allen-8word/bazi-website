@@ -627,7 +627,7 @@ function renderXianxiaProfile(profile){
   const tenGodSummary = profile.tenGodSummary || '命格技能樹可搭配十神分布，作為理解行動模式與人際互動的參考。';
 
   contentEl.innerHTML = `
-    <div class="xianxia-kicker">本 命 仙 途 總 覽</div>
+    <div class="xianxia-kicker">本 命 靈 獸 總 覽</div>
     <h2 class="xianxia-title">${escapeHtml(profile.title)}</h2>
     <span class="spirit-root-badge">本命靈根：${escapeHtml(profile.spiritRoot)}${profile.yinYang ? ' · ' + escapeHtml(profile.yinYang) : ''}</span>
     <div class="xianxia-keywords">${keywordsHtml}</div>
@@ -644,7 +644,7 @@ function renderXianxiaProfile(profile){
         <p>${escapeHtml(profile.gift)}</p>
       </div>
       <div class="xianxia-point">
-        <strong>修行課題</strong>
+        <strong>成長課題</strong>
         <p>${escapeHtml(profile.challenge)}</p>
       </div>
       <div class="xianxia-point">
