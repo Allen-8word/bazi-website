@@ -42,8 +42,6 @@ const ELEMENT_NAMES = {
   wood: '木', fire: '火', earth: '土', metal: '金', water: '水'
 };
 
-let portraitMapWarned = false;
-
 // 取得品牌網址 + tagline
 function getShareUrl() {
   // 使用當前頁的 origin（生產為 vercel 網域，本地為 file://）
@@ -160,11 +158,11 @@ const ShareCard = {
         img.setAttribute('data-i', String(i));
         img.src = list[i];
       } else {
-        const wrap = img.closest('.sc2-illustration');
+        const wrap = img.closest('.sc2-illustration, .sc-portrait-wrap');
         if (wrap) wrap.style.display = 'none';
       }
     } catch (e) {
-      const wrap = img.closest('.sc2-illustration');
+      const wrap = img.closest('.sc2-illustration, .sc-portrait-wrap');
       if (wrap) wrap.style.display = 'none';
     }
   },
@@ -471,19 +469,26 @@ function getXianxiaProfile() {
   }
 }
 
-function getXianxiaPortrait(xianxiaProfile) {
-  if (!window.XIANXIA_PORTRAIT_MAP || typeof window.XIANXIA_PORTRAIT_MAP.getPortrait !== 'function') {
-    if (!portraitMapWarned) {
-      console.warn('[ShareCard] XIANXIA_PORTRAIT_MAP not loaded');
-      portraitMapWarned = true;
+// 靈獸卡插圖：改用新靈獸圖系（assets/beast-numerology/），與第二張卡共用備援鏈
+// 有生日 → 顯示使用者自己的 {日主}×{靈數} 圖；無生日 → 回退該日主的靈數 1 代表圖
+function getBeastPortraitSrcs() {
+  const d = state.data || {};
+  const py = STEM_PINYIN[d.dayStem];
+  if (!py) return null;
+  const dir = './assets/beast-numerology/';
+  if (window.NUMEROLOGY && d.birthYear && d.birthMonth && d.birthDay) {
+    const calc = window.NUMEROLOGY.calcLifePathNumber(d.birthYear, d.birthMonth, d.birthDay);
+    if (calc) {
+      const srcs = [`${dir}${py}_${calc.lifePath}.png`];
+      if (calc.isMaster) {
+        srcs.push(`${dir}master_${calc.lifePath}.png`);
+        srcs.push(`${dir}${py}_${calc.baseNumber}.png`);
+      }
+      if (srcs.indexOf(`${dir}${py}_1.png`) === -1) srcs.push(`${dir}${py}_1.png`);
+      return srcs;
     }
-    return null;
   }
-
-  const data = state.data || {};
-  const dayStem = (xianxiaProfile && xianxiaProfile.dayStem) || data.dayStem;
-  const gender = (xianxiaProfile && xianxiaProfile.gender) || data.gender || 'male';
-  return window.XIANXIA_PORTRAIT_MAP.getPortrait(dayStem, gender);
+  return [`${dir}${py}_1.png`];
 }
 
 function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
@@ -492,11 +497,16 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
     `<span class="sc-keyword">${escapeHtml(k)}</span>`
   ).join('');
   const reminder = xianxiaProfile.shareLine || xianxiaProfile.phrase || xianxiaProfile.challenge || '';
-  const portrait = getXianxiaPortrait(xianxiaProfile);
-  const portraitHTML = portrait
+  const portraitSrcs = getBeastPortraitSrcs();
+  const portraitHTML = portraitSrcs
     ? `
       <div class="sc-portrait-wrap">
-        <img class="sc-portrait-img" src="${escapeHtml(portrait.src)}" alt="${escapeHtml(portrait.alt)}" onerror="this.closest('.sc-portrait-wrap').style.display='none';">
+        <img class="sc-portrait-img"
+             src="${escapeHtml(portraitSrcs[0])}"
+             data-srcs='${escapeHtml(JSON.stringify(portraitSrcs))}'
+             data-i="0"
+             alt="${escapeHtml(xianxiaProfile.title || '')}"
+             onerror="window.ShareCard._imgNext(this)">
       </div>
     `
     : '';
