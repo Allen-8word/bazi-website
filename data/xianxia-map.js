@@ -14,7 +14,7 @@ const dayStemTitles = {
     gift: '有向上生長與開創道路的力量，適合在新的局面中帶頭前進。',
     challenge: '容易急著突破，忽略節奏、資源整合與身邊人的感受。',
     phrase: '向上生長，適合開創自己的道路。',
-    shareLine: '你的本命靈根帶著開山拓路的氣息。'
+    shareLine: '你的本命靈獸帶著開山拓路的氣息。'
   },
   乙: {
     yinYang: '陰木',
@@ -28,7 +28,7 @@ const dayStemTitles = {
     gift: '擅長在環境變化中找到生長縫隙，也容易察覺人與人之間的細膩變化。',
     challenge: '容易過度配合環境或他人，忘記自己的主軸與界線。',
     phrase: '柔中帶韌，擅長在關係與環境中生長。',
-    shareLine: '你的本命靈根像靈藤，柔韌卻不輕易折斷。'
+    shareLine: '你的本命靈獸像靈藤，柔韌卻不輕易折斷。'
   },
   丙: {
     yinYang: '陽火',
@@ -42,7 +42,7 @@ const dayStemTitles = {
     gift: '容易用熱情、行動與存在感帶動他人，適合站到光裡傳遞理念。',
     challenge: '能量太強時，容易急躁、過度外放，或忽略自己的消耗。',
     phrase: '光明外放，適合用熱情照亮他人。',
-    shareLine: '你的本命靈根像烈陽，天生帶著照亮場域的力量。'
+    shareLine: '你的本命靈獸像烈陽，天生帶著照亮場域的力量。'
   },
   丁: {
     yinYang: '陰火',
@@ -56,7 +56,7 @@ const dayStemTitles = {
     gift: '擅長在細節中看見方向，適合用溫度、靈感與策略陪伴他人。',
     challenge: '容易想太多、情緒受環境影響，需要穩定自己的內在火光。',
     phrase: '細膩敏銳，擅長在暗處點亮方向。',
-    shareLine: '你的本命靈根像星燈，在細微處照出答案。'
+    shareLine: '你的本命靈獸像星燈，在細微處照出答案。'
   },
   戊: {
     yinYang: '陽土',
@@ -70,7 +70,7 @@ const dayStemTitles = {
     gift: '具備承擔與整合資源的力量，適合成為團隊或關係中的穩定支點。',
     challenge: '容易背太多責任，也可能因為固執而不容易調整方向。',
     phrase: '厚重穩定，適合承擔與整合資源。',
-    shareLine: '你的本命靈根像山岳，穩定而有承載力。'
+    shareLine: '你的本命靈獸像山岳，穩定而有承載力。'
   },
   己: {
     yinYang: '陰土',
@@ -84,7 +84,7 @@ const dayStemTitles = {
     gift: '擅長培育、照顧與修復，能把混亂的事物慢慢整理成可成長的狀態。',
     challenge: '容易操心過度，或把別人的課題背到自己身上。',
     phrase: '溫厚細緻，擅長滋養、培育與修復。',
-    shareLine: '你的本命靈根像靈田，懂得讓事物慢慢長成。'
+    shareLine: '你的本命靈獸像靈田，懂得讓事物慢慢長成。'
   },
   庚: {
     yinYang: '陽金',
@@ -98,7 +98,7 @@ const dayStemTitles = {
     gift: '具備切開混亂、建立秩序與做出決斷的力量。',
     challenge: '容易太直接或過度剛硬，需要練習柔軟與彈性。',
     phrase: '剛毅果斷，適合斬斷混亂、建立秩序。',
-    shareLine: '你的本命靈根像天刃，適合為混亂劃出清楚邊界。'
+    shareLine: '你的本命靈獸像天刃，適合為混亂劃出清楚邊界。'
   },
   辛: {
     yinYang: '陰金',
@@ -112,7 +112,7 @@ const dayStemTitles = {
     gift: '擅長看見細節、提升質感，能把粗糙的事物打磨出價值。',
     challenge: '容易過度挑剔自己或他人，需要允許過程中的不完美。',
     phrase: '精緻敏銳，擅長打磨價值與提升質感。',
-    shareLine: '你的本命靈根像靈玉，越打磨越能顯出光芒。'
+    shareLine: '你的本命靈獸像靈玉，越打磨越能顯出光芒。'
   },
   壬: {
     yinYang: '陽水',
@@ -126,7 +126,7 @@ const dayStemTitles = {
     gift: '擁有廣闊視野與流動智慧，適合跨界、策略、探索與資源連結。',
     challenge: '容易想得太廣、行動分散，需要聚焦與收束。',
     phrase: '視野廣闊，適合流動、策略與跨界探索。',
-    shareLine: '你的本命靈根像滄海，能容納變化，也能看見遠方。'
+    shareLine: '你的本命靈獸像滄海，能容納變化，也能看見遠方。'
   },
   癸: {
     yinYang: '陰水',
@@ -140,7 +140,7 @@ const dayStemTitles = {
     gift: '具備細膩感知與深層洞察力，能察覺他人忽略的訊息。',
     challenge: '容易受情緒或環境影響，需要建立穩定的內在邊界。',
     phrase: '細膩深邃，擅長感知細節與洞察人心。',
-    shareLine: '你的本命靈根像靈泉，安靜卻能映照真相。'
+    shareLine: '你的本命靈獸像靈泉，安靜卻能映照真相。'
   }
 };
 
@@ -257,11 +257,11 @@ const luckLabels = {
 
 const uiLabels = {
   siteName: '本命仙盤',
-  mainTitle: '測出你的本命靈根與守護靈獸',
-  subtitle: '輸入出生資料，查看你的本命靈根、五行靈氣、命格技能樹與年度機緣。',
+  mainTitle: '測出你的本命靈獸與生命靈數',
+  subtitle: '輸入出生資料，查看你的本命靈獸、五行靈氣、命格技能樹與年度機緣。',
   submitCTA: '啟動我的本命仙盤',
   resultTitle: '本命靈獸總覽',
-  dayMaster: '本命靈根',
+  dayMaster: '本命靈獸',
   fiveElements: '五行靈氣',
   tenGods: '命格技能樹',
   dayun: '境界轉換期',

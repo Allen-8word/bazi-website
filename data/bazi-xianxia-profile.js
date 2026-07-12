@@ -63,7 +63,7 @@ function buildXianxiaProfile(input){
     shortTitle,
     gender: normalizedGender,
     keywords: dayProfile.keywords || [],
-    summary: '你的本命靈根為' + dayProfile.spiritRoot + '，命格稱號是' + title + '。' + dayProfile.phrase,
+    summary: '你的本命靈獸是' + title + '，五行靈根為' + dayProfile.spiritRoot + '。' + dayProfile.phrase,
     gift: dayProfile.gift,
     challenge: dayProfile.challenge,
     elementAuraSummary,
