@@ -516,7 +516,7 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
 
       <div class="sc-xiantu-root">${escapeHtml(xianxiaProfile.spiritRoot)}</div>
       <div class="sc-xiantu-title">${escapeHtml(xianxiaProfile.title)}</div>
-      <div class="sc-xiantu-subtitle">${escapeHtml(xianxiaProfile.yinYang || (dayMasterProfile && dayMasterProfile.elementName) || '')} · ${escapeHtml(xianxiaProfile.essence || '本命靈根')}</div>
+      <div class="sc-xiantu-subtitle">${escapeHtml(xianxiaProfile.yinYang || (dayMasterProfile && dayMasterProfile.elementName) || '')} · ${escapeHtml(xianxiaProfile.essence || '本命靈獸')}</div>
 
       <div class="sc-keywords sc-xiantu-keywords">${keywordsHTML}</div>
 
