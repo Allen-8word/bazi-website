@@ -28,8 +28,15 @@ const state = {
 };
 
 const TABS = [
-  { id: 'xianxia', label: '靈 獸', filename: 'benming-lingshou' }
+  { id: 'xianxia', label: '靈 獸', filename: 'benming-lingshou' },
+  { id: 'beastnum', label: '靈 獸 × 靈 數', filename: 'lingshou-lingshu' }
 ];
+
+// 生命靈數整合 Phase E：日主拼音（圖檔命名用）
+const STEM_PINYIN = {
+  '甲': 'jia', '乙': 'yi', '丙': 'bing', '丁': 'ding', '戊': 'wu',
+  '己': 'ji', '庚': 'geng', '辛': 'xin', '壬': 'ren', '癸': 'gui'
+};
 
 const ELEMENT_NAMES = {
   wood: '木', fire: '火', earth: '土', metal: '金', water: '水'
@@ -140,6 +147,26 @@ const ShareCard = {
       btn.classList.toggle('active', i === idx);
     });
     renderCurrentCard();
+    // 切卡後必須重新生成 PNG blob，否則分享/下載會拿到上一張卡
+    if (window.html2canvas) pregenerateBlob();
+  },
+
+  // 生命靈數整合 Phase E：靈獸圖檔備援鏈（主檔 → 卓越數共用圖 → 基礎數圖 → 隱藏）
+  _imgNext(img) {
+    try {
+      const list = JSON.parse(img.getAttribute('data-srcs') || '[]');
+      let i = parseInt(img.getAttribute('data-i') || '0', 10) + 1;
+      if (i < list.length) {
+        img.setAttribute('data-i', String(i));
+        img.src = list[i];
+      } else {
+        const wrap = img.closest('.sc2-illustration');
+        if (wrap) wrap.style.display = 'none';
+      }
+    } catch (e) {
+      const wrap = img.closest('.sc2-illustration');
+      if (wrap) wrap.style.display = 'none';
+    }
   },
 
   download() {
@@ -235,7 +262,18 @@ function generateCardBlob() {
     ? document.fonts.ready
     : Promise.resolve();
 
-  return fontReady.then(() => {
+  // 等卡內所有圖片載入（或失敗備援）完成，避免截圖截到半載入狀態
+  const imagesReady = Promise.all(
+    Array.from(frame.querySelectorAll('img')).map(img =>
+      (img.complete) ? Promise.resolve() : new Promise(res => {
+        img.addEventListener('load', res, { once: true });
+        img.addEventListener('error', res, { once: true });
+        setTimeout(res, 3000); // 保險絲：最多等 3 秒
+      })
+    )
+  );
+
+  return Promise.all([fontReady, imagesReady]).then(() => {
     return window.html2canvas(frame, {
       scale: 2,                       // 540×960 → 1080×1920
       useCORS: true,
@@ -279,7 +317,8 @@ function getCardBlob() {
 function getFileName() {
   const tab = TABS[state.currentTab];
   const stem = (state.data && state.data.dayStem) || 'bazi';
-  return `bazi-${tab.filename}-${stem}.png`;
+  const lp = (tab.id === 'beastnum' && state.beastNumCalc) ? '-' + state.beastNumCalc.lifePath : '';
+  return `bazi-${tab.filename}-${stem}${lp}.png`;
 }
 
 // 是否支援「分享檔案」（手機 Safari / Chrome 大多支援；電腦多半不支援）
@@ -301,7 +340,8 @@ function renderCurrentCard() {
   const frame = document.getElementById('shareCardFrame');
   if (!frame || !state.data) return;
 
-  frame.innerHTML = renderPersonaHTML();
+  const tab = TABS[state.currentTab] || TABS[0];
+  frame.innerHTML = (tab.id === 'beastnum') ? renderBeastNumHTML() : renderPersonaHTML();
 
   // 渲染 QR code 到該卡的 .sc-qr 內
   renderQRCode();
@@ -464,7 +504,7 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
   return `
     <div class="sc-brand">
       <span class="sc-brand-mark">本 命 仙 盤</span>
-      <span class="sc-brand-tag">XIANTU</span>
+      <span class="sc-brand-tag">LINGSHOU</span>
     </div>
 
     <div class="sc-xiantu-content">
@@ -483,12 +523,145 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
       ${portraitHTML}
 
       <div class="sc-xiantu-panel">
-        <div class="sc-xiantu-label">修 行 提 醒</div>
+        <div class="sc-xiantu-label">靈 獸 提 醒</div>
         <p>${escapeHtml(reminder)}</p>
       </div>
     </div>
 
     ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+  `;
+}
+
+
+// ============================================
+// Template 2: 靈獸 × 生命靈數 合成卡（生命靈數整合 Phase E）
+// 資料來源：window.NUMEROLOGY（Phase A）+ window.BEAST_NUMEROLOGY（Phase C）
+// 圖檔備援鏈：{拼音}_{靈數}.png → master_{靈數}.png（卓越數）→ {拼音}_{基礎數}.png → 隱藏圖區
+// ============================================
+function renderBeastNumHTML() {
+  const d = state.data || {};
+  state.beastNumCalc = null;
+
+  // 依賴與資料防禦：缺模組或缺生日時給出可讀的說明卡，不讓畫面空白
+  if (!window.NUMEROLOGY || !window.BEAST_NUMEROLOGY || !d.birthYear || !d.birthMonth || !d.birthDay || !d.dayStem) {
+    return `
+      <div class="sc-brand">
+        <span class="sc-brand-mark">本 命 仙 盤</span>
+        <span class="sc-brand-tag">LINGSHOU</span>
+      </div>
+      <div class="sc2-content sc2-empty">
+        <div class="sc2-kicker">靈 獸 × 靈 數</div>
+        <p class="sc2-empty-text">缺少出生日期資料，請回到首頁重新排盤一次，即可生成這張卡。</p>
+      </div>
+      ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+    `;
+  }
+
+  const calc = window.NUMEROLOGY.calcLifePathNumber(d.birthYear, d.birthMonth, d.birthDay);
+  if (!calc) {
+    return `
+      <div class="sc-brand">
+        <span class="sc-brand-mark">本 命 仙 盤</span>
+        <span class="sc-brand-tag">LINGSHOU</span>
+      </div>
+      <div class="sc2-content sc2-empty">
+        <div class="sc2-kicker">靈 獸 × 靈 數</div>
+        <p class="sc2-empty-text">生日資料異常，請回到首頁重新排盤。</p>
+      </div>
+      ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+    `;
+  }
+  state.beastNumCalc = calc;
+
+  const syn = window.BEAST_NUMEROLOGY.getSynthesis(d.dayStem, calc.lifePath);
+  const numProfile = window.NUMEROLOGY.getNumerologyProfile(calc.lifePath) || {};
+  if (!syn) {
+    return `
+      <div class="sc-brand">
+        <span class="sc-brand-mark">本 命 仙 盤</span>
+        <span class="sc-brand-tag">LINGSHOU</span>
+      </div>
+      <div class="sc2-content sc2-empty">
+        <div class="sc2-kicker">靈 獸 × 靈 數</div>
+        <p class="sc2-empty-text">資料載入中，請關閉視窗後再試一次。</p>
+      </div>
+      ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+    `;
+  }
+
+  // 標籤列：一般靈數「甲木 × 生命靈數 3」；卓越數「甲木 × 卓越數 11／2」
+  const labelText = calc.isMaster
+    ? `${window.BEAST_NUMEROLOGY.DAY_MASTER_LABELS[d.dayStem]} × 卓越數 ${calc.displayLabel}`
+    : `${window.BEAST_NUMEROLOGY.DAY_MASTER_LABELS[d.dayStem]} × 生命靈數 ${calc.lifePath}`;
+
+  // 名稱列：一般「青木麟龍 · 探索幼蟲」；卓越「青木麟龍 × 螢火蟲 · 星光信使」
+  const namesText = calc.isMaster
+    ? `${syn.beastName} × ${numProfile.insectName || ''} · ${numProfile.masterTitle || ''}`
+    : `${syn.beastName} · ${numProfile.stageName || ''}`;
+
+  // 圖檔備援鏈
+  const py = STEM_PINYIN[d.dayStem] || 'x';
+  const dir = './assets/beast-numerology/';
+  const srcs = [`${dir}${py}_${calc.lifePath}.png`];
+  if (calc.isMaster) {
+    srcs.push(`${dir}master_${calc.lifePath}.png`);
+    srcs.push(`${dir}${py}_${calc.baseNumber}.png`);
+  }
+  const illustrationHTML = `
+    <div class="sc2-illustration">
+      <img src="${escapeHtml(srcs[0])}"
+           data-srcs='${escapeHtml(JSON.stringify(srcs))}'
+           data-i="0"
+           alt="${escapeHtml(namesText)}"
+           onerror="window.ShareCard._imgNext(this)">
+    </div>
+  `;
+
+  const fieldsHTML = (syn.fields || []).map(f => `<span class="sc2-chip">${escapeHtml(f)}</span>`).join('');
+  const luckyHTML = (syn.luckyElements || []).map(f => `<span class="sc2-chip sc2-chip-gold">${escapeHtml(f)}</span>`).join('');
+
+  return `
+    <div class="sc-brand">
+      <span class="sc-brand-mark">本 命 仙 盤</span>
+      <span class="sc-brand-tag">LINGSHOU</span>
+    </div>
+
+    <div class="sc2-content">
+      <div class="sc2-kicker">我 的 靈 獸 × 靈 數</div>
+      <div class="sc2-label">${escapeHtml(labelText)}</div>
+      <div class="sc2-names">${escapeHtml(namesText)}</div>
+
+      ${illustrationHTML}
+
+      <div class="sc2-subtitle">${escapeHtml(syn.subtitle)}</div>
+
+      <div class="sc-xiantu-panel sc2-panel">
+        <div class="sc-xiantu-label">核 心 特 質</div>
+        <p>${escapeHtml(syn.coreTrait)}</p>
+      </div>
+
+      <div class="sc-xiantu-panel sc2-panel">
+        <div class="sc-xiantu-label">生 命 任 務</div>
+        <p>${escapeHtml(syn.lifeMission)}</p>
+      </div>
+
+      <div class="sc2-chip-group">
+        <div class="sc-xiantu-label">適 合 發 展 領 域</div>
+        <div class="sc2-chips">${fieldsHTML}</div>
+      </div>
+
+      <div class="sc2-chip-group">
+        <div class="sc-xiantu-label">幸 運 元 素</div>
+        <div class="sc2-chips">${luckyHTML}</div>
+      </div>
+
+      <div class="sc-xiantu-panel sc-xiantu-panel-soft sc2-panel">
+        <div class="sc-xiantu-label">給 你 的 提 醒</div>
+        <p>${escapeHtml(syn.reminder)}</p>
+      </div>
+    </div>
+
+    ${renderFooterHTML('掃 我 測 你 的 靈 獸 × 靈 數')}
   `;
 }
 

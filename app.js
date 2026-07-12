@@ -850,6 +850,9 @@ function renderResult(){
     window.ShareCard.init({
       pillars: r.pillars,
       dayStem: r.pillars.day.stem,
+      birthYear: state.year,
+      birthMonth: state.month,
+      birthDay: state.day,
       dayElement: r.dayElement,
       name: state.name,
       gender: state.gender,

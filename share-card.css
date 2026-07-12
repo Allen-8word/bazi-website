@@ -1041,3 +1041,117 @@
     display: none !important;
   }
 }
+
+/* ============================================
+   生命靈數整合 Phase E：靈獸 × 靈數 合成卡（sc2-*）
+   沿用既有 tokens 與 sc-xiantu-panel 體系
+   ============================================ */
+.sc2-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 6px 26px 10px;
+  min-height: 0;
+}
+.sc2-kicker {
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: 7px;
+  color: var(--brand-primary);
+  margin-bottom: 8px;
+}
+.sc2-label {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  text-align: center;
+}
+.sc2-names {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.sc2-illustration {
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 10px;
+  border: 1.5px solid rgba(201, 168, 124, 0.55);
+  box-shadow: 0 4px 18px rgba(201, 168, 124, 0.22);
+  background: #fdfdfc;
+  flex-shrink: 0;
+}
+.sc2-illustration img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sc2-subtitle {
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  letter-spacing: 1px;
+  color: var(--brand-primary);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.sc2-panel {
+  margin-bottom: 8px;
+  padding: 11px 16px;
+}
+.sc2-panel p {
+  font-size: 11.5px;
+  line-height: 1.72;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.sc2-panel .sc-xiantu-label {
+  margin-bottom: 6px;
+}
+.sc2-chip-group {
+  width: 100%;
+  margin-bottom: 8px;
+}
+.sc2-chip-group .sc-xiantu-label {
+  margin-bottom: 6px;
+}
+.sc2-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 6px;
+}
+.sc2-chip {
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.72);
+  border: 0.5px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  padding: 3.5px 11px;
+  white-space: nowrap;
+}
+.sc2-chip-gold {
+  color: var(--brand-primary);
+  border-color: rgba(201, 168, 124, 0.5);
+  background: rgba(201, 168, 124, 0.08);
+}
+.sc2-empty {
+  justify-content: center;
+}
+.sc2-empty-text {
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 320px;
+}
