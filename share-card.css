@@ -1155,3 +1155,50 @@
   text-align: center;
   max-width: 320px;
 }
+
+/* ============================================
+   P0 成長機制（2026-07）：稀有度編號 + 天生搭檔
+   ============================================ */
+.sc-rarity {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--brand-primary);
+  background: rgba(201, 168, 124, 0.09);
+  border: 0.5px solid rgba(201, 168, 124, 0.4);
+  border-radius: var(--radius-pill);
+  padding: 3px 12px;
+  margin: 6px auto 8px;
+  width: fit-content;
+}
+.sc-partner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 0.5px dashed rgba(201, 168, 124, 0.55);
+}
+.sc-partner-label {
+  font-size: 9.5px;
+  letter-spacing: 2px;
+  color: var(--brand-primary);
+  flex-shrink: 0;
+}
+.sc-partner-name {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+.sc-partner-hook {
+  font-size: 9.5px;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}

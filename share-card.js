@@ -38,6 +38,75 @@ const STEM_PINYIN = {
   '己': 'ji', '庚': 'geng', '辛': 'xin', '壬': 'ren', '癸': 'gui'
 };
 
+// ============ P0 成長機制：稀有度編號 + 天生搭檔（2026-07） ============
+// 編號規則：日主序（甲0~癸9）×13 + 靈數序（1-9,11,22,33,44）+ 1 → No.001~No.130
+const STEM_ORDER = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+const NUM_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33, 44];
+// 天生搭檔：五行相生 + 陰陽同氣（甲陽木→丙陽火、乙陰木→丁陰火…水生木回到木）
+const PARTNER_STEM = {
+  '甲': '丙', '乙': '丁', '丙': '戊', '丁': '己', '戊': '庚',
+  '己': '辛', '庚': '壬', '辛': '癸', '壬': '甲', '癸': '乙'
+};
+
+function beastNameOf(stem) {
+  if (window.BEAST_NUMEROLOGY && window.BEAST_NUMEROLOGY.BEAST_NAMES[stem]) {
+    return window.BEAST_NUMEROLOGY.BEAST_NAMES[stem];
+  }
+  if (window.XIANXIA_MAP && window.XIANXIA_MAP.dayStemTitles[stem]) {
+    return window.XIANXIA_MAP.dayStemTitles[stem].title;
+  }
+  return null;
+}
+
+/** 組合資訊：編號、標籤、搭檔靈獸（缺生日時 comboNo 為 null，畫面自動略過） */
+function getComboInfo() {
+  const d = state.data || {};
+  if (!d.dayStem) return null;
+  const info = {
+    dayStem: d.dayStem,
+    beastName: beastNameOf(d.dayStem),
+    partnerStem: PARTNER_STEM[d.dayStem] || null,
+    partnerBeast: null,
+    calc: null,
+    comboNo: null,
+    comboLabel: null,
+    comboName: null
+  };
+  if (info.partnerStem) info.partnerBeast = beastNameOf(info.partnerStem);
+  if (window.NUMEROLOGY && window.BEAST_NUMEROLOGY && d.birthYear && d.birthMonth && d.birthDay) {
+    const calc = window.NUMEROLOGY.calcLifePathNumber(d.birthYear, d.birthMonth, d.birthDay);
+    if (calc) {
+      info.calc = calc;
+      const si = STEM_ORDER.indexOf(d.dayStem);
+      const ni = NUM_ORDER.indexOf(calc.lifePath);
+      if (si >= 0 && ni >= 0) {
+        info.comboNo = si * 13 + ni + 1;
+        info.comboLabel = 'No.' + String(info.comboNo).padStart(3, '0');
+        info.comboName = window.BEAST_NUMEROLOGY.DAY_MASTER_LABELS[d.dayStem] + ' × ' + calc.displayLabel;
+      }
+    }
+  }
+  return info;
+}
+
+/** 稀有度列 HTML（無生日時回傳空字串） */
+function renderRarityHTML(info) {
+  if (!info || !info.comboLabel) return '';
+  return `<div class="sc-rarity">130 種靈獸組合 · ${escapeHtml(info.comboLabel)} · ${escapeHtml(info.comboName)}</div>`;
+}
+
+/** 天生搭檔列 HTML */
+function renderPartnerHTML(info) {
+  if (!info || !info.partnerBeast) return '';
+  return `
+    <div class="sc-partner">
+      <span class="sc-partner-label">天 生 搭 檔</span>
+      <span class="sc-partner-name">${escapeHtml(info.partnerBeast)}</span>
+      <span class="sc-partner-hook">tag 一個最像他的朋友</span>
+    </div>
+  `;
+}
+
 // 圖檔候選組鏈：每個邏輯名先試 .webp（正式素材）再退 .png（備援）
 function expandImgFormats(logicalNames) {
   const out = [];
@@ -59,6 +128,21 @@ function getShareUrl() {
     return window.location.origin;
   }
   return 'https://bazi.atelier';
+}
+
+// P0：分享面板自動帶文案（部分平台會忽略 text，屬正常）
+function buildSharePayload(file) {
+  const info = getComboInfo();
+  let text = '';
+  if (info && info.beastName) {
+    text = '我的本命靈獸是' + info.beastName + '🌿';
+    if (info.comboLabel) text += ' 130 種組合裡的 ' + info.comboLabel + '，';
+    else text += ' ';
+    text += '你的呢？' + getShareUrl();
+  }
+  const payload = { files: [file] };
+  if (text) { payload.text = text; payload.title = '本命仙盤 · 靈獸命格測驗'; }
+  return payload;
 }
 
 function getDisplayUrl() {
@@ -239,7 +323,7 @@ const ShareCard = {
       return;
     }
 
-    navigator.share({ files: [file] }).then(() => {
+    navigator.share(buildSharePayload(file)).then(() => {
       showToast('已分享');
       trackEvent('share_card_share', { tab: TABS[state.currentTab].id, day_stem: state.data.dayStem || '' });
     }).catch(err => {
@@ -503,6 +587,7 @@ function getBeastPortraitSrcs() {
 
 function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
   const d = state.data;
+  const comboInfo = getComboInfo();
   const keywordsHTML = (xianxiaProfile.keywords || []).slice(0, 4).map(k =>
     `<span class="sc-keyword">${escapeHtml(k)}</span>`
   ).join('');
@@ -537,6 +622,7 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
       <div class="sc-xiantu-root">${escapeHtml(xianxiaProfile.spiritRoot)}</div>
       <div class="sc-xiantu-title">${escapeHtml(xianxiaProfile.title)}</div>
       <div class="sc-xiantu-subtitle">${escapeHtml(xianxiaProfile.yinYang || (dayMasterProfile && dayMasterProfile.elementName) || '')} · ${escapeHtml(xianxiaProfile.essence || '本命靈獸')}</div>
+      ${renderRarityHTML(comboInfo)}
 
       <div class="sc-keywords sc-xiantu-keywords">${keywordsHTML}</div>
 
@@ -546,6 +632,8 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
         <div class="sc-xiantu-label">靈 獸 提 醒</div>
         <p>${escapeHtml(reminder)}</p>
       </div>
+
+      ${renderPartnerHTML(comboInfo)}
     </div>
 
     ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
@@ -650,6 +738,7 @@ function renderBeastNumHTML() {
       <div class="sc2-kicker">我 的 靈 獸 × 靈 數</div>
       <div class="sc2-label">${escapeHtml(labelText)}</div>
       <div class="sc2-names">${escapeHtml(namesText)}</div>
+      ${renderRarityHTML(getComboInfo())}
 
       ${illustrationHTML}
 
@@ -679,6 +768,8 @@ function renderBeastNumHTML() {
         <div class="sc-xiantu-label">給 你 的 提 醒</div>
         <p>${escapeHtml(syn.reminder)}</p>
       </div>
+
+      ${renderPartnerHTML(getComboInfo())}
     </div>
 
     ${renderFooterHTML('掃 我 測 你 的 靈 獸 × 靈 數')}
