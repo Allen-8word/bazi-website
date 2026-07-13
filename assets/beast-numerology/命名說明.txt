@@ -1,23 +1,12 @@
-【靈獸 × 生命靈數 圖檔命名規則】（Phase E 定案）
+【靈獸 × 生命靈數 圖檔命名規則】（2026-07 正式版）
 
-放置位置：assets/beast-numerology/（就是本資料夾）
-格式：PNG，建議 1254×1254 或以上正方形、純白背景（之後可請 Claude 統一壓成 WebP）
+本資料夾為網站正式素材：130 張 WebP（1024×1024, q85），
+命名 {日主拼音}_{靈數}.webp，例：jia_1.webp ~ gui_44.webp
+（甲=jia 乙=yi 丙=bing 丁=ding 戊=wu 己=ji 庚=geng 辛=xin 壬=ren 癸=gui）
 
-一、生命靈數 1-9（每日主 9 張，共 90 張）
-  {日主拼音}_{靈數}.png
-  甲=jia  乙=yi  丙=bing  丁=ding  戊=wu
-  己=ji   庚=geng 辛=xin  壬=ren  癸=gui
-  範例：jia_1.png ~ jia_9.png、gui_1.png ~ gui_9.png
+程式取圖順序（share-card.js v11.4 起）：
+  {拼音}_{靈數}.webp → .png → （卓越數）master_{靈數}.webp → .png
+  → {拼音}_{基礎數}.webp → .png → 靈獸卡再退 {拼音}_1 → 全無則優雅隱藏
 
-二、卓越數（依你選的方案擇一，程式三種都支援，自動偵測）
-  方案 B（共用昆蟲圖，4 張）：master_11.png、master_22.png、master_33.png、master_44.png
-  方案 C（每日主專屬，40 張）：{拼音}_11.png（例：jia_11.png）
-  方案 A（不生圖）：什麼都不用放
-
-三、程式取圖順序（自動備援，缺圖不會壞版面）
-  1. {拼音}_{靈數}.png          ← 專屬圖優先
-  2. master_{靈數}.png          ← 卓越數共用圖（僅卓越數）
-  3. {拼音}_{基礎數}.png        ← 回退基礎數圖（僅卓越數，11→2、22→4、33→6、44→8）
-  4. 全部沒有 → 圖區自動隱藏，卡片版面自動補滿，不會開天窗
-
-圖生好後直接拖進 GitHub 的 assets/beast-numerology/ 資料夾即可，不用改任何程式。
+日後單張重生替換：轉成同名 .webp 丟進本資料夾覆蓋即可（或先丟 .png 也能吃到）。
+原始 1254px PNG 檔請自行在本機保存，repo 不需要。
