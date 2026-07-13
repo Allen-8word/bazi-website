@@ -12,7 +12,8 @@
 請你做到以下幾件事：
 
 1. **完整閱讀本文件**，理解專案的全貌
-2. **嚴格遵守已決定的設計原則與技術約束**（特別是「26 個 ID 不能改」「零幻覺原則」「純前端零成本」）
+2. **嚴格遵守已決定的設計原則與技術約束**（特別是「25 個 ID 不能改」「零幻覺原則」「純前端零成本」）
+3. **先讀第十六章**：2026-07 完成的「靈獸 × 生命靈數整合」是目前最新架構，涵蓋新資料模組、分享卡 v2 與 130 張圖檔管線
 3. **在動工前先盤點現況**，不要破壞既有功能
 4. **每完成一個工作就打包 ZIP** 並列出需上傳的檔案
 5. **使用 Mac 介面說明所有操作**（這位使用者用 Mac Pro）
@@ -55,20 +56,22 @@
 - ✅「純前端」「本地運算」「即時生成」（事實陳述）
 - ✅「僅供參考」「不構成決策建議」（免責聲明）
 
-### 🔴 鐵則 3：26 個 ID 絕對不能改名
+### 🔴 鐵則 3：25 個 ID 絕對不能改名
 
-`app.js`（600 行）與 `analysis.js`（500 行）依賴這 26 個 ID。**改名 = 整個排盤功能壞掉**：
+`app.js` 與 `analysis.js` 依賴這 25 個 ID。**改名 = 整個排盤功能壞掉**：
 
 ```
 表單輸入：iName, iGender, iYear, iMonth, iDay, iHour, iLocation, iMinute, iEmail
-按鈕：btnSubmit, btnBack, btnViewAnalysis
+按鈕：btnSubmit, btnBack
 表單區：emailForm, emailSuccess, errMsg
 頁面切換：page-home, page-result
 結果區：rName, rDate, rPillars, rTags, rDyList, rFyGrid, rFyTitle
 巴納姆卡：bnTitle, bnItems, bnBiz
 ```
 
-**任何重構前都要驗證這 26 個 ID 是否完好。**
+> 📌 2026-07 勘誤：原清單的 實際早已不存在於程式碼（歷史階段移除按鈕後未更新本文件），Phase A 例行檢查發現並修正為 25 個。
+
+**任何重構前都要驗證這 25 個 ID 是否完好。**
 
 ### 🔴 鐵則 4：CSS 必須引用 token 變數
 
@@ -173,7 +176,7 @@
 
 ---
 
-## 六、檔案結構（截至 Phase 9-A）
+## 六、檔案結構（截至 Phase 9-A；2026-07 新增檔案見第十六章 16.3）
 
 ```
 bazi-website/
@@ -405,10 +408,10 @@ grep -n "id=\"xxx\"" index.html # 確認要改的 ID 還在
 node -c app.js && echo "✓ app.js"
 node -c analysis.js && echo "✓ analysis.js"
 
-# 26 個 ID 完整性檢查
+# 25 個 ID 完整性檢查
 MISSING=0
 for id in iName iGender iYear iMonth iDay iHour iLocation iMinute iEmail \
-          btnSubmit btnBack btnViewAnalysis emailForm emailSuccess errMsg \
+          btnSubmit btnBack emailForm emailSuccess errMsg \
           page-home page-result \
           rName rDate rPillars rTags rDyList rFyGrid rFyTitle \
           bnTitle bnItems bnBiz; do
@@ -417,7 +420,7 @@ for id in iName iGender iYear iMonth iDay iHour iLocation iMinute iEmail \
     echo "✗ 缺失: $id"
   fi
 done
-if [ $MISSING -eq 0 ]; then echo "✅ 26 個 ID 完好"; fi
+if [ $MISSING -eq 0 ]; then echo "✅ 25 個 ID 完好"; fi
 ```
 
 ### 5. 打包並交付
@@ -507,11 +510,75 @@ cd /mnt/user-data/outputs && zip -r bazi-website.zip bazi-website/ -x "*.DS_Stor
 
 1. 這是**已上線運作的網站**，每次改動都會直接影響使用者
 2. **永遠先盤點再動工**
-3. **每個 Phase 完成都要打包 ZIP** + 驗證 26 個 ID
+3. **每個 Phase 完成都要打包 ZIP** + 驗證 25 個 ID
 4. **不要過度承諾**：誠實告知這次改動的範圍與風險
 5. **保持「姊姊感」溝通**：略帶溫暖、略帶務實，不囉嗦
 
+## 十六、靈獸 × 生命靈數整合專案（2026-07 完成）
+
+> 本章是 2026-07 的大型整合案完整記錄。任何後續開發前，本章與前面各章同等重要。
+
+### 16.1 專案概述
+
+把「生命靈數（1-9 + 卓越數 11/22/33/44）」系統整合進八字網站，同時將角色主題從「十日主修仙」改為「十日主靈獸」。新增第二張分享卡「靈獸 × 靈數」，10 日主 × 13 靈數 = 130 組專屬合成文案 + 130 張角色插圖全部上線。
+
+**十日主靈獸對照**：甲木青木麟龍（樹枝鹿角）、乙木花藤靈狐（花藤尾巴）、丙火日曜小朱雀（日輪光暈）、丁火星燈靈梟（胸口靈燈）、戊土嶽岩靈龜（山脈龜殼）、己土穀穗靈兔（稻穗耳朵）、庚金白刃幼虎（銀刃尾巴）、辛金月銀靈貂（月光寶石）、壬水滄海鯨龍（海龍尾）、癸水月露水母鹿（水母傘）。靈獸**不分性別**（genderTitles 男女欄位填同一靈獸名，資料結構未動）。
+
+**卓越數昆蟲原型**：11 螢火蟲・星光信使、22 白蟻・築城大師、33 蜜蜂・聖蜜導師、44 獨角仙・玄甲架構師。
+
+### 16.2 五個 Phase 摘要
+
+| Phase | 內容 | 關鍵產出 |
+|---|---|---|
+| A | 靈數資料模組 | `data/numerology.js`（13 筆查表 + 計算函式，window.NUMEROLOGY）。卓越數規則：YYYYMMDD 八位相加，每層縮減都檢查 11/22/33/44（例 29→11 算卓越數），44 已納入 |
+| B | 接入排盤流程 | 結果頁「能量輪廓」下方新增獨立靈數卡（renderNumerology）；生日沿用 iYear/iMonth/iDay；模組缺失時安靜隱藏 |
+| C | 130 組合成文案 | `data/beast-numerology-synthesis.js`（window.BEAST_NUMEROLOGY）。**單一事實來源**：由 tools/build-synthesis.js 從《合成文案草稿_審核版v1.md》自動轉出，勿手改 JS，改 MD 後重跑腳本 |
+| D | 修仙→靈獸改寫 | 91 筆顯示文字替換；**檔名/變數/ID/class 全部未動**（xianxia 命名保留）。另完成「本命靈根→本命靈獸」26 處（結果頁徽章改「五行靈根」避免矛盾） |
+| E | 分享卡 v2 | 第二分頁「靈 獸 × 靈 數」；修既有 bug（切分頁未重生 blob）；靈獸卡插圖改用新圖系，舊人像系統下線 |
+
+### 16.3 新增/異動檔案
+
+```
+data/numerology.js                    ⭐ 靈數查表 + 計算（Phase A）
+data/beast-numerology-synthesis.js    ⭐ 130 組文案 + 領域/幸運元素對照表 + 組合函式（Phase C，勿手改）
+tools/build-synthesis.js              生成腳本（MD → JS，不被網站載入）
+assets/beast-numerology/              ⭐ 130 張 WebP 角色圖 + 命名說明.txt
+share-card.js                         大改：雙分頁、renderBeastNumHTML、圖檔備援鏈 expandImgFormats
+share-card.css                        新增 sc2-* 樣式（既有樣式未動）
+app.js                                renderNumerology + ShareCard.init 傳生日
+index.html / analysis.html / analysis.js / data/xianxia-map.js / data/dayMaster.js / data/bazi-xianxia-profile.js  顯示文字改寫 + 版本推進
+```
+
+**已下線（驗收後可刪）**：assets/share-card-portraits/（20 張舊人像）、data/xianxia-portrait-map.js——程式已零引用。
+
+### 16.4 圖檔管線（重要）
+
+- 正式素材：`assets/beast-numerology/{拼音}_{靈數}.webp`，1024×1024 q85，共 130 張約 18.4MB。拼音：jia yi bing ding wu ji geng xin ren gui
+- 取圖鏈（share-card.js v11.4）：`{拼音}_{靈數}.webp → .png → （卓越數）master_{靈數}.webp → .png → {拼音}_{基礎數}.webp → .png → 靈獸卡再退 {拼音}_1 → 全無則優雅隱藏圖區`
+- 單張重生替換：轉同名 .webp 覆蓋即可，程式零修改
+- 生圖規格鐵律（歷次踩雷總結）：**乾淨純白背景**（禁「透明背景」字樣，會生出假棋盤格）、負向含「不要棋盤格紋背景」「不要多隻靈獸角色」、#7 破蛹須「蝴蝶半身在蛹內、非靈獸臉混種」、1:1 比例
+- 原始 1254px PNG（299MB）由使用者本機保存，repo 不收
+
+### 16.5 快取版本地圖（2026-07-12 現況）
+
+app.js **v11.3**｜share-card.js **v11.4**｜share-card.css **v11.1**｜xianxia-map.js **v11.1**｜dayMaster.js **v11.0**｜bazi-xianxia-profile.js **v11.0**｜analysis.js **v11.1**｜numerology.js v1.0｜beast-numerology-synthesis.js v1.0。**任何 JS/CSS 改動都必須推進版本號**（index.html 與 analysis.html 兩處都要）。
+
+### 16.6 顯示文字現況
+
+- 已改：修仙人物稱號→靈獸名、仙途→靈獸、修行課題→成長課題、本命靈根→本命靈獸
+- 保留（使用者可否決）：品牌名「本命仙盤」（涉 SEO/QR/網域，**產品層決策待定**）、「靈根/靈氣/境界轉換期」等通用玄幻詞（「五行靈根：甲木靈根」語境保留）
+
+### 16.7 待辦清單
+
+1. ⏸️ 驗收 130 張圖上線（測試生日：1995-09-29→癸水卓越數 44／8；1992-02-15→中間層卓越數 11／2）
+2. ⏸️ 驗收後刪除 share-card-portraits/ 與 xianxia-portrait-map.js
+3. ⏸️ 品牌名「本命仙盤」是否改名——產品決策
+4. ⏸️ 合成文案審核：《合成文案草稿_審核版v1.md》使用者尚未逐條審核（甲木×3 為參考圖基準版）；審後改 MD → 重跑 tools/build-synthesis.js
+5. ⏸️ 原 12 階段的 Phase 9-B（流年四面向評分）仍未做
+
+---
+
 —— 文件結束 ——
 
-> **產出日期**：Phase 9-A 完成後
-> **下一步建議**：開新對話做 Phase 9-B（流年四面向評分）
+> **產出日期**：Phase 9-A 完成後；**2026-07-12 大幅增補第十六章（靈獸 × 生命靈數整合）**
+> **下一步建議**：見 16.7 待辦清單
