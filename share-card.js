@@ -38,6 +38,16 @@ const STEM_PINYIN = {
   '己': 'ji', '庚': 'geng', '辛': 'xin', '壬': 'ren', '癸': 'gui'
 };
 
+// 圖檔候選組鏈：每個邏輯名先試 .webp（正式素材）再退 .png（備援）
+function expandImgFormats(logicalNames) {
+  const out = [];
+  for (const name of logicalNames) {
+    out.push(name + '.webp');
+    out.push(name + '.png');
+  }
+  return out;
+}
+
 const ELEMENT_NAMES = {
   wood: '木', fire: '火', earth: '土', metal: '金', water: '水'
 };
@@ -479,16 +489,16 @@ function getBeastPortraitSrcs() {
   if (window.NUMEROLOGY && d.birthYear && d.birthMonth && d.birthDay) {
     const calc = window.NUMEROLOGY.calcLifePathNumber(d.birthYear, d.birthMonth, d.birthDay);
     if (calc) {
-      const srcs = [`${dir}${py}_${calc.lifePath}.png`];
+      const names = [`${dir}${py}_${calc.lifePath}`];
       if (calc.isMaster) {
-        srcs.push(`${dir}master_${calc.lifePath}.png`);
-        srcs.push(`${dir}${py}_${calc.baseNumber}.png`);
+        names.push(`${dir}master_${calc.lifePath}`);
+        names.push(`${dir}${py}_${calc.baseNumber}`);
       }
-      if (srcs.indexOf(`${dir}${py}_1.png`) === -1) srcs.push(`${dir}${py}_1.png`);
-      return srcs;
+      if (names.indexOf(`${dir}${py}_1`) === -1) names.push(`${dir}${py}_1`);
+      return expandImgFormats(names);
     }
   }
-  return [`${dir}${py}_1.png`];
+  return expandImgFormats([`${dir}${py}_1`]);
 }
 
 function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
@@ -612,11 +622,11 @@ function renderBeastNumHTML() {
   // 圖檔備援鏈
   const py = STEM_PINYIN[d.dayStem] || 'x';
   const dir = './assets/beast-numerology/';
-  const srcs = [`${dir}${py}_${calc.lifePath}.png`];
-  if (calc.isMaster) {
-    srcs.push(`${dir}master_${calc.lifePath}.png`);
-    srcs.push(`${dir}${py}_${calc.baseNumber}.png`);
-  }
+  const srcs = expandImgFormats(
+    calc.isMaster
+      ? [`${dir}${py}_${calc.lifePath}`, `${dir}master_${calc.lifePath}`, `${dir}${py}_${calc.baseNumber}`]
+      : [`${dir}${py}_${calc.lifePath}`]
+  );
   const illustrationHTML = `
     <div class="sc2-illustration">
       <img src="${escapeHtml(srcs[0])}"
