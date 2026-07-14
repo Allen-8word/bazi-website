@@ -1202,3 +1202,175 @@
   color: var(--text-secondary);
   white-space: nowrap;
 }
+
+/* ============================================
+   P1（2026-07）：卡片比例動態切換
+   ============================================ */
+/* 限動 9:16（預設，維持 540×960） */
+.share-card-wrapper.sc-ratio-story { width: calc(540px * var(--preview-scale)); height: calc(960px * var(--preview-scale)); }
+.share-card-frame.sc-ratio-story { width: 540px; height: 960px; }
+/* 貼文 4:5（540×675） */
+.share-card-wrapper.sc-ratio-post { width: calc(540px * var(--preview-scale)); height: calc(675px * var(--preview-scale)); }
+.share-card-frame.sc-ratio-post {
+  width: 540px; height: 675px;
+  padding: 0;
+  background: linear-gradient(135deg, #f4f8f0 0%, #eef4ea 45%, #f6faf3 100%);
+}
+
+/* ============================================
+   P1：貼文卡雙欄排版（scp-*，仿範本）
+   ============================================ */
+.scp-card {
+  display: flex;
+  width: 100%;
+  height: calc(100% - 34px);
+  padding: 20px 22px 8px;
+  box-sizing: border-box;
+  gap: 16px;
+  align-items: stretch;
+}
+.scp-left { width: 52%; display: flex; flex-direction: column; }
+.scp-left .scp-section:nth-of-type(2) { flex: 0 0 auto; }
+.scp-right { width: 48%; display: flex; flex-direction: column; }
+
+.scp-title-row { display: flex; align-items: baseline; gap: 5px; }
+.scp-title-stem {
+  font-family: var(--font-serif); font-size: 27px; font-weight: 700;
+  color: #4a7c3f; letter-spacing: 1px;
+}
+.scp-title-x { font-size: 16px; color: #9cb88c; }
+.scp-title-num {
+  font-family: var(--font-serif); font-size: 20px; font-weight: 700; color: #d4a24a;
+}
+.scp-subtitle { font-size: 12px; color: #5a6b4f; letter-spacing: 1px; margin: 4px 0 0; }
+.scp-divider {
+  height: 1px; margin: 8px 0 10px;
+  background: linear-gradient(90deg, #b4cca0, transparent);
+}
+
+.scp-section { margin-bottom: 11px; }
+.scp-h {
+  font-family: var(--font-serif); font-size: 13px; font-weight: 700;
+  color: #4a7c3f; margin-bottom: 4px; letter-spacing: 1px;
+}
+.scp-p { font-size: 10px; line-height: 1.65; color: #55604d; margin: 0; }
+
+.scp-strength-list { list-style: none; margin: 0; padding: 0; }
+.scp-strength-item {
+  font-size: 9.5px; line-height: 1.75; color: #55604d; padding-left: 13px; position: relative;
+}
+.scp-strength-item::before {
+  content: '🌿'; position: absolute; left: 0; font-size: 7px; top: 2px;
+}
+
+.scp-field-grid { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.scp-field-item, .scp-lucky-item { display: flex; align-items: center; gap: 3px; }
+.scp-field-leaf { font-size: 8px; }
+.scp-field-name { font-size: 9px; color: #55604d; }
+
+.scp-reminder {
+  margin-top: auto;
+  border: 1px solid #cdddb8; border-radius: 8px;
+  padding: 8px 10px; background: rgba(255,255,255,0.5);
+}
+.scp-reminder-title {
+  font-family: var(--font-serif); font-size: 11px; font-weight: 700;
+  color: #4a7c3f; text-align: center; margin-bottom: 4px;
+}
+.scp-reminder-text { font-size: 9px; line-height: 1.6; color: #55604d; text-align: center; margin: 0; }
+
+/* 右欄 */
+.scp-illust {
+  position: relative; width: 100%; aspect-ratio: 1/1;
+  border-radius: 12px; overflow: hidden; margin-bottom: 10px;
+}
+.scp-illust img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scp-badge {
+  position: absolute; top: 8px; right: 10px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.scp-badge-num {
+  font-family: var(--font-serif); font-size: 46px; font-weight: 700;
+  color: #e8b04a; line-height: 1;
+  text-shadow: 0 2px 8px rgba(255,255,255,0.9), 0 0 20px rgba(232,176,74,0.5);
+}
+.scp-badge-sub { font-size: 11px; color: #d4a24a; font-weight: 700; margin-top: -2px; }
+
+.scp-energy-box {
+  border: 1px solid #cdddb8; border-radius: 10px;
+  padding: 9px 10px; background: rgba(255,255,255,0.55); margin-bottom: 8px;
+}
+.scp-energy-title {
+  font-family: var(--font-serif); font-size: 10.5px; font-weight: 700;
+  color: #4a7c3f; text-align: center; margin-bottom: 6px;
+}
+.scp-energy-words { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px; margin-bottom: 7px; }
+.scp-energy-word { font-size: 11px; font-weight: 700; color: #5a6b4f; }
+.scp-energy-sep { font-size: 9px; color: #b4cca0; }
+.scp-energy-divider {
+  font-size: 9px; color: #d4a24a; text-align: center; letter-spacing: 2px;
+  margin: 5px 0; position: relative;
+}
+.scp-lucky-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 8px; }
+
+/* 貼文卡 footer bar */
+.scp-footer-bar {
+  height: 34px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px; border-top: 1px solid rgba(180,204,160,0.4);
+}
+.scp-footer-brand { font-family: var(--font-serif); font-size: 11px; color: #4a7c3f; letter-spacing: 3px; }
+.scp-footer-rarity { font-size: 9px; color: #a0916a; letter-spacing: 1px; }
+.scp-qr { width: 26px; height: 26px; }
+.scp-qr img, .scp-qr canvas { width: 100% !important; height: 100% !important; }
+
+/* 貼文卡的搭檔列縮小以適應右欄 */
+.scp-right .sc-partner { margin-top: 0; padding: 6px 8px; flex-wrap: wrap; justify-content: center; }
+.scp-right .sc-partner-hook { font-size: 8.5px; }
+
+/* ============================================
+   P1：限動卡減字大圖版（scs-*）9:16
+   ============================================ */
+.scs-card {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 54px 44px 40px; box-sizing: border-box;
+  background: linear-gradient(160deg, #f6faf3 0%, #eef4ea 55%, #f0f6ec 100%);
+}
+.scs-brand {
+  font-family: var(--font-serif); font-size: 13px; letter-spacing: 6px;
+  color: #4a7c3f; margin-bottom: 20px;
+}
+.scs-illust {
+  width: 372px; height: 372px; border-radius: 26px; overflow: hidden;
+  margin-bottom: 26px; box-shadow: 0 10px 40px rgba(120,150,100,0.22);
+  background: #fdfefb;
+}
+.scs-illust img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scs-beast-name {
+  font-family: var(--font-serif); font-size: 38px; font-weight: 700;
+  color: #3d6b34; letter-spacing: 3px; text-align: center;
+}
+.scs-combo {
+  font-family: var(--font-serif); font-size: 18px; color: #d4a24a;
+  letter-spacing: 1px; margin-top: 4px;
+}
+.scs-card .sc-rarity { margin-top: 12px; font-size: 11px; }
+.scs-slogan {
+  font-family: var(--font-serif); font-size: 20px; color: #4a7c3f;
+  letter-spacing: 2px; text-align: center; margin: 34px 0;
+  line-height: 1.75;
+}
+.scs-card .sc-partner {
+  margin-top: 0; margin-bottom: auto;
+  background: rgba(255,255,255,0.65); border-color: rgba(160,190,130,0.6);
+}
+.scs-footer {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding-top: 18px; margin-top: 18px;
+  border-top: 1px solid rgba(160,190,130,0.35);
+}
+.scs-qr { width: 52px; height: 52px; flex-shrink: 0; }
+.scs-qr img, .scs-qr canvas { width: 100% !important; height: 100% !important; }
+.scs-footer-text { display: flex; flex-direction: column; }
+.scs-footer-url { font-size: 12px; color: #6b7a5f; letter-spacing: 0.5px; }
+.scs-footer-cta { font-size: 13px; color: #4a7c3f; letter-spacing: 2px; font-weight: 600; margin-top: 2px; }

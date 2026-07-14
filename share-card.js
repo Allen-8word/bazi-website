@@ -28,8 +28,8 @@ const state = {
 };
 
 const TABS = [
-  { id: 'xianxia', label: '靈 獸', filename: 'benming-lingshou' },
-  { id: 'beastnum', label: '靈 獸 × 靈 數', filename: 'lingshou-lingshu' }
+  { id: 'xianxia', label: '限 動', filename: 'benming-lingshou', ratio: 'story', w: 540, h: 960 },
+  { id: 'beastnum', label: '貼 文', filename: 'lingshou-lingshu', ratio: 'post', w: 540, h: 675 }
 ];
 
 // 生命靈數整合 Phase E：日主拼音（圖檔命名用）
@@ -433,6 +433,16 @@ function renderCurrentCard() {
   if (!frame || !state.data) return;
 
   const tab = TABS[state.currentTab] || TABS[0];
+
+  // P1：依分頁切換卡片比例（限動 9:16 / 貼文 4:5）
+  const wrapper = frame.closest('.share-card-wrapper');
+  frame.classList.remove('sc-ratio-story', 'sc-ratio-post');
+  frame.classList.add(tab.ratio === 'post' ? 'sc-ratio-post' : 'sc-ratio-story');
+  if (wrapper) {
+    wrapper.classList.remove('sc-ratio-story', 'sc-ratio-post');
+    wrapper.classList.add(tab.ratio === 'post' ? 'sc-ratio-post' : 'sc-ratio-story');
+  }
+
   frame.innerHTML = (tab.id === 'beastnum') ? renderBeastNumHTML() : renderPersonaHTML();
 
   // 渲染 QR code 到該卡的 .sc-qr 內
@@ -588,16 +598,23 @@ function getBeastPortraitSrcs() {
 function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
   const d = state.data;
   const comboInfo = getComboInfo();
-  const keywordsHTML = (xianxiaProfile.keywords || []).slice(0, 4).map(k =>
-    `<span class="sc-keyword">${escapeHtml(k)}</span>`
-  ).join('');
-  const reminder = xianxiaProfile.shareLine || xianxiaProfile.phrase || xianxiaProfile.challenge || '';
   const portraitSrcs = getBeastPortraitSrcs();
+
+  // 靈數 slogan（Q7A）：有生日時用靈數 slogan，否則用日主 tagline
+  let slogan = '';
+  if (comboInfo && comboInfo.calc && window.NUMEROLOGY) {
+    const np = window.NUMEROLOGY.getNumerologyProfile(comboInfo.calc.lifePath);
+    if (np && np.slogan) slogan = np.slogan;
+  }
+  if (!slogan) slogan = xianxiaProfile.shareLine || xianxiaProfile.phrase || '';
+
+  // 組合名：有生日「甲木 × 生命靈數 3」，否則只有靈獸名
+  const comboName = (comboInfo && comboInfo.comboName) ? comboInfo.comboName : '';
+
   const portraitHTML = portraitSrcs
     ? `
-      <div class="sc-portrait-wrap">
-        <img class="sc-portrait-img"
-             src="${escapeHtml(portraitSrcs[0])}"
+      <div class="scs-illust">
+        <img src="${escapeHtml(portraitSrcs[0])}"
              data-srcs='${escapeHtml(JSON.stringify(portraitSrcs))}'
              data-i="0"
              alt="${escapeHtml(xianxiaProfile.title || '')}"
@@ -607,36 +624,27 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
     : '';
 
   return `
-    <div class="sc-brand">
-      <span class="sc-brand-mark">本 命 仙 盤</span>
-      <span class="sc-brand-tag">LINGSHOU</span>
-    </div>
-
-    <div class="sc-xiantu-content">
-      <div class="sc-xiantu-kicker">我 的 本 命 靈 獸 卡</div>
-
-      <div class="sc-persona-circle sc-xiantu-circle">
-        <span class="sc-persona-stem">${escapeHtml(d.dayStem)}</span>
-      </div>
-
-      <div class="sc-xiantu-root">${escapeHtml(xianxiaProfile.spiritRoot)}</div>
-      <div class="sc-xiantu-title">${escapeHtml(xianxiaProfile.title)}</div>
-      <div class="sc-xiantu-subtitle">${escapeHtml(xianxiaProfile.yinYang || (dayMasterProfile && dayMasterProfile.elementName) || '')} · ${escapeHtml(xianxiaProfile.essence || '本命靈獸')}</div>
-      ${renderRarityHTML(comboInfo)}
-
-      <div class="sc-keywords sc-xiantu-keywords">${keywordsHTML}</div>
+    <div class="scs-card">
+      <div class="scs-brand">本 命 仙 盤</div>
 
       ${portraitHTML}
 
-      <div class="sc-xiantu-panel">
-        <div class="sc-xiantu-label">靈 獸 提 醒</div>
-        <p>${escapeHtml(reminder)}</p>
-      </div>
+      <div class="scs-beast-name">${escapeHtml(xianxiaProfile.title)}</div>
+      ${comboName ? `<div class="scs-combo">${escapeHtml(comboName)}</div>` : ''}
+      ${renderRarityHTML(comboInfo)}
+
+      ${slogan ? `<div class="scs-slogan">「${escapeHtml(slogan)}」</div>` : ''}
 
       ${renderPartnerHTML(comboInfo)}
-    </div>
 
-    ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+      <div class="scs-footer">
+        <div class="scs-qr sc-qr"></div>
+        <div class="scs-footer-text">
+          <div class="scs-footer-url">${escapeHtml(getDisplayUrl())}</div>
+          <div class="scs-footer-cta">掃 我 · 測 你 的 本 命 靈 獸</div>
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -707,6 +715,10 @@ function renderBeastNumHTML() {
     ? `${syn.beastName} × ${numProfile.insectName || ''} · ${numProfile.masterTitle || ''}`
     : `${syn.beastName} · ${numProfile.stageName || ''}`;
 
+  // 右上大數字徽章（卓越數顯示基礎數大字 + 小標）
+  const bigNumber = calc.isMaster ? String(calc.baseNumber) : String(calc.lifePath);
+  const badgeSubText = calc.isMaster ? calc.displayLabel : '';
+
   // 圖檔備援鏈
   const py = STEM_PINYIN[d.dayStem] || 'x';
   const dir = './assets/beast-numerology/';
@@ -715,71 +727,94 @@ function renderBeastNumHTML() {
       ? [`${dir}${py}_${calc.lifePath}`, `${dir}master_${calc.lifePath}`, `${dir}${py}_${calc.baseNumber}`]
       : [`${dir}${py}_${calc.lifePath}`]
   );
-  const illustrationHTML = `
-    <div class="sc2-illustration">
-      <img src="${escapeHtml(srcs[0])}"
-           data-srcs='${escapeHtml(JSON.stringify(srcs))}'
-           data-i="0"
-           alt="${escapeHtml(namesText)}"
-           onerror="window.ShareCard._imgNext(this)">
-    </div>
-  `;
 
-  const fieldsHTML = (syn.fields || []).map(f => `<span class="sc2-chip">${escapeHtml(f)}</span>`).join('');
-  const luckyHTML = (syn.luckyElements || []).map(f => `<span class="sc2-chip sc2-chip-gold">${escapeHtml(f)}</span>`).join('');
+  // 1A 程式化補欄位：性格優勢（strengths 前 5）+ 能量關鍵字（keywords 前 5）
+  const strengths = (numProfile.strengths || []).slice(0, 5);
+  const strengthsHTML = strengths.map(s => `<li class="scp-strength-item">${escapeHtml(s)}</li>`).join('');
+  const energyKeys = (numProfile.keywords || []).slice(0, 5);
+  const energyHTML = energyKeys.map(k => `<span class="scp-energy-word">${escapeHtml(k)}</span>`).join('<span class="scp-energy-sep">｜</span>');
+
+  const fieldsHTML = (syn.fields || []).map(f =>
+    `<div class="scp-field-item"><span class="scp-field-leaf">🍃</span><span class="scp-field-name">${escapeHtml(f)}</span></div>`
+  ).join('');
+  const luckyHTML = (syn.luckyElements || []).map(f =>
+    `<div class="scp-lucky-item"><span class="scp-field-leaf">🍃</span><span class="scp-field-name">${escapeHtml(f)}</span></div>`
+  ).join('');
+
+  const comboInfo = getComboInfo();
 
   return `
-    <div class="sc-brand">
-      <span class="sc-brand-mark">本 命 仙 盤</span>
-      <span class="sc-brand-tag">LINGSHOU</span>
+    <div class="scp-card">
+      <!-- 左欄：文字 -->
+      <div class="scp-left">
+        <div class="scp-title-row">
+          <span class="scp-title-stem">${escapeHtml(window.BEAST_NUMEROLOGY.DAY_MASTER_LABELS[d.dayStem])}</span>
+          <span class="scp-title-x">×</span>
+          <span class="scp-title-num">${calc.isMaster ? '卓越數 ' + escapeHtml(calc.displayLabel) : '生命靈數 ' + calc.lifePath}</span>
+        </div>
+        <div class="scp-subtitle">${escapeHtml(syn.subtitle)}</div>
+        <div class="scp-divider"></div>
+
+        <div class="scp-section">
+          <div class="scp-h">🌿 核心特質</div>
+          <p class="scp-p">${escapeHtml(syn.coreTrait)}</p>
+        </div>
+
+        ${strengthsHTML ? `
+        <div class="scp-section">
+          <div class="scp-h">🌿 性格優勢</div>
+          <ul class="scp-strength-list">${strengthsHTML}</ul>
+        </div>` : ''}
+
+        <div class="scp-section">
+          <div class="scp-h">🌿 生命任務</div>
+          <p class="scp-p">${escapeHtml(syn.lifeMission)}</p>
+        </div>
+
+        <div class="scp-section">
+          <div class="scp-h">🌿 適合發展領域</div>
+          <div class="scp-field-grid">${fieldsHTML}</div>
+        </div>
+
+        <div class="scp-reminder">
+          <div class="scp-reminder-title">給你的提醒</div>
+          <p class="scp-reminder-text">${escapeHtml(syn.reminder)}</p>
+        </div>
+      </div>
+
+      <!-- 右欄：圖 + 徽章 + 關鍵字盒 -->
+      <div class="scp-right">
+        <div class="scp-illust">
+          <img src="${escapeHtml(srcs[0])}"
+               data-srcs='${escapeHtml(JSON.stringify(srcs))}'
+               data-i="0"
+               alt="${escapeHtml(namesText)}"
+               onerror="window.ShareCard._imgNext(this)">
+          <div class="scp-badge">
+            <span class="scp-badge-num">${escapeHtml(bigNumber)}</span>
+            ${badgeSubText ? `<span class="scp-badge-sub">${escapeHtml(badgeSubText)}</span>` : ''}
+          </div>
+        </div>
+
+        <div class="scp-energy-box">
+          <div class="scp-energy-title">${escapeHtml(labelText)} 的能量關鍵字</div>
+          <div class="scp-energy-words">${energyHTML}</div>
+          <div class="scp-energy-divider">幸 運 元 素</div>
+          <div class="scp-lucky-grid">${luckyHTML}</div>
+        </div>
+
+        ${renderPartnerHTML(comboInfo)}
+      </div>
     </div>
 
-    <div class="sc2-content">
-      <div class="sc2-kicker">我 的 靈 獸 × 靈 數</div>
-      <div class="sc2-label">${escapeHtml(labelText)}</div>
-      <div class="sc2-names">${escapeHtml(namesText)}</div>
-      ${renderRarityHTML(getComboInfo())}
-
-      ${illustrationHTML}
-
-      <div class="sc2-subtitle">${escapeHtml(syn.subtitle)}</div>
-
-      <div class="sc-xiantu-panel sc2-panel">
-        <div class="sc-xiantu-label">核 心 特 質</div>
-        <p>${escapeHtml(syn.coreTrait)}</p>
-      </div>
-
-      <div class="sc-xiantu-panel sc2-panel">
-        <div class="sc-xiantu-label">生 命 任 務</div>
-        <p>${escapeHtml(syn.lifeMission)}</p>
-      </div>
-
-      <div class="sc2-chip-group">
-        <div class="sc-xiantu-label">適 合 發 展 領 域</div>
-        <div class="sc2-chips">${fieldsHTML}</div>
-      </div>
-
-      <div class="sc2-chip-group">
-        <div class="sc-xiantu-label">幸 運 元 素</div>
-        <div class="sc2-chips">${luckyHTML}</div>
-      </div>
-
-      <div class="sc-xiantu-panel sc-xiantu-panel-soft sc2-panel">
-        <div class="sc-xiantu-label">給 你 的 提 醒</div>
-        <p>${escapeHtml(syn.reminder)}</p>
-      </div>
-
-      ${renderPartnerHTML(getComboInfo())}
+    <div class="scp-footer-bar">
+      <div class="scp-footer-brand">本 命 仙 盤</div>
+      ${comboInfo && comboInfo.comboLabel ? `<div class="scp-footer-rarity">130 種組合 · ${escapeHtml(comboInfo.comboLabel)}</div>` : ''}
+      <div class="scp-qr sc-qr"></div>
     </div>
-
-    ${renderFooterHTML('掃 我 測 你 的 靈 獸 × 靈 數')}
   `;
 }
 
-
-// ============================================
-// 共用：卡片底部（QR + 網址）
-// ============================================
 function renderFooterHTML(ctaText) {
   return `
     <div class="sc-footer">
