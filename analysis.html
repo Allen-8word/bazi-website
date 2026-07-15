@@ -18,6 +18,21 @@
 <link rel="stylesheet" href="/layout.css">
 <link rel="stylesheet" href="/sections.css">
 
+<script>
+  /* 與 index.html 相同的 GA 腳手架：GA_MEASUREMENT_ID 留空時完全不載入、零影響 */
+  const GA_MEASUREMENT_ID = '';
+  if (GA_MEASUREMENT_ID) {
+    const gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_MEASUREMENT_ID);
+    document.head.appendChild(gaScript);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_MEASUREMENT_ID, { 'anonymize_ip': true });
+  }
+</script>
+
 <style>
 :root {
   --bg-primary: #F5F1EB;
@@ -1518,9 +1533,149 @@ body {
     margin-top: 0;
   }
 }
+/* === 2026-07 新增：靈獸摘要主圖（五行觀察合併改版） === */
+.xianxia-report-portrait {
+  display: block;
+  width: min(220px, 56%);
+  margin: 0 auto 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 18px rgba(61, 58, 54, 0.12);
+}
+.xianxia-aura-title {
+  font-size: 14px;
+  color: var(--color-mystic);
+  letter-spacing: 3px;
+  margin: 1.25rem 0 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed #EFE9DD;
+  font-weight: 500;
+}
+.xianxia-aura-lead {
+  font-size: 15px;
+  color: #5A554E;
+  line-height: 1.9;
+  margin-bottom: 4px;
+}
+
+/* === 2026-07 新增：生命靈數章節 === */
+.num-head { text-align: center; margin-bottom: 1rem; }
+.num-label {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 44px;
+  color: var(--color-accent);
+  line-height: 1.2;
+}
+.num-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 20px;
+  color: var(--color-text);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+.num-role { font-size: 14px; color: var(--color-mystic); margin-top: 4px; letter-spacing: 1px; }
+.num-block { margin-top: 1.25rem; }
+.num-block-title {
+  font-size: 14px;
+  color: var(--color-mystic);
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed #EFE9DD;
+  font-weight: 500;
+}
+.num-positioning {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px;
+  line-height: 2;
+  color: #3D3A36;
+  padding: 1.1rem 1.25rem;
+  background: #F9F5EC;
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  letter-spacing: 0.5px;
+}
+.num-list-item {
+  padding: 8px 4px 8px 18px;
+  font-size: 15px;
+  color: #4D4944;
+  line-height: 1.8;
+  position: relative;
+  border-bottom: 1px dashed rgba(139, 157, 131, 0.2);
+}
+.num-list-item:last-child { border-bottom: none; }
+.num-list-item::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  color: var(--color-main);
+  font-weight: 700;
+}
+.num-slogan {
+  text-align: center;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 18px;
+  color: var(--color-accent-dark);
+  letter-spacing: 1.5px;
+  margin: 1.5rem 0 0.5rem;
+}
+.num-synthesis {
+  margin-top: 1.5rem;
+  padding: 14px;
+  background: rgba(139, 157, 131, 0.06);
+  border-radius: var(--radius-md);
+}
+.num-synthesis .ns-kicker { font-size: 13px; color: var(--color-mystic); letter-spacing: 2px; margin-bottom: 8px; }
+.num-synthesis .ns-title { font-size: 16px; color: var(--color-text); font-weight: 500; margin-bottom: 8px; }
+.num-synthesis p { font-size: 15px; color: #4D4944; line-height: 1.85; margin-bottom: 8px; }
+.num-synthesis p:last-child { margin-bottom: 0; }
+.num-footnote {
+  margin-top: 1.5rem;
+  font-size: 12.5px;
+  color: #7A756D;
+  line-height: 1.8;
+}
+.num-footnote p { margin-bottom: 6px; }
+.rpt-source {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #9B958B;
+  text-align: right;
+}
+
+/* === 2026-07 新增：LINE 社群導流卡（沿用 paywall 卡底） === */
+.line-questions { margin: 1.1rem 0; }
+.line-question {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px;
+  color: #3D3A36;
+  line-height: 1.9;
+  padding: 8px 12px;
+  letter-spacing: 0.5px;
+}
+a.paywall-cta {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+.line-cta-note {
+  text-align: center;
+  font-size: 12.5px;
+  color: #7A756D;
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+}
 </style>
 </head>
 <body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">本 命 仙 盤</div>
+  </div>
+</header>
 
 <main class="container">
 
@@ -1551,46 +1706,37 @@ body {
     <div id="xianxiaSummaryContent"></div>
   </div>
 
-  <!-- 一、命主特質 -->
-  <div class="report-card" id="cardDayMaster">
-    <div class="card-section-title">一 · 命 主 特 質</div>
-    <div id="dmContent"></div>
-  </div>
-
-  <!-- 二、五行能量觀察 -->
-  <div class="report-card" id="cardElements">
-    <div class="card-section-title">二 · 五 行 能 量 觀 察</div>
-    <div class="radar-wrap" id="elRadarWrap"></div>
-    <div class="element-summary" id="elSummary"></div>
-    <div style="text-align:center"><span class="body-strength" id="bodyStrength"></span></div>
-    <div id="elPersonality"></div>
-  </div>
-
-  <!-- 三、人格畫像 -->
+  <!-- 一、人格畫像 -->
   <div class="report-card" id="cardPersona">
-    <div class="card-section-title">三 · 人 格 畫 像</div>
+    <div class="card-section-title">一 · 人 格 畫 像</div>
     <div id="personaContent"></div>
   </div>
 
-  <!-- 四、流年運勢預警 -->
+  <!-- 二、流年運勢預警 -->
   <div class="report-card" id="cardFlowYear">
-    <div class="card-section-title">四 · 流 年 天 劫 與 機 緣</div>
+    <div class="card-section-title">二 · 流 年 天 劫 與 機 緣</div>
     <div class="fy-year-strip" id="fyYearStrip"></div>
     <div id="fyContent"></div>
   </div>
 
-  <!-- 五、姊姊贈言 -->
+  <!-- 三、生命靈數（2026-07 新增章節，資料：data/numerology-report.js） -->
+  <div class="report-card" id="cardNumerology" hidden>
+    <div class="card-section-title">三 · 生 命 靈 數</div>
+    <div id="numerologyContent"></div>
+  </div>
+
+  <!-- 四、姊姊贈言 -->
   <div class="report-card sister-card" id="cardSisterWord">
-    <div class="card-section-title">五 · 給 你 的 一 句 話</div>
+    <div class="card-section-title">四 · 給 你 的 一 句 話</div>
     <div class="sister-quote-mark">「</div>
     <div id="sisterContent" class="sister-content"></div>
     <div class="sister-quote-mark sister-quote-end">」</div>
     <div class="sister-signature">— 寫給你的｜芯妤姊</div>
   </div>
 
-  <!-- 六、付費鉤子 -->
-  <div class="report-card paywall-card" id="cardPaywall">
-    <div class="card-section-title">六 · 更 深 的 問 題</div>
+  <!-- LINE 社群導流（原付費鉤子改造，2026-07；LINE_COMMUNITY_URL 留空時整卡不渲染） -->
+  <div class="report-card paywall-card" id="cardPaywall" hidden>
+    <div class="card-section-title">有 些 話 ， 想 留 到 聊 天 的 時 候 說</div>
     <div id="paywallContent"></div>
   </div>
 
@@ -1656,12 +1802,15 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/lunar.js"></script>
 <script src="./data/dayMaster.js?v=11.0"></script>
 <script src="./data/branches.js"></script>
-<script src="./data/tenGods.js?v=11.1"></script>
-<script src="./data/elements.js?v=11.1"></script>
+<script src="./data/tenGods.js"></script>
+<script src="./data/elements.js"></script>
 <script src="./data/engine.js"></script>
 <script src="./data/xianxia-map.js?v=11.1"></script>
 <script src="./data/bazi-xianxia-profile.js?v=11.0"></script>
-<script src="./analysis.js?v=11.2"></script>
+<script src="./data/numerology.js?v=1.0"></script>
+<script src="./data/numerology-report.js?v=1.0"></script>
+<script src="./data/beast-numerology-synthesis.js?v=1.0"></script>
+<script src="./analysis.js?v=12.0"></script>
 
 </body>
 </html>

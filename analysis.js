@@ -1,20 +1,31 @@
 /**
- * analysis.js — 姊姊感版分析報告渲染邏輯
+ * analysis.js — 姊姊感版分析報告渲染邏輯（v12.0，2026-07 改版）
  *
- * 6 段式報告骨架：
- *   一、命主特質（開場隱喻 + 三個誤解 + 點頭場景 + 陰影面）
- *   二、五行能量觀察（雷達圖 + 為什麼你感覺累/旺盛 + 真正需要的補充）
- *   三、人格畫像（主導/輔助 + 外在 vs 內在 + 人生劇本 + 核心張力 + 十神結構圖）
- *   四、流年運勢預警（為什麼這年重要 + 事件類型 + 最容易卡的地方）
- *   五、姊姊贈言（總結性的一句話）
- *   六、付費鉤子（具體到月份/面向，引導升級）
+ * 報告骨架：
+ *   開場、本命靈獸摘要（含靈獸主圖 + 五行靈氣日常感受，原「五行能量觀察」描述已併入）
+ *   一、人格畫像（主導/輔助 + 外在 vs 內在 + 核心張力）
+ *   二、流年天劫與機緣（為什麼這年重要 + 事件類型 + 最容易卡的地方）
+ *   三、生命靈數（data/numerology-report.js 查表 + 靈獸×靈數合成文案）
+ *   四、給你的一句話（姊姊贈言，折衷版語氣）
+ *   尾、LINE 社群導流卡（原付費鉤子改造；LINE_COMMUNITY_URL 留空時整卡不渲染）
  *
+ * v12.0 移除：命主特質區塊、五行雷達圖與百分比、付費鉤子（含 renderPaywallSync 流年連動）。
  * 所有內容皆來自 data/*.js 的查表資料，零 AI 生成、零幻覺。
  */
 (function() {
 'use strict';
 
 const Solar = window.Solar;
+
+/* 🔗 LINE 社群邀請連結：拿到連結後填入這裡並重新部署即可上線導流卡。
+ *    留空字串 = 導流卡完全不渲染，報告結束在「給你的一句話」。 */
+const LINE_COMMUNITY_URL = '';
+
+/* 靈獸圖檔拼音對照（與 share-card.js 一致） */
+const STEM_PINYIN = {
+  '甲': 'jia', '乙': 'yi', '丙': 'bing', '丁': 'ding', '戊': 'wu',
+  '己': 'ji', '庚': 'geng', '辛': 'xin', '壬': 'ren', '癸': 'gui'
+};
 
 function escapeHtml(str) {
   return String(str || '')
@@ -96,7 +107,50 @@ function buildXianxiaProfile(result, analysisData, gender) {
   }
 }
 
-function renderXianxiaSummary(profile) {
+function buildBeastPortraitHtml(dayStem, numProfile) {
+  const py = STEM_PINYIN[dayStem];
+  if (!py || !numProfile || !numProfile.number) return '';
+  const base = `/assets/beast-numerology/${py}_${numProfile.number}`;
+  /* webp 優先、png 備援、都失敗則整張圖移除（與分享卡取圖鏈一致的降級精神） */
+  return `<img class="xianxia-report-portrait" src="${base}.webp" alt="本命靈獸圖"
+    onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='${base}.png';}else{this.remove();}">`;
+}
+
+/* 原「五行能量觀察」的日常感受描述，改以靈獸靈氣敘事併入摘要卡（2026-07 改版） */
+function buildElementAuraHtml(bodyStrength, energy) {
+  if (!bodyStrength || !energy || !window.ELEMENT_PERSONALITY) return '';
+
+  const order = ['wood','fire','earth','metal','water'];
+  const sorted = [...order].sort((a, b) => (energy[b] || 0) - (energy[a] || 0));
+  const strongProfile = window.ELEMENT_PERSONALITY[sorted[0]];
+  const weakProfile = window.ELEMENT_PERSONALITY[sorted[sorted.length - 1]];
+  if (!strongProfile || !weakProfile) return '';
+
+  const renderFeelingBlock = (profile, mode) => {
+    const data = mode === 'excess' ? profile.excess : profile.deficient;
+    const scenesHtml = data.scenes.map(s => `<div class="ef-scene">${s}</div>`).join('');
+    return `
+      <div class="element-feeling">
+        <div class="ef-title">${profile.name}${mode === 'excess' ? '偏旺' : '偏弱'} · 你的日常感受</div>
+        <div class="ef-feeling">${data.feeling}</div>
+        <div class="ef-scenes">${scenesHtml}</div>
+        <div class="ef-need">
+          <div class="ef-need-label">→ 你真正需要的補充</div>
+          ${data.need}
+        </div>
+      </div>
+    `;
+  };
+
+  return `
+    <div class="xianxia-aura-title">靈 獸 的 靈 氣 底 色</div>
+    <div class="xianxia-aura-lead">你的靈獸帶著「${escapeHtml(strongProfile.name)}偏旺、${escapeHtml(weakProfile.name)}偏弱」的靈氣底色（命格 · ${escapeHtml(bodyStrength.type)}）。這份底色會直接反映在你的日常感受裡：</div>
+    ${renderFeelingBlock(strongProfile, 'excess')}
+    ${renderFeelingBlock(weakProfile, 'deficient')}
+  `;
+}
+
+function renderXianxiaSummary(profile, numProfile, bodyStrength, energy) {
   const cardEl = document.getElementById('cardXianxiaSummary');
   const contentEl = document.getElementById('xianxiaSummaryContent');
   if (!cardEl || !contentEl) return;
@@ -114,6 +168,7 @@ function renderXianxiaSummary(profile) {
   contentEl.innerHTML = `
     <div class="xianxia-report-head">
       <div class="xianxia-report-kicker">本 命 靈 獸 摘 要</div>
+      ${buildBeastPortraitHtml(profile.dayStem, numProfile)}
       <div class="xianxia-report-title">${escapeHtml(profile.title)}</div>
       <div class="xianxia-report-root">五行靈根：${escapeHtml(profile.spiritRoot)}${profile.yinYang ? ' · ' + escapeHtml(profile.yinYang) : ''}</div>
     </div>
@@ -138,6 +193,7 @@ function renderXianxiaSummary(profile) {
         <p>${escapeHtml(profile.elementAuraSummary)}</p>
       </div>
     </div>
+    ${buildElementAuraHtml(bodyStrength, energy)}
   `;
   cardEl.hidden = false;
 }
@@ -166,136 +222,10 @@ function getInitialFlowYear(params) {
   return getClosestFlowYear(years, currentYear);
 }
 
-/* ========= 段落 1：命主特質 ========= */
-function renderDayMaster(dayStem) {
-  const profile = window.DAY_MASTER_PROFILES[dayStem];
-  if (!profile) return;
-  const el = document.getElementById('dmContent');
-
-  const keywordsHtml = profile.keywords.map(k => `<span>${k}</span>`).join('');
-
-  el.innerHTML = `
-    <div class="dm-imagery">
-      <div class="stem-big el-${profile.element}-text">${profile.stem}</div>
-      <div class="img-title">${profile.imagery}</div>
-      <div class="img-sub">${profile.elementName} · 日柱日主</div>
-    </div>
-    <div class="dm-keywords">${keywordsHtml}</div>
-
-    <div class="dm-opening-metaphor">${profile.openingMetaphor}</div>
-
-    <div class="dm-section">
-      <div class="dm-section-title">這 份 特 質 的 另 一 面</div>
-      <div class="shadow-block">
-        <div class="shadow-label">⚠ 你需要看見的</div>
-        ${profile.shadowSide}
-      </div>
-    </div>
-  `;
-}
-
-/* ========= 段落 2：五行能量觀察 ========= */
-function renderElementRadar(energy) {
-  const order = ['wood','fire','earth','metal','water'];
-  const colorMap = { wood:'#5A7A4E', fire:'#B85454', earth:'#B89569', metal:'#6F7378', water:'#4A5868' };
-  const angleStep = (2 * Math.PI) / 5;
-  const startAngle = -Math.PI / 2;
-  const cx = 150, cy = 130, maxR = 90;
-
-  const maxVal = Math.max(...order.map(k => energy[k] || 0));
-  const scale = maxVal > 0 ? maxR / Math.max(maxVal, 30) : 1;
-
-  let polyPoints = '';
-  let dots = '';
-  order.forEach((key, i) => {
-    const angle = startAngle + angleStep * i;
-    const value = energy[key] || 0;
-    const r = value * scale;
-    const x = cx + r * Math.cos(angle);
-    const y = cy + r * Math.sin(angle);
-    polyPoints += `${x.toFixed(1)},${y.toFixed(1)} `;
-    dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${colorMap[key]}"/>`;
-  });
-
-  let gridPolys = '';
-  [1, 0.66, 0.33].forEach(sc => {
-    let pts = '';
-    for (let i = 0; i < 5; i++) {
-      const angle = startAngle + angleStep * i;
-      const x = cx + maxR * sc * Math.cos(angle);
-      const y = cy + maxR * sc * Math.sin(angle);
-      pts += `${x.toFixed(1)},${y.toFixed(1)} `;
-    }
-    gridPolys += `<polygon points="${pts.trim()}" fill="none" stroke="#E8E2D5" stroke-width="1"/>`;
-  });
-
-  let axisLines = '';
-  let labelTexts = '';
-  const labelMap = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
-  order.forEach((key, i) => {
-    const angle = startAngle + angleStep * i;
-    const x = cx + maxR * Math.cos(angle);
-    const y = cy + maxR * Math.sin(angle);
-    axisLines += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#E8E2D5" stroke-width="1"/>`;
-    const labelX = cx + (maxR + 16) * Math.cos(angle);
-    const labelY = cy + (maxR + 16) * Math.sin(angle) + 4;
-    labelTexts += `<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-size="13" fill="${colorMap[key]}" font-family="Noto Serif TC, serif">${labelMap[key]}</text>`;
-  });
-
-  document.getElementById('elRadarWrap').innerHTML = `
-    <svg viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" class="radar-svg" aria-label="五行能量雷達圖">
-      ${gridPolys}${axisLines}
-      <polygon points="${polyPoints.trim()}" fill="rgba(139,157,131,0.25)" stroke="#8B9D83" stroke-width="2"/>
-      ${dots}${labelTexts}
-    </svg>
-  `;
-
-  // 五行百分比摘要
-  let summaryHtml = '';
-  order.forEach(key => {
-    const value = energy[key] || 0;
-    summaryHtml += `
-      <div>
-        <div class="el-label el-${key}-text">${labelMap[key]}</div>
-        <div class="el-value">${value.toFixed(1)}%</div>
-      </div>
-    `;
-  });
-  document.getElementById('elSummary').innerHTML = summaryHtml;
-}
-
-function renderBodyStrengthAndPersonality(bodyStrength, energy) {
-  document.getElementById('bodyStrength').textContent = '命格 · ' + bodyStrength.type;
-
-  const order = ['wood','fire','earth','metal','water'];
-  const sorted = [...order].sort((a, b) => (energy[b] || 0) - (energy[a] || 0));
-  const strongest = sorted[0];
-  const weakest = sorted[sorted.length - 1];
-
-  const strongProfile = window.ELEMENT_PERSONALITY[strongest];
-  const weakProfile = window.ELEMENT_PERSONALITY[weakest];
-  if (!strongProfile || !weakProfile) return;
-
-  const renderFeelingBlock = (profile, mode) => {
-    const data = mode === 'excess' ? profile.excess : profile.deficient;
-    const scenesHtml = data.scenes.map(s => `<div class="ef-scene">${s}</div>`).join('');
-    return `
-      <div class="element-feeling">
-        <div class="ef-title">${profile.name}${mode === 'excess' ? '偏旺' : '偏弱'} · 你的日常感受</div>
-        <div class="ef-feeling">${data.feeling}</div>
-        <div class="ef-scenes">${scenesHtml}</div>
-        <div class="ef-need">
-          <div class="ef-need-label">→ 你真正需要的補充</div>
-          ${data.need}
-        </div>
-      </div>
-    `;
-  };
-
-  document.getElementById('elPersonality').innerHTML =
-    renderFeelingBlock(strongProfile, 'excess') +
-    renderFeelingBlock(weakProfile, 'deficient');
-}
+/* ========= （2026-07 移除）段落「命主特質」與「五行能量觀察」 =========
+ * 命主特質：整塊刪除（DAY_MASTER_PROFILES 仍供姊姊贈言使用，資料檔保留）。
+ * 五行能量觀察：雷達圖與百分比刪除；日常感受描述改由 buildElementAuraHtml 併入靈獸摘要卡。
+ */
 
 /* ========= 段落 3：人格畫像 ========= */
 function renderPersona(topTwo) {
@@ -483,18 +413,7 @@ function renderFlowYear(analysisData, currentYearParam) {
     }
 
     contentEl.innerHTML = html;
-
-    // 🔄 同步更新付費鉤子區塊（讓年份跟著流年切換）
-    if (typeof window.renderPaywallSync === 'function') {
-      window.renderPaywallSync(
-        year,
-        analysisData.dayStem,
-        analysisData.topTwoTenGods,
-        fy.ganZhi,
-        fy.stemTenGod,
-        fy.branchTenGod
-      );
-    }
+    // （2026-07 移除）原付費鉤子的流年連動已隨區塊改造拆除，LINE 導流卡為靜態內容
   }
 
   renderFyContent(selectedYear);
@@ -522,90 +441,147 @@ function renderSisterWord(dayStem, topTwo) {
   const mainTg = topTwo && topTwo[0] ? window.TEN_GODS_PROFILES[topTwo[0]] : null;
   if (!dmProfile) return;
 
-  // 用日主隱喻 + 主導十神的特質，組合一段「姊姊贈言」
+  // 用日主隱喻 + 主導十神的特質，組合一段「姊姊贈言」（折衷版語氣：短句、去說教、可引用）
   const sentences = [];
 
   // 第一句：日主天性的肯定
-  sentences.push(`你的存在本身就是「${dmProfile.imagery}」這種樣子——不需要變成別人，因為你已經是你。`);
+  sentences.push(`你是「${dmProfile.imagery}」。這個樣子，本來就很好。`);
 
   // 第二句：呼應主導十神的核心矛盾
   if (mainTg) {
     const tensionShort = mainTg.coreTension.split('練習：')[0].trim();
-    sentences.push(`你最該知道的是：${tensionShort.replace(/。$/, '。')}`);
+    sentences.push(`有件事想跟你說：${tensionShort.replace(/。$/, '。')}`);
   }
 
   // 第三句：陰影面的接納
   const shadowFirst = dmProfile.shadowSide.split('。')[0];
-  sentences.push(`${shadowFirst}。不是你的錯，是你的天性如此——但你已經夠好了。`);
+  sentences.push(`${shadowFirst}。這不是缺點，是你的一部分。`);
 
   // 第四句：給予方向感
-  sentences.push(`接下來的日子，記得：你不需要成為「更好的版本」，你只需要成為「更完整的自己」。`);
+  sentences.push(`接下來，不用急著變好。把自己活得更完整，就夠了。`);
 
   document.getElementById('sisterContent').innerHTML = sentences.map(s => `<p style="margin-bottom:12px">${s}</p>`).join('');
 }
 
-/* ========= 段落 6：付費鉤子 ========= */
-function renderPaywall(year, dayStem, topTwo, ganZhi, stemTenGod, branchTenGod) {
-  const features = [];
+/* ========= 段落 3：生命靈數（2026-07 新增章節） ========= */
+function renderNumerology(numProfile, dayStem) {
+  const cardEl = document.getElementById('cardNumerology');
+  const contentEl = document.getElementById('numerologyContent');
+  if (!cardEl || !contentEl) return;
 
-  // 條目 1：流年三個關鍵月份
-  features.push({
-    icon: '01',
-    text: `${year} 年三個關鍵月份的具體事件預測（${stemTenGod || '主要十神'}結構會在哪些月份特別活躍）`
-  });
+  const R = window.NUMEROLOGY_REPORT;
+  const entry = (numProfile && R && R.ENTRIES) ? R.ENTRIES[numProfile.number] : null;
+  if (!entry) { cardEl.hidden = true; contentEl.innerHTML = ''; return; }
 
-  // 條目 2：流月對應的決策建議
-  features.push({
-    icon: '02',
-    text: `每個關鍵月份「該做什麼、該避開什麼」——具體到工作、合作、感情、健康四個面向`
-  });
+  const listHtml = (items) => (items || []).map(t =>
+    `<div class="num-list-item">${escapeHtml(t)}</div>`
+  ).join('');
 
-  // 條目 3：主導十神的深度解讀
-  if (topTwo && topTwo[0]) {
-    features.push({
-      icon: '03',
-      text: `「${topTwo[0]} + ${topTwo[1] || '單一'}」組合的完整人生劇本——包括 40 歲、50 歲、60 歲後的命運走向`
-    });
+  const block = (title, inner) => `
+    <div class="num-block">
+      <div class="num-block-title">${title}</div>
+      ${inner}
+    </div>
+  `;
+
+  let html = `
+    <div class="num-head">
+      <div class="num-label">${escapeHtml(entry.displayLabel)}</div>
+      <div class="num-name">${escapeHtml(entry.name)}</div>
+      <div class="num-role">${escapeHtml(entry.role)}</div>
+    </div>
+  `;
+
+  if (entry.isMaster) {
+    /* 卓越數呈現順序（依知識庫顯示邏輯）：先基礎數功課 → 內在拉扯 → 天賦/盲點/課題 → 高階使命，避免神化 */
+    html += block(`先 從 ${entry.baseNumber} 的 功 課 說 起`, `<div class="num-positioning">${escapeHtml(entry.baseIntro)}</div>`);
+    html += block('你 的 內 在 拉 扯', `<div class="num-positioning">${escapeHtml(entry.innerConflict)}</div>`);
+  } else {
+    html += block('原 型 定 位', `<div class="num-positioning">${escapeHtml(entry.positioning)}</div>`);
   }
 
-  // 條目 4：合夥與感情運的分析
-  features.push({
-    icon: '04',
-    text: `${year} 年合夥契合度、感情關係的具體建議（哪些月份適合啟動、哪些月份要保留）`
-  });
+  html += block('你 的 天 賦', listHtml(entry.strengths));
+  html += block('容 易 卡 住 的 地 方', listHtml(entry.blindspots));
+  html += block('給 你 的 課 題', listHtml(entry.lessons));
 
-  // 條目 5：補運與化解
-  features.push({
-    icon: '05',
-    text: `命局五行偏頗的化解方向——具體可執行的生活調整建議（不是補運品推銷）`
-  });
+  if (entry.isMaster) {
+    html += block('高 階 使 命', `<div class="num-positioning">${escapeHtml(entry.mission)}</div>`);
+  }
 
-  const featuresHtml = features.map(f => `
-    <div class="paywall-feature">
-      <span class="pf-icon">${f.icon}</span>
-      <span>${f.text}</span>
-    </div>
-  `).join('');
+  html += `<div class="num-slogan">「${escapeHtml(entry.slogan.replace(/。$/, ''))}」</div>`;
 
-  const paywallEl = document.getElementById('paywallContent');
-  if (!paywallEl) return;
+  /* 靈獸 × 靈數合成文案（查表帶入既有 130 組，與分享卡同源） */
+  const syn = (window.BEAST_NUMEROLOGY && dayStem)
+    ? window.BEAST_NUMEROLOGY.getSynthesis(dayStem, numProfile.number)
+    : null;
+  if (syn) {
+    html += `
+      <div class="num-synthesis">
+        <div class="ns-kicker">你 的 靈 獸 × 你 的 靈 數</div>
+        <div class="ns-title">${escapeHtml(syn.beastName)} × ${escapeHtml(entry.displayLabel)}｜${escapeHtml(syn.subtitle)}</div>
+        <p>${escapeHtml(syn.coreTrait)}</p>
+        <p>${escapeHtml(syn.lifeMission)}</p>
+        <p>${escapeHtml(syn.reminder)}</p>
+      </div>
+    `;
+  }
 
-  paywallEl.innerHTML = `
-    <div class="paywall-intro">
-      免費版幫你看見了「你是什麼樣的人」<br>
-      但 ${year} 年具體會發生什麼、什麼時候會發生<br>
-      還沒講完
-    </div>
-    ${featuresHtml}
-    <button class="paywall-cta" id="btnPaywall" disabled>
-      解 鎖 ${year} 完 整 渡 劫 指 南
-      <span class="pc-price">（即將開放 · 訂閱 Email 搶先通知）</span>
-    </button>
-  `;
+  const footnoteHtml = (R.FOOTNOTE || []).map(p => `<p>${escapeHtml(p)}</p>`).join('');
+  html += `<div class="num-footnote">${footnoteHtml}</div>`;
+  html += `<div class="rpt-source">${escapeHtml(R.SOURCE_LABEL)}</div>`;
+
+  contentEl.innerHTML = html;
+  cardEl.hidden = false;
 }
 
-// 暴露為全域函式，讓流年切換時可以同步呼叫
-window.renderPaywallSync = renderPaywall;
+/* ========= 尾段：LINE 社群導流卡（2026-07，原付費鉤子改造） ========= */
+function renderLineCommunity() {
+  const cardEl = document.getElementById('cardPaywall');
+  const contentEl = document.getElementById('paywallContent');
+  if (!cardEl || !contentEl) return;
+
+  /* 連結未填時整卡不渲染，避免死按鈕傷害信任 */
+  if (!LINE_COMMUNITY_URL) {
+    cardEl.hidden = true;
+    contentEl.innerHTML = '';
+    return;
+  }
+
+  contentEl.innerHTML = `
+    <div class="paywall-intro">
+      這份報告能告訴你性格的形狀、能量的走向。<br>
+      但有些問題，光看報告不會有答案——
+    </div>
+    <div class="line-questions">
+      <div class="line-question">「這份工作，該不該換？」</div>
+      <div class="line-question">「這段關係，還要不要繼續？」</div>
+      <div class="line-question">「今年，適合開始新的東西嗎？」</div>
+    </div>
+    <div class="paywall-intro">
+      這種沒有標準答案的題目，適合慢慢聊。<br>
+      我開了一個 LINE 社群，每週分享靈獸視角的能量提醒；<br>
+      想深入看自己的盤，社群裡也能預約一對一。
+    </div>
+    <a class="paywall-cta" id="btnLineCommunity" href="${LINE_COMMUNITY_URL}" target="_blank" rel="noopener">
+      免 費 加 入 LINE 社 群
+    </a>
+    <div class="line-cta-note">一對一採預約制，細節在社群置頂</div>
+  `;
+  cardEl.hidden = false;
+
+  /* 點擊追蹤：GA / Meta Pixel 有裝就送事件，沒裝就靜默（對應年度目標的數據迴圈） */
+  const btn = document.getElementById('btnLineCommunity');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      if (typeof window.gtag === 'function') {
+        try { window.gtag('event', 'line_community_click', { placement: 'report_end' }); } catch (e) {}
+      }
+      if (typeof window.fbq === 'function') {
+        try { window.fbq('trackCustom', 'line_community_click', { placement: 'report_end' }); } catch (e) {}
+      }
+    });
+  }
+}
 
 function buildBaziAIChartData(params, result, analysisData, xianxiaProfile) {
   const flowYear = analysisData.flowYear || {};
@@ -771,29 +747,20 @@ function init() {
   document.getElementById('rptName').textContent = displayName + ' · ' + (params.g === 'female' ? '女命' : '男命');
   document.getElementById('rptMeta').textContent = '國曆 ' + result.solarDate + ' · 農曆 ' + result.lunarDate;
 
+  /* 生命靈數：與 app.js/分享卡使用同一組輸入生日值，確保三處數字與靈獸圖一致 */
+  const numProfile = (window.NUMEROLOGY && params.y && params.m && params.d)
+    ? window.NUMEROLOGY.getProfileByBirthday(+params.y, +params.m, +params.d)
+    : null;
+
   const xianxiaProfile = buildXianxiaProfile(result, analysisData, params.g);
-  renderXianxiaSummary(xianxiaProfile);
+  renderXianxiaSummary(xianxiaProfile, numProfile, analysisData.bodyStrength, analysisData.elementEnergy);
 
-  // 渲染六個段落
-  renderDayMaster(analysisData.dayStem);
-  renderElementRadar(analysisData.elementEnergy);
-  renderBodyStrengthAndPersonality(analysisData.bodyStrength, analysisData.elementEnergy);
+  // 渲染報告段落（v12.0 結構）
   renderPersona(analysisData.topTwoTenGods);
-
   renderFlowYear(analysisData, initialFlowYear);
+  renderNumerology(numProfile, analysisData.dayStem);
   renderSisterWord(analysisData.dayStem, analysisData.topTwoTenGods);
-
-  const fyForPaywall = window.BAZI_ENGINE.calculateFlowYearAnalysis(
-    initialFlowYear, analysisData.dayStem, window.BRANCH_PROFILES, window.FLOW_YEAR_ELEMENTS
-  );
-  renderPaywall(
-    initialFlowYear,
-    analysisData.dayStem,
-    analysisData.topTwoTenGods,
-    fyForPaywall ? fyForPaywall.ganZhi : '',
-    fyForPaywall ? fyForPaywall.stemTenGod : '',
-    fyForPaywall ? fyForPaywall.branchTenGod : ''
-  );
+  renderLineCommunity();
 
   const aiChartData = buildBaziAIChartData(params, result, analysisData, xianxiaProfile);
   initBaziAIChat(aiChartData, false);
