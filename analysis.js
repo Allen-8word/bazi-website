@@ -436,31 +436,28 @@ function renderFlowYear(analysisData, currentYearParam) {
 }
 
 /* ========= 段落 5：姊姊贈言 ========= */
-function renderSisterWord(dayStem, topTwo) {
+/* 給你的一句話 v2（2026-07）：50 字內、綜合日主 × 生命靈數的單段話。
+ * 資料取自 130 組合成文案（人工定稿查表，零幻覺）。
+ * 分配規則（與 renderNumerology 鏡像，確保兩區塊永不重複）：
+ *   lifeMission ≤ 50 字（130 組中 129 組）→ 本區用 lifeMission，靈數章節用 reminder
+ *   lifeMission > 50 字（僅甲×3 一組）    → 本區用 reminder，靈數章節用 lifeMission */
+function renderSisterWord(dayStem, numProfile) {
   const dmProfile = window.DAY_MASTER_PROFILES[dayStem];
-  const mainTg = topTwo && topTwo[0] ? window.TEN_GODS_PROFILES[topTwo[0]] : null;
   if (!dmProfile) return;
 
-  // 用日主隱喻 + 主導十神的特質，組合一段「姊姊贈言」（折衷版語氣：短句、去說教、可引用）
-  const sentences = [];
+  const syn = (window.BEAST_NUMEROLOGY && numProfile)
+    ? window.BEAST_NUMEROLOGY.getSynthesis(dayStem, numProfile.number)
+    : null;
 
-  // 第一句：日主天性的肯定
-  sentences.push(`你是「${dmProfile.imagery}」。這個樣子，本來就很好。`);
-
-  // 第二句：呼應主導十神的核心矛盾
-  if (mainTg) {
-    const tensionShort = mainTg.coreTension.split('練習：')[0].trim();
-    sentences.push(`有件事想跟你說：${tensionShort.replace(/。$/, '。')}`);
+  let line;
+  if (syn) {
+    line = syn.lifeMission.length <= 50 ? syn.lifeMission : syn.reminder;
+  } else {
+    /* 靈數資料未載入時的保底：日主單軸短句 */
+    line = `你是「${dmProfile.imagery}」。不用急著變好，把自己活得完整就好。`;
   }
 
-  // 第三句：陰影面的接納
-  const shadowFirst = dmProfile.shadowSide.split('。')[0];
-  sentences.push(`${shadowFirst}。這不是缺點，是你的一部分。`);
-
-  // 第四句：給予方向感
-  sentences.push(`接下來，不用急著變好。把自己活得更完整，就夠了。`);
-
-  document.getElementById('sisterContent').innerHTML = sentences.map(s => `<p style="margin-bottom:12px">${s}</p>`).join('');
+  document.getElementById('sisterContent').innerHTML = `<p>${escapeHtml(line)}</p>`;
 }
 
 /* ========= 段落 3：生命靈數（2026-07 新增章節） ========= */
@@ -541,8 +538,7 @@ function renderNumerology(numProfile, dayStem) {
         <div class="ns-kicker">你 的 靈 獸 × 你 的 靈 數</div>
         <div class="ns-title">${escapeHtml(syn.beastName)} × ${escapeHtml(entry.displayLabel)}｜${escapeHtml(syn.subtitle)}</div>
         <p>${escapeHtml(syn.coreTrait)}</p>
-        <p>${escapeHtml(syn.lifeMission)}</p>
-        <p>${escapeHtml(syn.reminder)}</p>
+        <p>${escapeHtml(syn.lifeMission.length <= 50 ? syn.reminder : syn.lifeMission)}</p>
       </div>
     `;
   }
@@ -780,7 +776,7 @@ function init() {
   renderPersona(analysisData.topTwoTenGods);
   renderFlowYear(analysisData, initialFlowYear);
   renderNumerology(numProfile, analysisData.dayStem);
-  renderSisterWord(analysisData.dayStem, analysisData.topTwoTenGods);
+  renderSisterWord(analysisData.dayStem, numProfile);
   renderLineCommunity();
 
   const aiChartData = buildBaziAIChartData(params, result, analysisData, xianxiaProfile);

@@ -623,7 +623,15 @@ analysis.js **v12.0**｜analysis.html 新掛 numerology.js v1.0、numerology-rep
 章節內順序：…課題 →（卓越數：高階使命）→ 核心標語 → 領域 → 幸運象徵 → 成長語句 → 靈獸×靈數合成 → 註腳 → 來源標示。
 正本升版 **v1.1**；快取：numerology-report.js **v1.1**、analysis.js **v12.1**。
 
-### 17.8 待辦
+### 17.9 三項微調（2026-07-17）
+
+1. **給你的一句話 v2**：改為 50 字內、綜合日主 × 靈數的單段話。取 130 組合成文案查表（零幻覺）：`lifeMission ≤ 50 字` → 贈言用 lifeMission、靈數章節合成區用 reminder；`> 50 字`（僅甲×3 一組）→ 兩者互換。兩函式各自套用同一規則（鏡像、無執行順序依賴），130 組全掃描通過：贈言皆 ≤50 字、兩區塊零重複。靈數合成區塊由三句減為兩句（coreTrait ＋ 互補句）。
+2. **移除署名**：報告頁「— 寫給你的｜芯妤姊」已刪除，全站目前無人名（`sister-signature` CSS 留置無害）。若日後要恢復署名，於 cardSisterWord 內加回該 div 即可。
+3. **天生搭檔改天干五合**：`share-card.js` 的 `PARTNER_STEM` 改為甲己／乙庚／丙辛／丁壬／戊癸互配。改動理由：五合在命理上本義即相互吸引配對、關係雙向——被 tag 的人排卡後搭檔指回原 tag 者，互相印證，社交驗證感比舊制（食神單向鏈）更強。share-card.js 快取推進 **v11.7**（index.html）。
+
+快取現況：analysis.js **v12.2**、share-card.js **v11.7**、numerology-report.js v1.1。
+
+### 17.10 待辦
 
 1. ⏸️ 取得 LINE 社群邀請連結 → 填入 `LINE_COMMUNITY_URL` → 版本號推進 → 部署
 2. ⏸️ 申請 GA → 填入兩個 HTML 的 `GA_MEASUREMENT_ID`（數據迴圈最後一哩）
@@ -635,4 +643,4 @@ analysis.js **v12.0**｜analysis.html 新掛 numerology.js v1.0、numerology-rep
 —— 文件結束 ——
 
 > **產出日期**：Phase 9-A 完成後；2026-07-12 增補第十六章；**2026-07-15 增補第十七章（報告頁 v12.0 + 生命靈數章節）**
-> **下一步建議**：見 17.8 待辦清單（LINE 連結與 GA 為最優先）
+> **下一步建議**：見 17.10 待辦清單（LINE 連結與 GA 為最優先）
