@@ -46,8 +46,18 @@ for (const chunk of chunks) {
     strengths: parseBullets(section(body, '你的天賦') || ''),
     blindspots: parseBullets(section(body, '容易卡住的地方') || ''),
     lessons: parseBullets(section(body, '給你的課題') || ''),
-    slogan: (section(body, '核心標語') || '').replace(/^> \*\*|\*\*$/g, '').trim()
+    slogan: (section(body, '核心標語') || '').replace(/^> \*\*|\*\*$/g, '').trim(),
+    fields: parseBullets(section(body, '適合發展的領域') || ''),
+    growthQuote: (section(body, '成長語句') || '').replace(/^> /, '').trim()
   };
+
+  // 幸運象徵：三條「類別｜名稱 — 象徵句」
+  entry.symbols = {};
+  const symMap = { '核心色彩': 'color', '象徵植物': 'plant', '象徵礦石': 'stone' };
+  for (const line of parseBullets(section(body, '你的幸運象徵') || '')) {
+    const sm = line.match(/^(核心色彩|象徵植物|象徵礦石)｜(.+?) — (.+)$/);
+    if (sm) entry.symbols[symMap[sm[1]]] = { name: sm[2].trim(), meaning: sm[3].trim() };
+  }
 
   if (isMaster) {
     entry.baseNumber = parseInt(hm[2], 10);
@@ -67,6 +77,13 @@ for (const chunk of chunks) {
   }
   for (const k of ['strengths', 'blindspots', 'lessons']) {
     if (entry[k].length < 3) { console.error(`❌ ${num} 的 ${k} 少於 3 條`); process.exit(1); }
+  }
+  if (entry.fields.length < 6) { console.error(`❌ ${num} 的發展領域少於 6 條`); process.exit(1); }
+  if (!entry.growthQuote) { console.error(`❌ ${num} 缺成長語句`); process.exit(1); }
+  for (const k of ['color', 'plant', 'stone']) {
+    if (!entry.symbols[k] || !entry.symbols[k].name || !entry.symbols[k].meaning) {
+      console.error(`❌ ${num} 幸運象徵缺 ${k}`); process.exit(1);
+    }
   }
 
   entries[num] = entry;
@@ -89,13 +106,14 @@ for (const w of banned) {
 const out = `/**
  * 生命靈數報告章節資料庫 (Numerology Report Entries)
  *
- * 資料來源：「生命靈數報告_審核版v1.md」（Allen 審核定稿），由 tools/build-numerology-report.js 自動轉出。
+ * 資料來源：「生命靈數報告_審核版v1.md」v1.1（Allen 審核定稿；v1.1 增補發展領域/幸運象徵/成長語句），由 tools/build-numerology-report.js 自動轉出。
  * 勿手動編輯本檔；內容修改請改 MD 後重新生成，確保單一事實來源。
  * 遵守鐵則 1（零幻覺原則）：全部為預先撰寫之查表資料。
  * 遵守鐵則 2：全文不使用「一定、絕對、精準、必須」等絕對化用語（生成時已自動掃描）。
  *
  * 對外介面 window.NUMEROLOGY_REPORT：
- * - ENTRIES[n] → { number, isMaster, displayLabel, name, role, positioning|baseIntro/innerConflict/mission, strengths[], blindspots[], lessons[], slogan }
+ * - ENTRIES[n] → { number, isMaster, displayLabel, name, role, positioning|baseIntro/innerConflict/mission,
+ *                  strengths[], blindspots[], lessons[], slogan, fields[], symbols{color/plant/stone:{name,meaning}}, growthQuote }
  * - FOOTNOTE → string[]（章節註腳，依序渲染）
  * - SOURCE_LABEL → 來源標示字串
  */
