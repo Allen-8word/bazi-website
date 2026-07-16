@@ -1667,6 +1667,47 @@ a.paywall-cta {
   margin-top: 10px;
   letter-spacing: 0.5px;
 }
+/* === v12.1 新增：靈數章節三個增量區塊 === */
+.num-chips { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 2px; }
+.num-chip {
+  font-size: 13.5px;
+  color: #5A554E;
+  background: rgba(139, 157, 131, 0.10);
+  border: 1px solid rgba(139, 157, 131, 0.25);
+  border-radius: 999px;
+  padding: 5px 13px;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+}
+.num-symbol-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 9px 4px;
+  border-bottom: 1px dashed rgba(139, 157, 131, 0.2);
+}
+.num-symbol-row:last-child { border-bottom: none; }
+.nsym-label { font-size: 12.5px; color: var(--color-mystic); letter-spacing: 2px; flex-shrink: 0; }
+.nsym-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px;
+  color: var(--color-accent-dark);
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.nsym-meaning { font-size: 13.5px; color: #7A756D; line-height: 1.7; }
+.num-growth {
+  margin-top: 1.25rem;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: #5A554E;
+  line-height: 1.95;
+  text-align: center;
+  letter-spacing: 0.5px;
+  background: #F9F5EC;
+  border-radius: var(--radius-md);
+}
 </style>
 </head>
 <body>
@@ -1808,9 +1849,9 @@ a.paywall-cta {
 <script src="./data/xianxia-map.js?v=11.1"></script>
 <script src="./data/bazi-xianxia-profile.js?v=11.0"></script>
 <script src="./data/numerology.js?v=1.0"></script>
-<script src="./data/numerology-report.js?v=1.0"></script>
+<script src="./data/numerology-report.js?v=1.1"></script>
 <script src="./data/beast-numerology-synthesis.js?v=1.0"></script>
-<script src="./analysis.js?v=12.0"></script>
+<script src="./analysis.js?v=12.1"></script>
 
 </body>
 </html>

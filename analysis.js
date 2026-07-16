@@ -510,6 +510,27 @@ function renderNumerology(numProfile, dayStem) {
 
   html += `<div class="num-slogan">「${escapeHtml(entry.slogan.replace(/。$/, ''))}」</div>`;
 
+  /* v12.1 新增：適合發展的領域（chip 排版）＋幸運象徵＋成長語句 */
+  if (entry.fields && entry.fields.length) {
+    const chips = entry.fields.map(f => `<span class="num-chip">${escapeHtml(f)}</span>`).join('');
+    html += block('適 合 發 展 的 領 域', `<div class="num-chips">${chips}</div>`);
+  }
+  if (entry.symbols && entry.symbols.color) {
+    const symRow = (label, sym) => `
+      <div class="num-symbol-row">
+        <span class="nsym-label">${label}</span>
+        <span class="nsym-name">${escapeHtml(sym.name)}</span>
+        <span class="nsym-meaning">${escapeHtml(sym.meaning)}</span>
+      </div>`;
+    html += block('你 的 幸 運 象 徵',
+      symRow('核心色彩', entry.symbols.color) +
+      symRow('象徵植物', entry.symbols.plant) +
+      symRow('象徵礦石', entry.symbols.stone));
+  }
+  if (entry.growthQuote) {
+    html += `<div class="num-growth">${escapeHtml(entry.growthQuote)}</div>`;
+  }
+
   /* 靈獸 × 靈數合成文案（查表帶入既有 130 組，與分享卡同源） */
   const syn = (window.BEAST_NUMEROLOGY && dayStem)
     ? window.BEAST_NUMEROLOGY.getSynthesis(dayStem, numProfile.number)

@@ -612,7 +612,18 @@ app.js **v11.3**｜share-card.js **v11.4**｜share-card.css **v11.1**｜xianxia-
 
 analysis.js **v12.0**｜analysis.html 新掛 numerology.js v1.0、numerology-report.js **v1.0（新檔）**、beast-numerology-synthesis.js v1.0。其餘檔案版本同 16.5。
 
-### 17.6 待辦
+### 17.7 靈數章節 v1.1 增量（2026-07-15 追加）
+
+自 Allen 提供的《生命靈數資料.txt》以「欄位級併入」收入三類增量（命名體系與四段式解讀不動，該檔的蝴蝶命名與重疊敘述不收）：
+
+- **適合發展的領域**：13 組 × 8–9 條，chip 標籤排版（`.num-chip`）
+- **你的幸運象徵**：核心色彩／象徵植物／象徵礦石各一，含象徵句（`.num-symbol-row`）。⚠️ 卓越數四組的象徵句原始資料從缺、為本次補寫，已請 Allen 特別審閱
+- **成長語句**：每數一句，折衷版轉寫，章節收尾第二句 quotable（`.num-growth`）
+
+章節內順序：…課題 →（卓越數：高階使命）→ 核心標語 → 領域 → 幸運象徵 → 成長語句 → 靈獸×靈數合成 → 註腳 → 來源標示。
+正本升版 **v1.1**；快取：numerology-report.js **v1.1**、analysis.js **v12.1**。
+
+### 17.8 待辦
 
 1. ⏸️ 取得 LINE 社群邀請連結 → 填入 `LINE_COMMUNITY_URL` → 版本號推進 → 部署
 2. ⏸️ 申請 GA → 填入兩個 HTML 的 `GA_MEASUREMENT_ID`（數據迴圈最後一哩）
@@ -624,4 +635,4 @@ analysis.js **v12.0**｜analysis.html 新掛 numerology.js v1.0、numerology-rep
 —— 文件結束 ——
 
 > **產出日期**：Phase 9-A 完成後；2026-07-12 增補第十六章；**2026-07-15 增補第十七章（報告頁 v12.0 + 生命靈數章節）**
-> **下一步建議**：見 17.6 待辦清單（LINE 連結與 GA 為最優先）
+> **下一步建議**：見 17.8 待辦清單（LINE 連結與 GA 為最優先）
