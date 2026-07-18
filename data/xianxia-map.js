@@ -256,10 +256,10 @@ const luckLabels = {
 };
 
 const uiLabels = {
-  siteName: '本命仙盤',
+  siteName: '八字靈數',
   mainTitle: '測出你的本命靈獸與生命靈數',
   subtitle: '輸入出生資料，查看你的本命靈獸、五行靈氣、命格技能樹與年度機緣。',
-  submitCTA: '啟動我的本命仙盤',
+  submitCTA: '啟動我的八字靈數',
   resultTitle: '本命靈獸總覽',
   dayMaster: '本命靈獸',
   fiveElements: '五行靈氣',
