@@ -144,7 +144,7 @@ function buildSharePayload(file) {
     text += '你的呢？' + getShareUrl();
   }
   const payload = { files: [file] };
-  if (text) { payload.text = text; payload.title = '本命仙盤 · 靈獸命格測驗'; }
+  if (text) { payload.text = text; payload.title = '八字靈數 · 靈獸命格測驗'; }
   return payload;
 }
 
@@ -505,7 +505,7 @@ function renderPersonaHTML() {
     `<span class="sc-keyword">${escapeHtml(k)}</span>`
   ).join('');
 
-  // 修仙稱號區塊（Phase 11：稱號 + 職業徽章 + 稱號特色）
+  // 靈獸稱號區塊（Phase 11：稱號 + 職業徽章 + 稱號特色）
   const xianxiaHTML = profile.xianxiaTitle
     ? `
       <div class="sc-xianxia">
@@ -628,7 +628,7 @@ function renderXianxiaHTML(xianxiaProfile, dayMasterProfile) {
 
   return `
     <div class="scs-card">
-      <div class="scs-brand">本 命 仙 盤</div>
+      <div class="scs-brand">八 字 靈 數</div>
 
       ${portraitHTML}
 
@@ -665,8 +665,8 @@ function renderBeastNumHTML() {
   if (!window.NUMEROLOGY || !window.BEAST_NUMEROLOGY || !d.birthYear || !d.birthMonth || !d.birthDay || !d.dayStem) {
     return `
       <div class="sc-brand">
-        <span class="sc-brand-mark">本 命 仙 盤</span>
-        <span class="sc-brand-tag">LINGSHOU</span>
+        <span class="sc-brand-mark">八 字 靈 數</span>
+        <span class="sc-brand-tag">@lingshou.atelier</span>
       </div>
       <div class="sc2-content sc2-empty">
         <div class="sc2-kicker">靈 獸 × 靈 數</div>
@@ -680,8 +680,8 @@ function renderBeastNumHTML() {
   if (!calc) {
     return `
       <div class="sc-brand">
-        <span class="sc-brand-mark">本 命 仙 盤</span>
-        <span class="sc-brand-tag">LINGSHOU</span>
+        <span class="sc-brand-mark">八 字 靈 數</span>
+        <span class="sc-brand-tag">@lingshou.atelier</span>
       </div>
       <div class="sc2-content sc2-empty">
         <div class="sc2-kicker">靈 獸 × 靈 數</div>
@@ -697,8 +697,8 @@ function renderBeastNumHTML() {
   if (!syn) {
     return `
       <div class="sc-brand">
-        <span class="sc-brand-mark">本 命 仙 盤</span>
-        <span class="sc-brand-tag">LINGSHOU</span>
+        <span class="sc-brand-mark">八 字 靈 數</span>
+        <span class="sc-brand-tag">@lingshou.atelier</span>
       </div>
       <div class="sc2-content sc2-empty">
         <div class="sc2-kicker">靈 獸 × 靈 數</div>
@@ -811,7 +811,7 @@ function renderBeastNumHTML() {
     </div>
 
     <div class="scp-footer-bar">
-      <div class="scp-footer-brand">本 命 仙 盤</div>
+      <div class="scp-footer-brand">八 字 靈 數</div>
       ${comboInfo && comboInfo.comboLabel ? `<div class="scp-footer-rarity">130 種組合 · ${escapeHtml(comboInfo.comboLabel)}</div>` : ''}
       <div class="scp-qr sc-qr"></div>
     </div>
