@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
 const LINE_REPLY_API_URL = 'https://api.line.me/v2/bot/message/reply';
-const BAZI_SITE_URL = 'https://bazi-website-one.vercel.app';
+const BAZI_SITE_URL = 'https://bazilingshu.vercel.app';
 
 function bodyToBuffer(body) {
   if (Buffer.isBuffer(body)) return body;
