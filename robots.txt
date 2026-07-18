@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /api/
+Disallow: /dev/
 
-Sitemap: https://your-domain.vercel.app/sitemap.xml
+Sitemap: https://bazi-website-one.vercel.app/sitemap.xml
