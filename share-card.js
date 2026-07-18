@@ -672,7 +672,7 @@ function renderBeastNumHTML() {
         <div class="sc2-kicker">靈 獸 × 靈 數</div>
         <p class="sc2-empty-text">缺少出生日期資料，請回到首頁重新排盤一次，即可生成這張卡。</p>
       </div>
-      ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+      ${renderFooterHTML('掃 我 啟 動 八 字 靈 數')}
     `;
   }
 
@@ -687,7 +687,7 @@ function renderBeastNumHTML() {
         <div class="sc2-kicker">靈 獸 × 靈 數</div>
         <p class="sc2-empty-text">生日資料異常，請回到首頁重新排盤。</p>
       </div>
-      ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+      ${renderFooterHTML('掃 我 啟 動 八 字 靈 數')}
     `;
   }
   state.beastNumCalc = calc;
@@ -704,7 +704,7 @@ function renderBeastNumHTML() {
         <div class="sc2-kicker">靈 獸 × 靈 數</div>
         <p class="sc2-empty-text">資料載入中，請關閉視窗後再試一次。</p>
       </div>
-      ${renderFooterHTML('掃 我 啟 動 本 命 仙 盤')}
+      ${renderFooterHTML('掃 我 啟 動 八 字 靈 數')}
     `;
   }
 

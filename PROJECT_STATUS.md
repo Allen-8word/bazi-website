@@ -575,6 +575,7 @@ app.js **v11.3**｜share-card.js **v11.4**｜share-card.css **v11.1**｜xianxia-
 1. ⏸️ 驗收 130 張圖上線（測試生日：1995-09-29→癸水卓越數 44／8；1992-02-15→中間層卓越數 11／2）
 2. ⏸️ 驗收後刪除 share-card-portraits/ 與 xianxia-portrait-map.js
 3. ✅ 品牌改名已完成（2026-07-18）：全站「本命仙盤」→「八字靈數」共 29 處施工完畢；LINE webhook 觸發關鍵字**刻意保留舊名「本命仙盤」**收舊 QR/貼文流量（全站 grep 驗收時此一筆為正常殘留）
+   - 補充（同日二輪）：另掃出**全形空格直式變體「本 命 仙 盤」**4 處（analysis.html 頁首 ×1 已依使用者指示整塊刪除、share-card.js QR footer ×3 改「掃 我 啟 動 八 字 靈 數」）；**未來 grep 驗收舊名務必同時搜「本命仙盤」與「本 命 仙 盤」兩種寫法**；姊姊贈言卡引號裝飾「」亦依使用者指示移除
 4. ⏸️ 合成文案審核：《合成文案草稿_審核版v1.md》使用者尚未逐條審核（甲木×3 為參考圖基準版）；審後改 MD → 重跑 tools/build-synthesis.js
 5. ⏸️ 原 12 階段的 Phase 9-B（流年四面向評分）仍未做
 
@@ -607,7 +608,7 @@ app.js **v11.3**｜share-card.js **v11.4**｜share-card.css **v11.1**｜xianxia-
 
 - 姊姊贈言（給你的一句話）：四句組句模板改折衷版（短句、去說教、每句可截圖引用）
 - 靈獸摘要主圖取圖鏈：`{pinyin}_{靈數}.webp` → 失敗退 `.png` → 再失敗移除圖片
-- 死 CSS 待清理（不影響功能）：`dm-*`、`misunderstood`、`nod-*`、`shadow-block`、`radar-*`、`element-summary`、`body-strength`、`paywall-feature/pf-icon` 散落於基礎/列印/響應式三處，留待日後統一清
+- 死 CSS 待清理（不影響功能）：`dm-*`、`misunderstood`、`nod-*`、`shadow-block`、`radar-*`、`element-summary`、`body-strength`、`paywall-feature/pf-icon`、`sister-quote-mark`（2026-07-18 引號裝飾元素已刪，CSS 留存）、`site-header/.brand`（analysis.html 頁首區塊已整塊移除，CSS 留存；index.html 仍使用同名 class 需保留基礎樣式）散落於基礎/列印/響應式三處，留待日後統一清
 - ✅ 原「已知殘留」已隨改名一併處理（2026-07-18）：AI 問答卡標題改「向你的八字靈數提問」；webhook「仙途卡/仙途報告/修行課題/本命靈根」殘留、share-card.js 修仙註解、portrait-map 20 條「修仙命格圖像」alt 全數清除
 
 ### 17.5 快取版本（2026-07-15 現況）
