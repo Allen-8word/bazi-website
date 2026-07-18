@@ -55,12 +55,12 @@ function verifyLineSignature(rawBody, signature, channelSecret) {
 function buildFaqReply(text) {
   const normalizedText = String(text || '').trim();
 
-  if (['測驗', '排盤', '開始', '本命仙盤'].some(keyword => normalizedText.includes(keyword))) {
-    return '你可以先到本命仙盤網站完成免費測驗：\n' + BAZI_SITE_URL + '\n\n輸入出生資料後，就能看到你的本命靈根、五行靈氣與年度機緣，也可以下載本命仙途卡分享給朋友。';
+  if (['測驗', '排盤', '開始', '八字靈數', '靈獸事務所', '本命仙盤'].some(keyword => normalizedText.includes(keyword))) {
+    return '你可以先到八字靈數網站完成免費測驗：\n' + BAZI_SITE_URL + '\n\n輸入出生資料後，就能看到你的本命靈獸、五行靈氣與年度機緣，也可以下載靈獸命格卡分享給朋友。';
   }
 
-  if (['完整報告', '仙途報告', '報告'].some(keyword => normalizedText.includes(keyword))) {
-    return '完整仙途報告正在開放準備中，未來會包含更完整的五行、十神、流年與修行課題解析。\n\n你可以先完成免費測驗，後續開放會優先透過 LINE 通知你。';
+  if (['完整報告', '靈獸報告', '報告'].some(keyword => normalizedText.includes(keyword))) {
+    return '完整靈獸報告正在開放準備中，未來會包含更完整的五行、十神、流年與成長課題解析。\n\n你可以先完成免費測驗，後續開放會優先透過 LINE 通知你。';
   }
 
   if (['出生時間', '不知道時辰', '時辰不知道'].some(keyword => normalizedText.includes(keyword))) {
@@ -71,7 +71,7 @@ function buildFaqReply(text) {
     return '我已收到你的需求。如果需要真人協助，請直接留下你想詢問的問題，稍後會由真人回覆你。';
   }
 
-  return '這裡是本命仙盤 LINE 小助手。\n\n你可以輸入：\n・測驗\n・完整報告\n・出生時間不知道\n・真人客服\n\n我會協助你找到下一步。';
+  return '這裡是八字靈數 LINE 小助手（靈獸事務所）。\n\n你可以輸入：\n・測驗\n・完整報告\n・出生時間不知道\n・真人客服\n\n我會協助你找到下一步。';
 }
 
 async function replyToLine(replyToken, text, channelAccessToken) {
