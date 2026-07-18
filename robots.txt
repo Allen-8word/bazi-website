@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /dev/
 
-Sitemap: https://bazi-website-one.vercel.app/sitemap.xml
+Sitemap: https://bazilingshu.vercel.app/sitemap.xml
