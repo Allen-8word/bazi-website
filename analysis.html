@@ -1497,6 +1497,63 @@ body {
   transition: all 0.2s;
 }
 .paywall-cta:hover { background: var(--color-accent-dark); }
+
+/* ===== 諮詢師分流雙卡（2026-07） ===== */
+.consultant-lead {
+  margin-bottom: 1.5rem;
+}
+.consultant-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 1.25rem 0 0.5rem;
+}
+.consultant-card {
+  background: #FFF;
+  border: 1px solid #E8E2D5;
+  border-radius: var(--radius-md);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+}
+.consultant-tag {
+  display: inline-block;
+  align-self: center;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--color-accent-dark);
+  background: #F9F5EC;
+  border: 1px solid #EADFC8;
+  border-radius: 999px;
+  padding: 4px 14px;
+  margin-bottom: 14px;
+}
+.consultant-intro {
+  font-size: 15px;
+  color: #4D4944;
+  line-height: 1.9;
+  letter-spacing: 0.3px;
+  text-align: center;
+  flex: 1 1 auto;
+  margin-bottom: 16px;
+}
+.consultant-cta {
+  margin-top: auto;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+.consultant-note {
+  margin-top: 1.25rem;
+  line-height: 1.8;
+  text-align: center;
+}
+/* 桌機並列 */
+@media (min-width: 768px) {
+  .consultant-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+}
 .paywall-cta .pc-price {
   font-size: 14px;
   letter-spacing: 1px;
@@ -1766,9 +1823,9 @@ a.paywall-cta {
     <div id="sisterContent" class="sister-content"></div>
   </div>
 
-  <!-- LINE 社群導流（原付費鉤子改造，2026-07；LINE_COMMUNITY_URL 留空時整卡不渲染） -->
+  <!-- 諮詢師分流導流（2026-07 雙老師版；CONSULTANTS 兩位 url 皆空時整卡不渲染） -->
   <div class="report-card paywall-card" id="cardPaywall" hidden>
-    <div class="card-section-title">有 些 話 ， 想 留 到 聊 天 的 時 候 說</div>
+    <div class="card-section-title">想 再 往 裡 走 一 點 ？</div>
     <div id="paywallContent"></div>
   </div>
 
