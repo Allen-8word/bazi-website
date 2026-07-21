@@ -1841,7 +1841,12 @@ a.paywall-cta {
 
   </div><!-- /#pdfArea -->
 
-  <div class="report-card bazi-ai-chat-card" id="cardBaziAIChat">
+  <!-- AI 命盤問答卡:2026-07-21 暫時隱藏。
+       原因:後端 /api/bazi-chat 尚未建置,按下會報錯;且即時 AI 生成與本站零幻覺靜態架構
+       衝突、會產生 API 成本、並可能搶走導向兩位真人老師的流量。
+       未來若要啟用:①建 api/bazi-chat.js 後端 ②把八字GPT提示詞+靈數框架搬進 system prompt
+       ③加費率限制與內容安全防護 ④移除下方 hidden。前端邏輯(initBaziAIChat)保留未動。 -->
+  <div class="report-card bazi-ai-chat-card" id="cardBaziAIChat" hidden>
     <div class="bazi-ai-chat__header">
       <div class="bazi-ai-chat__kicker">AI 命 盤 問 答</div>
       <h2>向你的八字靈數提問</h2>
