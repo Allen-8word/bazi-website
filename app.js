@@ -1070,25 +1070,7 @@ function handleEmailSubmit(e){
 }
 
 function renderLineCTA(){
-  const btn = document.getElementById('btnLineCta');
   const analysisBtn = document.getElementById('btnOpenAnalysisFromLineCta');
-  const statusEl = document.getElementById('lineCtaStatus');
-
-  if(btn) btn.addEventListener('click', () => {
-    track('line_cta_click', {
-      configured: !!LINE_OFFICIAL_URL
-    });
-
-    if(!LINE_OFFICIAL_URL){
-      if(statusEl) statusEl.textContent = 'LINE 官方帳號設定中';
-      console.warn('LINE_OFFICIAL_URL not configured');
-      return;
-    }
-
-    if(statusEl) statusEl.textContent = '';
-    window.open(LINE_OFFICIAL_URL, '_blank', 'noopener');
-  });
-
   if(analysisBtn) analysisBtn.addEventListener('click', openAnalysisPage);
 }
 
