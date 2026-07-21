@@ -7,7 +7,7 @@
  *   二、流年天劫與機緣（為什麼這年重要 + 事件類型 + 最容易卡的地方）
  *   三、生命靈數（data/numerology-report.js 查表 + 靈獸×靈數合成文案）
  *   四、給你的一句話（姊姊贈言，折衷版語氣）
- *   尾、LINE 社群導流卡（原付費鉤子改造；LINE_COMMUNITY_URL 留空時整卡不渲染）
+ *   尾、諮詢師分流導流卡（2026-07 雙老師版；CONSULTANTS 兩位 url 皆空時整卡不渲染）
  *
  * v12.0 移除：命主特質區塊、五行雷達圖與百分比、付費鉤子（含 renderPaywallSync 流年連動）。
  * 所有內容皆來自 data/*.js 的查表資料，零 AI 生成、零幻覺。
@@ -17,9 +17,31 @@
 
 const Solar = window.Solar;
 
-/* 🔗 LINE 社群邀請連結：拿到連結後填入這裡並重新部署即可上線導流卡。
- *    留空字串 = 導流卡完全不渲染，報告結束在「給你的一句話」。 */
-const LINE_COMMUNITY_URL = '';
+/* 🔗 諮詢師導流設定（2026-07 由 LINE 社群改為雙諮詢師分流）
+ *    每位老師的 url 留空字串 = 該張卡不渲染；兩位都留空 = 整個導流區塊不渲染，
+ *    報告乾淨結束在「給你的一句話」。日後若某位老師暫停服務，清空其 url 即可。 */
+const CONSULTANTS = [
+  {
+    id: 'numerology',
+    url: 'https://www.instagram.com/mirai.8988',
+    tag: '生命靈數・天賦解讀',
+    name: '未來',
+    // 承接「想更懂自己」的延續性需求
+    intro: '如果你剛剛看完，心裡浮出一句「原來我是這樣的人」——<br>' +
+           '那份好奇還可以更深。你的靈數藏著天賦的形狀、卡關的原因，還有你這一生走得最順的節奏。想更完整地認識自己，來找未來老師聊聊。',
+    cta: '追 蹤 未 來 老 師 的 靈 數 解 讀'
+  },
+  {
+    id: 'divination',
+    url: 'https://www.instagram.com/showme0815',
+    tag: '卜卦・靈擺問測',
+    name: '艾倫',
+    // 承接「有具體的事想問」的事件性需求
+    intro: '如果你心裡正卡著一件事——該不該、會不會、要選哪一個——<br>' +
+           '命盤看的是「你是誰」，但有些當下的問題，想找個人一起理一理。卜卦與靈擺，陪你把心裡的猶豫慢慢梳開。',
+    cta: '追 蹤 艾 倫 老 師 的 問 測 日 常'
+  }
+];
 
 /* 靈獸圖檔拼音對照（與 share-card.js 一致） */
 const STEM_PINYIN = {
@@ -551,53 +573,59 @@ function renderNumerology(numProfile, dayStem) {
   cardEl.hidden = false;
 }
 
-/* ========= 尾段：LINE 社群導流卡（2026-07，原付費鉤子改造） ========= */
-function renderLineCommunity() {
+/* ========= 尾段：諮詢師分流導流卡（2026-07，雙老師版） ========= */
+function renderConsultants() {
   const cardEl = document.getElementById('cardPaywall');
   const contentEl = document.getElementById('paywallContent');
   if (!cardEl || !contentEl) return;
 
-  /* 連結未填時整卡不渲染，避免死按鈕傷害信任 */
-  if (!LINE_COMMUNITY_URL) {
+  /* 只保留有填連結的老師；兩位都留空 = 整卡不渲染，避免死按鈕傷害信任 */
+  const active = CONSULTANTS.filter(c => c.url && c.url.trim());
+  if (active.length === 0) {
     cardEl.hidden = true;
     contentEl.innerHTML = '';
     return;
   }
 
+  const cardsHTML = active.map(c => `
+    <div class="consultant-card">
+      <div class="consultant-tag">${escapeHtml(c.tag)}</div>
+      <div class="consultant-intro">${c.intro}</div>
+      <a class="paywall-cta consultant-cta" data-consultant="${c.id}"
+         href="${escapeHtml(c.url)}" target="_blank" rel="noopener">
+        ${escapeHtml(c.cta)}
+      </a>
+    </div>
+  `).join('');
+
   contentEl.innerHTML = `
-    <div class="paywall-intro">
-      這份報告能告訴你性格的形狀、能量的走向。<br>
-      但有些問題，光看報告不會有答案——
+    <div class="paywall-intro consultant-lead">
+      看完你的命盤，如果心裡有些想更深入的地方——<br>
+      依你想探索的方向，這裡有兩位老師可以陪你。
     </div>
-    <div class="line-questions">
-      <div class="line-question">「這份工作，該不該換？」</div>
-      <div class="line-question">「這段關係，還要不要繼續？」</div>
-      <div class="line-question">「今年，適合開始新的東西嗎？」</div>
+    <div class="consultant-grid">
+      ${cardsHTML}
     </div>
-    <div class="paywall-intro">
-      這種沒有標準答案的題目，適合慢慢聊。<br>
-      我開了一個 LINE 社群，每週分享靈獸視角的能量提醒；<br>
-      想深入看自己的盤，社群裡也能預約一對一。
+    <div class="line-cta-note consultant-note">
+      兩位老師的服務與收費，可以到他們的頁面看看，或直接私訊詢問。<br>
+      命理與問測內容僅供參考，不涉及醫療、診斷或治療。
     </div>
-    <a class="paywall-cta" id="btnLineCommunity" href="${LINE_COMMUNITY_URL}" target="_blank" rel="noopener">
-      免 費 加 入 LINE 社 群
-    </a>
-    <div class="line-cta-note">一對一採預約制，細節在社群置頂</div>
   `;
   cardEl.hidden = false;
 
-  /* 點擊追蹤：GA / Meta Pixel 有裝就送事件，沒裝就靜默（對應年度目標的數據迴圈） */
-  const btn = document.getElementById('btnLineCommunity');
-  if (btn) {
+  /* 點擊追蹤：各老師送出獨立事件，方便日後在 GA4 比較哪條分流被點得多 */
+  contentEl.querySelectorAll('.consultant-cta').forEach(btn => {
     btn.addEventListener('click', () => {
+      const who = btn.getAttribute('data-consultant') || '';
+      const payload = { placement: 'report_end', consultant: who };
       if (typeof window.gtag === 'function') {
-        try { window.gtag('event', 'line_community_click', { placement: 'report_end' }); } catch (e) {}
+        try { window.gtag('event', 'consultant_click', payload); } catch (e) {}
       }
       if (typeof window.fbq === 'function') {
-        try { window.fbq('trackCustom', 'line_community_click', { placement: 'report_end' }); } catch (e) {}
+        try { window.fbq('trackCustom', 'consultant_click', payload); } catch (e) {}
       }
     });
-  }
+  });
 }
 
 function buildBaziAIChartData(params, result, analysisData, xianxiaProfile) {
@@ -777,7 +805,7 @@ function init() {
   renderFlowYear(analysisData, initialFlowYear);
   renderNumerology(numProfile, analysisData.dayStem);
   renderSisterWord(analysisData.dayStem, numProfile);
-  renderLineCommunity();
+  renderConsultants();
 
   const aiChartData = buildBaziAIChartData(params, result, analysisData, xianxiaProfile);
   initBaziAIChat(aiChartData, false);
